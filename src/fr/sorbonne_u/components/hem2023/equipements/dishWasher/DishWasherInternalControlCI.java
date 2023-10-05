@@ -11,7 +11,7 @@ public interface DishWasherInternalControlCI extends OfferedCI, RequiredCI, Dish
 	public boolean isDryingModeEnable()throws Exception;
 	public int getEnergyConsumption() throws Exception;
 	
-	public int getWaterQuantity() throws Exception;
+	public double getWaterQuantity() throws Exception;
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
 }

@@ -21,7 +21,6 @@ public interface DishWasherUserControlCI extends RequiredCI, OfferedCI, DishWash
 	
 	public boolean fillWater(int waterQuantityToAdd) throws Exception;
 	
-	public int getWaterQuantity() throws Exception;
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
 }

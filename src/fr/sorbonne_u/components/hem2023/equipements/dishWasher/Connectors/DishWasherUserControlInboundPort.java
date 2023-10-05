@@ -82,12 +82,6 @@ public class DishWasherUserControlInboundPort extends AbstractInboundPort implem
 	}
 
 	@Override
-	public int getWaterQuantity() throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public void startWashing() throws Exception {
 		// TODO Auto-generated method stub
 		

@@ -52,7 +52,7 @@ public class DishWasherInternalControlInboundPort extends AbstractInboundPort im
 	}
 
 	@Override
-	public int getWaterQuantity() throws Exception {
+	public double getWaterQuantity() throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
 	}

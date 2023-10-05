@@ -8,4 +8,6 @@ public interface DishWasherInternalControlI extends DishWasherImplementationI {
 	public Timer getTimer() throws Exception;
 	public boolean isDryingModeEnable()throws Exception;
 	public int getEnergyConsumption() throws Exception;
+	public double getWaterQuantity() throws Exception;
+
 }

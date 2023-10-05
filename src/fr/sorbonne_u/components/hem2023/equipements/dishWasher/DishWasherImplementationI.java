@@ -14,7 +14,11 @@ public interface DishWasherImplementationI {
 		INTENSIF
 	}
 	
-	public int getWaterQuantity() throws Exception;
+	public static enum DoorState {
+		OPEN,
+		CLOSE
+	}
+	
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
 }
