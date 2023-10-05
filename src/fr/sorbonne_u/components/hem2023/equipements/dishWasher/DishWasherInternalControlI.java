@@ -9,5 +9,5 @@ public interface DishWasherInternalControlI extends DishWasherImplementationI {
 	public boolean isDryingModeEnable()throws Exception;
 	public int getEnergyConsumption() throws Exception;
 	public double getWaterQuantity() throws Exception;
-
+	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception;
 }

@@ -40,5 +40,10 @@ public class Timer {
 		return seconde;
 	}
 	
+	public boolean isFinish() {
+		if(heure == 0 && minute == 0 && seconde == 0)
+			return true;
+		return false;
+	}
 
 }

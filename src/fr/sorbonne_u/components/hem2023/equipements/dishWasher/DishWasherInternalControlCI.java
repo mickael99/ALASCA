@@ -14,4 +14,6 @@ public interface DishWasherInternalControlCI extends OfferedCI, RequiredCI, Dish
 	public double getWaterQuantity() throws Exception;
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
+	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception;
+
 }

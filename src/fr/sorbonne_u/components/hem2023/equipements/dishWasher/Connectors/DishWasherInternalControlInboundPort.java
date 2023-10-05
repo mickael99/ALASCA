@@ -68,5 +68,8 @@ public class DishWasherInternalControlInboundPort extends AbstractInboundPort im
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
+		return false;
+	}
 }
