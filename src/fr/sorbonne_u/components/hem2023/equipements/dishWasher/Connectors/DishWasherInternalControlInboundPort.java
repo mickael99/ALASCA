@@ -83,4 +83,10 @@ public class DishWasherInternalControlInboundPort extends AbstractInboundPort im
 		return this.getOwner().handleRequest(
 				o -> ((DishWasherInternalControlI)o).isCuveWaterIsEmpty());
 	}
+	
+	@Override
+	public boolean isWashing() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((DishWasherInternalControlI)o).isWashing());
+	}
 }

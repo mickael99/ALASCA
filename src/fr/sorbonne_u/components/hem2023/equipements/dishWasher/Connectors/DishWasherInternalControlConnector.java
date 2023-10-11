@@ -46,12 +46,18 @@ public class DishWasherInternalControlConnector extends AbstractConnector implem
 		 ((DishWasherInternalControlCI)this.offering).stopWashing();
 	}
 	
+	@Override
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
 		return ((DishWasherInternalControlCI)this.offering).removeWaterQuantity(waterQuantityToRemove);
 	}
 	
+	@Override
 	public boolean isCuveWaterIsEmpty() throws Exception {
 		return ((DishWasherInternalControlCI)this.offering).isCuveWaterIsEmpty();
 	}
-
+	
+	@Override
+	public boolean isWashing() throws Exception {
+		return ((DishWasherInternalControlCI)this.offering).isWashing();
+	}
 }

@@ -40,10 +40,21 @@ public class Timer {
 		return seconde;
 	}
 	
+	public void remove() {
+		heure = minute = seconde = 0;
+	}
+	
 	public boolean isFinish() {
 		if(heure == 0 && minute == 0 && seconde == 0)
 			return true;
 		return false;
 	}
-
+	
+	public boolean equals(Timer timer) {
+		if(heure == timer.getHeure() && 
+				minute == timer.getMinute() &&
+				seconde == timer.getSeconde())
+			return true;
+		return false;
+	}
 }

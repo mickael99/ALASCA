@@ -13,9 +13,11 @@ public interface DishWasherUserControlI extends DishWasherInternalAndControlI {
 	public void disableDryingMode() throws Exception;
 	
 	public void scheduleWashing(Timer time) throws Exception;
+	public void removeTimer() throws Exception;
 		
 	public void openDoor() throws Exception;
 	public void closeDoor() throws Exception;
 	
-	public boolean fillWater(int waterQuantityToAdd) throws Exception;
+	public boolean fillWater(double waterQuantityToAdd) throws Exception;
+	public void fillWaterCompletely() throws Exception;
 }

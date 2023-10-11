@@ -9,11 +9,12 @@ public interface DishWasherInternalControlCI extends OfferedCI, RequiredCI, Dish
 	public WashingMode getWashingMode() throws Exception;
 	public Timer getTimer() throws Exception;
 	public boolean isDryingModeEnable()throws Exception;
-	public int getEnergyConsumption() throws Exception;
+	public int getEnergyConsumption() throws Exception; 
 	
 	public double getWaterQuantity() throws Exception;
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
+	public boolean isWashing() throws Exception;
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception;
 	public boolean isCuveWaterIsEmpty() throws Exception;
 }

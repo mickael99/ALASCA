@@ -63,8 +63,13 @@ public class DishWasherUserControlOutboundPort extends AbstractOutboundPort impl
 	}
 
 	@Override
-	public boolean fillWater(int waterQuantityToAdd) throws Exception {
-		return ((DishWasherUserControlCI)this.getConnector()).fillWater(waterQuantityToAdd);
+	public boolean fillWater(double d) throws Exception {
+		return ((DishWasherUserControlCI)this.getConnector()).fillWater(d);
+	}
+	
+	@Override 
+	public void fillWaterCompletely() throws Exception {
+		((DishWasherUserControlCI)this.getConnector()).fillWaterCompletely();
 	}
 
 	@Override
@@ -77,4 +82,8 @@ public class DishWasherUserControlOutboundPort extends AbstractOutboundPort impl
 		((DishWasherUserControlCI)this.getConnector()).stopWashing();
 	}
 	
+	@Override
+	public void removeTimer() throws Exception {
+		((DishWasherUserControlCI)this.getConnector()).removeTimer();
+	}
 }

@@ -13,7 +13,7 @@ public class DishWasherUserControlConnector extends AbstractConnector implements
 
 	@Override
 	public void turnOff() throws Exception {
-		((DishWasherUserControlCI)this.offering).turnOn();
+		((DishWasherUserControlCI)this.offering).turnOff();
 	}
 
 	@Override
@@ -52,8 +52,12 @@ public class DishWasherUserControlConnector extends AbstractConnector implements
 	}
 
 	@Override
-	public boolean fillWater(int waterQuantityToAdd) throws Exception {
+	public boolean fillWater(double waterQuantityToAdd) throws Exception {
 		return ((DishWasherUserControlCI)this.offering).fillWater(waterQuantityToAdd);
+	}
+	@Override
+	public void fillWaterCompletely() throws Exception {
+		((DishWasherUserControlCI)this.offering).fillWaterCompletely();
 	}
 
 	@Override
@@ -64,5 +68,10 @@ public class DishWasherUserControlConnector extends AbstractConnector implements
 	@Override
 	public void stopWashing() throws Exception {
 		((DishWasherUserControlCI)this.offering).stopWashing();
+	}
+	
+	@Override
+	public void removeTimer() throws Exception {
+		((DishWasherUserControlCI)this.offering).removeTimer();
 	}
 }

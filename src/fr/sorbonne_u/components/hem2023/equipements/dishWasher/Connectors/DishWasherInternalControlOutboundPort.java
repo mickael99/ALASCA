@@ -57,11 +57,18 @@ public class DishWasherInternalControlOutboundPort extends AbstractOutboundPort 
 		((DishWasherInternalControlCI)this.getConnector()).stopWashing();
 	}
 	
+	@Override
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
 		return ((DishWasherInternalControlCI)this.getConnector()).removeWaterQuantity(waterQuantityToRemove);
 	}
 	
+	@Override
 	public boolean isCuveWaterIsEmpty() throws Exception {
 		return ((DishWasherInternalControlCI)this.getConnector()).isCuveWaterIsEmpty();
+	}
+	
+	@Override
+	public boolean isWashing() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).isWashing();
 	}
 }

@@ -10,23 +10,6 @@ public class DishWasherUserControlInboundPort extends AbstractInboundPort implem
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * @Override
-	public void stopWashing() throws Exception {
-		this.getOwner().handleRequest(
-				o -> {	((DishWasherInternalControlI)o).stopWashing();
-						return null;
-				});
-	}
-	
-	@Override
-	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
-		return this.getOwner().handleRequest(
-				o -> ((DishWasherInternalControlI)o).removeWaterQuantity(waterQuantityToRemove));
-	}
-	 * @param owner
-	 * @throws Exception
-	 */
 	public DishWasherUserControlInboundPort(ComponentI owner) throws Exception{
 		super(DishWasherUserControlCI.class, owner);
 		assert owner instanceof DishWasherUserControlI;
@@ -108,9 +91,17 @@ public class DishWasherUserControlInboundPort extends AbstractInboundPort implem
 	}
 
 	@Override
-	public boolean fillWater(int waterQuantityToAdd) throws Exception {
+	public boolean fillWater(double waterQuantityToAdd) throws Exception {
 		return this.getOwner().handleRequest(
 				o -> ((DishWasherUserControlI)o).fillWater(waterQuantityToAdd));
+	}
+	
+	@Override
+	public void fillWaterCompletely() throws Exception {
+		this.getOwner().handleRequest(
+				o -> {	((DishWasherUserControlI)o).fillWaterCompletely();
+						return null;
+				});
 	}
 
 	@Override
@@ -128,5 +119,12 @@ public class DishWasherUserControlInboundPort extends AbstractInboundPort implem
 						return null;
 				});
 	}
-
+	
+	@Override
+	public void removeTimer() throws Exception {
+		this.getOwner().handleRequest(
+				o -> {	((DishWasherUserControlI)o).removeTimer();
+						return null;
+				});
+	}
 }

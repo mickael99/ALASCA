@@ -26,7 +26,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	protected boolean enableDrying;
 	protected Timer delayedProgram;
 	protected DoorState doorState;
-	protected boolean isWashing;
+	protected boolean washing;
 	
 	protected double waterQuantityInLiter;
 	protected static final double MAX_WATER_QUANTITY_IN_LITER = 15.0;
@@ -45,11 +45,17 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		super(uriId, 1, 0);
 		initialiseDishWasher();
 		initialisePort();
+		this.traceMessage("\n");
 	}
 	
 	private void initialiseDishWasher() throws Exception {
-		if(VERBOSE)
-			this.traceMessage("Initialisation des variables du lave vaisselle");
+		if(VERBOSE) {
+			this.tracer.get().setTitle("Dishwasher component");
+			this.tracer.get().setRelativePosition(0, 0);
+			this.toggleTracing();
+			
+			this.traceMessage("Initialisation des variables du lave vaisselle\n");
+		}
 		
 		dishWasherState = DishWasherState.OFF;
 		washingMode = WashingMode.NORMAL;
@@ -57,12 +63,13 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		delayedProgram = new Timer(0, 0, 0);
 		doorState = DoorState.CLOSE;
 		waterQuantityInLiter = MAX_WATER_QUANTITY_IN_LITER;
-		isWashing = false;
+		washing = false;
 	}
 	
 	private void initialisePort() throws Exception {
-		if(VERBOSE)
-			this.traceMessage("Initialisation des ports du lave vaisselle");
+		if(VERBOSE) 	
+			this.traceMessage("Initialisation des ports du lave vaisselle\n");
+		
 		
 		this.dishWasherInternalControlInboundPort = 
 				new DishWasherInternalControlInboundPort(URI_INTERNAL_CONTROL_INBOUND_PORT, this);
@@ -71,12 +78,6 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		this.dishWasherUserControlInboundPort = 
 				new DishWasherUserControlInboundPort(URI_USER_CONTROL_INBOUND_PORT, this);
 		this.dishWasherUserControlInboundPort.publishPort();
-		
-		if(VERBOSE) {
-			this.tracer.get().setTitle("Dishwasher component");
-			this.tracer.get().setRelativePosition(0, 0);
-			this.toggleTracing();
-		}
 	}
 	
 	/**
@@ -87,7 +88,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
 			if(VERBOSE)
-				this.traceMessage("Déconnexion des ports du lave vaisselle");
+				this.traceMessage("Déconnexion des ports du lave vaisselle\n\n");
 			
 			this.dishWasherInternalControlInboundPort.unpublishPort();
 			this.dishWasherUserControlInboundPort.unpublishPort();
@@ -103,39 +104,53 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	
 	@Override
 	public double getWaterQuantity() throws Exception {
+		if(VERBOSE)
+			this.traceMessage("il reste " + waterQuantityInLiter + " litre(s) d'eau dans le reservoir\n");
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 		return waterQuantityInLiter;
+	}
+	
+	@Override
+	public boolean isWashing() throws Exception {
+		return washing;
 	}
 
 	@Override
 	public void startWashing() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("On lance le lave vaisselle");
+			this.traceMessage("On lance le lave vaisselle\n");
 		
-		assert !isWashing :
+		assert !washing :
 			new PreconditionException("impossible de lancer le lave vaisselle car il est déjà entrain de tourner");
 		assert isOn() : 
 			new PreconditionException("impossible de lancer le lave vaisselle car il est éteint");
 		assert delayedProgram.isFinish() : 
-			new PreconditionException("impossible de lancer le lave vaisselle car il le minuteur n'est pas finis");
+			new PreconditionException("impossible de lancer le lave vaisselle car le minuteur n'est pas finis");
 		assert !isDoorOpen() :
 			new PreconditionException("impossible de lancer le lave vaisselle car la porte est ouverte");
 		assert !isCuveWaterIsEmpty() :
 			new PreconditionException("impossible de lancer le lave vaisselle car le reservoir est vide");
 		
-		isWashing = true;
+		washing = true;
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void stopWashing() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("On arrête le lave vaisselle");
+			this.traceMessage("On arrête le lave vaisselle\n");
 		
-		assert isWashing :
+		assert washing :
 			new PreconditionException("impossible d'arrêter le lave vaisselle car il est déjà à l'arrêt");
 		assert isOn() : 
 			new PreconditionException("impossible d'arrêter le lave vaisselle car il est éteint");
 		
-		isWashing = false;
+		washing = false;
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
@@ -191,17 +206,23 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	@Override
 	public void turnOn() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le lave vaisselle est en mode ON");
+			this.traceMessage("Le lave vaisselle est en mode ON\n");
 		
 		dishWasherState = DishWasherState.ON;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void turnOff() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le lave vaisselle est en mode OFF");
+			this.traceMessage("Le lave vaisselle est en mode OFF\n");
 		
 		dishWasherState = DishWasherState.OFF;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
@@ -214,85 +235,128 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	@Override
 	public void setWashingMode(WashingMode washingMode) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le lave vaisselle se met en mode " + washingMode.name());
+			this.traceMessage("Le lave vaisselle se met en mode " + washingMode.name() + "\n");
 		
 		this.washingMode = washingMode;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void enableDryingMode() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le lave vaisselle active le mode sechage");
+			this.traceMessage("Le lave vaisselle active le mode sechage\n");
 		
 		enableDrying = true;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void disableDryingMode() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le lave vaisselle désactive le mode sechage");
+			this.traceMessage("Le lave vaisselle désactive le mode sechage\n");
 		
 		enableDrying = false;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void scheduleWashing(Timer time) throws Exception {
 		if(VERBOSE)
 			this.traceMessage("Le lave vaisselle active un timer -> " + 
-					time.getHeure() + ":" + time.getMinute() + ":" + time.getSeconde());
+					time.getHeure() + ":" + time.getMinute() + ":" + time.getSeconde() + "\n");
 		
 		delayedProgram = time;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
-
+	
+	@Override
+	public void removeTimer() throws Exception {
+		this.delayedProgram.remove();
+	}
+	
 	@Override
 	public void openDoor() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("La porte du lave vaisselle s'ouvre");
+			this.traceMessage("La porte du lave vaisselle s'ouvre\n");
 		
 		doorState = DoorState.OPEN;
-		if(isWashing) {
+		if(washing) {
 			if(VERBOSE)
 				this.traceMessage
-					("La porte est ouverte pendant que le lave vaisselle s'ouvre, arrêt d'urgence !");
+					("La porte est ouverte pendant que le lave vaisselle s'ouvre, arrêt d'urgence !\n");
 		}
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
 	public void closeDoor() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("La porte du lave vaisselle se ferme");
+			this.traceMessage("La porte du lave vaisselle se ferme\n");
 		
 		doorState = DoorState.CLOSE;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 
 	@Override
-	public boolean fillWater(int waterQuantityToAdd) throws Exception {
+	public boolean fillWater(double waterQuantityToAdd) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Remplissage du réservoir du lave vaisselle de " + waterQuantityToAdd + " litre(s) d'eau");
+			this.traceMessage("Remplissage du réservoir du lave vaisselle de " + waterQuantityToAdd + " litre(s) d'eau\n");
 			
 		if(waterQuantityToAdd < 0.0 || waterQuantityInLiter + waterQuantityToAdd > MAX_WATER_QUANTITY_IN_LITER) {
 			if(VERBOSE)
-				this.traceMessage("Impossible de remplir le réservoir du lave vaisselle");			
+				this.traceMessage("Impossible de remplir le réservoir du lave vaisselle\n");			
 			return false;
 		}
 		
 		waterQuantityInLiter += waterQuantityToAdd;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
+		
 		return true;
+	}
+	
+	@Override
+	public void fillWaterCompletely() throws Exception {
+		if(VERBOSE)
+			this.traceMessage("Remplissage du réservoir du lave vaisselle au maximum\n");
+		
+		waterQuantityInLiter = MAX_WATER_QUANTITY_IN_LITER;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
 	}
 	
 	@Override
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le réservoir perd " + waterQuantityToRemove + " litre(s) d'eau");
+			this.traceMessage("Le réservoir perd " + waterQuantityToRemove + " litre(s) d'eau\n");
+		
 		if(waterQuantityToRemove < 0.0) {
 			if(VERBOSE)
-				this.traceMessage("Le réservoir ne perd pas d'eau car la quantité à retirer est négative");
+				this.traceMessage("Le réservoir ne perd pas d'eau car la quantité à retirer est négative\n");
 			return false;
 		}
 		if(waterQuantityInLiter - waterQuantityToRemove < 0.0)
 			waterQuantityInLiter = 0.0;
 		else 
 			waterQuantityInLiter -= waterQuantityToRemove;
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
+		
 		return true;
 	}
 	
@@ -300,9 +364,13 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	public boolean isCuveWaterIsEmpty() throws Exception {
 		if(waterQuantityInLiter == 0.0) {
 			if(VERBOSE)
-				this.traceMessage("Le réservoir est vide");
+				this.traceMessage("Le réservoir est vide\n");
 			return true;
 		}
+		
+		if(VERBOSE)
+			this.traceMessage("\n");
+		
 		return false;
 	}
 }
