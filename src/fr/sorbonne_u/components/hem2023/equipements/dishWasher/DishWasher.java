@@ -3,8 +3,12 @@ package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherInternalControlInboundPort;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherUserControlInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherInternalControlInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherUserControlInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlI;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 

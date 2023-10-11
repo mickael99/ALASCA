@@ -1,7 +1,7 @@
 package fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasherUserControlCI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 
 public class DishWasherUserControlConnector extends AbstractConnector implements DishWasherUserControlCI {
