@@ -1,12 +1,14 @@
 package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherInternalControlInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
+@OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasher extends AbstractComponent implements DishWasherUserControlI, DishWasherInternalControlI {
 	public static final boolean VERBOSE = true;
 	
@@ -39,8 +41,8 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		initialisePort();
 	}
 	
-	protected DishWasher(String uri_id) throws Exception {
-		super(uri_id, 1, 0);
+	protected DishWasher(String uriId) throws Exception {
+		super(uriId, 1, 0);
 		initialiseDishWasher();
 		initialisePort();
 	}
@@ -117,6 +119,8 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 			new PreconditionException("impossible de lancer le lave vaisselle car il le minuteur n'est pas finis");
 		assert !isDoorOpen() :
 			new PreconditionException("impossible de lancer le lave vaisselle car la porte est ouverte");
+		assert !isCuveWaterIsEmpty() :
+			new PreconditionException("impossible de lancer le lave vaisselle car le reservoir est vide");
 		
 		isWashing = true;
 	}
@@ -250,7 +254,6 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 			if(VERBOSE)
 				this.traceMessage
 					("La porte est ouverte pendant que le lave vaisselle s'ouvre, arrêt d'urgence !");
-			stopWashing();
 		}
 	}
 
@@ -265,9 +268,9 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	@Override
 	public boolean fillWater(int waterQuantityToAdd) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Remplissage du réservoir du lave vaisselle");
+			this.traceMessage("Remplissage du réservoir du lave vaisselle de " + waterQuantityToAdd + " litre(s) d'eau");
 			
-		if(waterQuantityToAdd < 0 || waterQuantityInLiter + waterQuantityToAdd > MAX_WATER_QUANTITY_IN_LITER) {
+		if(waterQuantityToAdd < 0.0 || waterQuantityInLiter + waterQuantityToAdd > MAX_WATER_QUANTITY_IN_LITER) {
 			if(VERBOSE)
 				this.traceMessage("Impossible de remplir le réservoir du lave vaisselle");			
 			return false;
@@ -277,20 +280,29 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		return true;
 	}
 	
+	@Override
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Le réservoir perd de l'eau");
-		if(waterQuantityToRemove < 0) {
+			this.traceMessage("Le réservoir perd " + waterQuantityToRemove + " litre(s) d'eau");
+		if(waterQuantityToRemove < 0.0) {
 			if(VERBOSE)
 				this.traceMessage("Le réservoir ne perd pas d'eau car la quantité à retirer est négative");
 			return false;
 		}
-		if(waterQuantityInLiter - waterQuantityToRemove < 0)
-			waterQuantityInLiter = 0;
+		if(waterQuantityInLiter - waterQuantityToRemove < 0.0)
+			waterQuantityInLiter = 0.0;
 		else 
 			waterQuantityInLiter -= waterQuantityToRemove;
 		return true;
 	}
 	
-
+	@Override
+	public boolean isCuveWaterIsEmpty() throws Exception {
+		if(waterQuantityInLiter == 0.0) {
+			if(VERBOSE)
+				this.traceMessage("Le réservoir est vide");
+			return true;
+		}
+		return false;
+	}
 }

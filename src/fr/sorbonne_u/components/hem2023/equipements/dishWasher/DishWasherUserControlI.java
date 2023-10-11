@@ -2,7 +2,7 @@ package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 
-public interface DishWasherUserControlI extends DishWasherImplementationI {
+public interface DishWasherUserControlI extends DishWasherInternalAndControlI {
 	public void turnOn() throws Exception;
 	public void turnOff() throws Exception;
 	public boolean isOn() throws Exception;

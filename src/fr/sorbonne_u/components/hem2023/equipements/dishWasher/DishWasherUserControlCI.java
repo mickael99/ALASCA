@@ -5,7 +5,6 @@ import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 
 public interface DishWasherUserControlCI extends RequiredCI, OfferedCI, DishWasherUserControlI {
-	public void turnOn() throws Exception;
 	public void turnOff() throws Exception;
 	public boolean isOn() throws Exception;
 	

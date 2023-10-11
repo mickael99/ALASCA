@@ -19,75 +19,62 @@ public class DishWasherUserControlOutboundPort extends AbstractOutboundPort impl
 
 	@Override
 	public void turnOn() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).turnOn();
 	}
 
 	@Override
 	public void turnOff() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).turnOff();
 	}
 
 	@Override
 	public boolean isOn() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		return ((DishWasherUserControlCI)this.getConnector()).isOn();
 	}
 
 	@Override
 	public void setWashingMode(WashingMode washingMode) throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).setWashingMode(washingMode);
 	}
 
 	@Override
 	public void enableDryingMode() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).enableDryingMode();
 	}
 
 	@Override
 	public void disableDryingMode() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).disableDryingMode();
 	}
 
 	@Override
 	public void scheduleWashing(Timer time) throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).scheduleWashing(time);
 	}
 
 	@Override
 	public void openDoor() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).openDoor();
 	}
 
 	@Override
 	public void closeDoor() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).closeDoor();
 	}
 
 	@Override
 	public boolean fillWater(int waterQuantityToAdd) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		return ((DishWasherUserControlCI)this.getConnector()).fillWater(waterQuantityToAdd);
 	}
 
 	@Override
 	public void startWashing() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).startWashing();
 	}
 
 	@Override
 	public void stopWashing() throws Exception {
-		// TODO Auto-generated method stub
-		
+		((DishWasherUserControlCI)this.getConnector()).stopWashing();
 	}
-
 	
 }

@@ -1,6 +1,6 @@
 package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 
-public interface DishWasherImplementationI {
+public interface DishWasherInternalAndControlI {
 	
 	public static enum DishWasherState {
 		ON,

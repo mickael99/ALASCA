@@ -8,7 +8,7 @@ import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 public class DishWasherInternalControlOutboundPort extends AbstractOutboundPort implements DishWasherInternalControlCI {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	public DishWasherInternalControlOutboundPort(ComponentI owner) throws Exception {
 		super(DishWasherInternalControlCI.class, owner);
 	}
@@ -19,53 +19,49 @@ public class DishWasherInternalControlOutboundPort extends AbstractOutboundPort 
 
 	@Override
 	public boolean isDoorOpen() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		return ((DishWasherInternalControlCI)this.getConnector()).isDoorOpen();
 	}
 
 	@Override
 	public WashingMode getWashingMode() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return ((DishWasherInternalControlCI)this.getConnector()).getWashingMode();
 	}
 
 	@Override
 	public Timer getTimer() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return ((DishWasherInternalControlCI)this.getConnector()).getTimer();
 	}
 
 	@Override
 	public boolean isDryingModeEnable() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		return ((DishWasherInternalControlCI)this.getConnector()).isDryingModeEnable();
 	}
 
 	@Override
 	public int getEnergyConsumption() throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return ((DishWasherInternalControlCI)this.getConnector()).getEnergyConsumption();
 	}
 
 	@Override
 	public double getWaterQuantity() throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return ((DishWasherInternalControlCI)this.getConnector()).getWaterQuantity();
 	}
 
 	@Override
 	public void startWashing() throws Exception {
-		// TODO Auto-generated method stub
-
+		((DishWasherInternalControlCI)this.getConnector()).startWashing();
 	}
 
 	@Override
 	public void stopWashing() throws Exception {
-		// TODO Auto-generated method stub
-
+		((DishWasherInternalControlCI)this.getConnector()).stopWashing();
 	}
 	
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
-		return false;
+		return ((DishWasherInternalControlCI)this.getConnector()).removeWaterQuantity(waterQuantityToRemove);
+	}
+	
+	public boolean isCuveWaterIsEmpty() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).isCuveWaterIsEmpty();
 	}
 }
