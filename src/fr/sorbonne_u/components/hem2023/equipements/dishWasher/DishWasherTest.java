@@ -12,14 +12,12 @@ import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWa
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
-import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
-import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 
 import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.Test;
 
 
-@RequiredInterfaces(required={DishWasherUserControlCI.class, DishWasherInternalControlCI.class, ClocksServerCI.class})
+@RequiredInterfaces(required={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasherTest extends AbstractComponent {
 	public static final String URI_INTERNAL_CONTROL_OUTBOUND_PORT
 		= "URI_INTERNAL_CONTROL_OUTBOUND_PORT";
@@ -29,7 +27,6 @@ public class DishWasherTest extends AbstractComponent {
 	
 	protected DishWasherInternalControlOutboundPort dishWasherInternalControlOutboundPort;
 	protected DishWasherUserControlOutboundPort dishWasherUserControlOutboundPort;
-	protected ClocksServerOutboundPort clocksServerOutboundPort;
 
 	
 	protected DishWasherTest() throws Exception {

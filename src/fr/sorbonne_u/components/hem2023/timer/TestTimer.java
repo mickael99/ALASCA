@@ -43,10 +43,22 @@ public class TestTimer {
 	}
 	
 	@Test
-	public void testDifferenceBeetweenTwoTimers() {
-		Timer timer1 = new Timer(1, 30, 0);
-		Timer timer2 = new Timer(7, 20, 50);
-		Timer expectedAnswer = new Timer(5, 50, 50);
+	public void testDifferenceBeetweenTwoTimers() throws Exception {
+		Timer timer1 = new Timer(23, 30, 0);
+		Timer timer2 = new Timer(7, 30, 50);
+		Timer expectedAnswer = new Timer(8, 0, 50);
 		assertTrue(timer1.differenceBeetweenTwoTimer(timer2).equals(expectedAnswer));
+		
+		timer1 = new Timer(0, 30, 10);
+		timer2 = new Timer(7, 10, 50);
+		expectedAnswer = new Timer(6, 40, 40);
+		assertTrue(timer1.differenceBeetweenTwoTimer(timer2).equals(expectedAnswer));
+	}
+	
+	@Test
+	public void testToString() {
+		Timer timer = new Timer(1, 30, 45);
+		String expectedAnswer = "1h 30min 45sec";
+		assertTrue(expectedAnswer.equals(timer.toString()));
 	}
 }

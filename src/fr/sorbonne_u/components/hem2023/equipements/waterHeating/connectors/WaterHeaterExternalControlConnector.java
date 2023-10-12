@@ -17,8 +17,8 @@ public class WaterHeaterExternalControlConnector extends AbstractConnector imple
 	}
 
 	@Override
-	public void heating() throws Exception {
-		((WaterHeaterExternalControlCI)this.offering).heating();
+	public boolean isHeating() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).isHeating();
 	}
 
 	@Override

@@ -50,4 +50,9 @@ public class WaterHeaterUserControlConnector extends AbstractConnector implement
 	public double getPowerLevel() throws Exception {
 		return ((WaterHeaterUserControlCI)this.offering).getPowerLevel();
 	}
+	
+	public void removeTimer() throws Exception {
+		((WaterHeaterUserControlCI)this.offering).removeTimer();
+	}
 }
+

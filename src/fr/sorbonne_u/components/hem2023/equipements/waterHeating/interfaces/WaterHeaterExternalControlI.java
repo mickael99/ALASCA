@@ -4,7 +4,7 @@ public interface WaterHeaterExternalControlI extends WaterHeaterUserAndExternalC
 	public int getCurrentTemperature() throws Exception;
 	public int getEnergyConsumption() throws Exception;
 	
-	public void heating() throws Exception;
+	public boolean isHeating() throws Exception;
 	public void startHeating() throws Exception;
 	public void stopHeating() throws Exception;
 }

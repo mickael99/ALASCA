@@ -110,10 +110,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	@Override
 	public double getWaterQuantity() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("il reste " + waterQuantityInLiter + " litre(s) d'eau dans le reservoir\n");
-		
-		if(VERBOSE)
-			this.traceMessage("\n");
+			this.traceMessage("il reste " + waterQuantityInLiter + " litre(s) d'eau dans le reservoir\n\n");
 		return waterQuantityInLiter;
 	}
 	

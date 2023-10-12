@@ -9,4 +9,5 @@ public interface WaterHeaterUserControlI extends WaterHeaterUserAndExternalContr
 	
 	public void setTargetWaterTemperature(int degree) throws Exception;
 	public void scheduleHeating(Timer launchTime, Timer endTime) throws Exception;
+	public void removeTimer() throws Exception;
 }

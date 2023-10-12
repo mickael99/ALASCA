@@ -61,4 +61,9 @@ public class WaterHeaterUserControlOutboundPort extends AbstractOutboundPort imp
 	public double getPowerLevel() throws Exception {
 		return ((WaterHeaterUserControlCI)this.getConnector()).getPowerLevel();
 	}
+	
+	@Override
+	public void removeTimer() throws Exception {
+		((WaterHeaterUserControlCI)this.getConnector()).removeTimer();
+	}
 }

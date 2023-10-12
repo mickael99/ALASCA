@@ -83,5 +83,12 @@ public class WaterHeaterUserControlInboundPort extends AbstractInboundPort imple
 		return this.getOwner().handleRequest(
 				o -> ((WaterHeaterUserControlI)o).getPowerLevel());
 	}
-
+	
+	@Override
+	public void removeTimer() throws Exception {
+		this.getOwner().handleRequest(
+				o -> {	((WaterHeaterUserControlI)o).removeTimer();
+						return null;
+				});
+	}
 }

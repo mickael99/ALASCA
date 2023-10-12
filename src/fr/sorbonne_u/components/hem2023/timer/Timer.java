@@ -8,6 +8,8 @@ package fr.sorbonne_u.components.hem2023.timer;
  *
  */
 public class Timer {
+	private static final int SECONDS_IN_ONE_DAY = 86400;
+	
 	private int heure;
 	private int minute;
 	private int seconde;
@@ -36,6 +38,12 @@ public class Timer {
 		return seconde;
 	}
 	
+	public void testAvailableHour() throws Exception {
+		assert heure >= 0 && heure <= 23 : new Exception("ce n'est pas une heure de la journée !");
+		assert minute >= 0 && minute <= 59 : new Exception("ce n'est pas une heure de la journée !");
+		assert seconde >= 0 && seconde <= 59 : new Exception("ce n'est pas une heure de la journée !");
+	}
+	
 	public void remove() {
 		heure = minute = seconde = 0;
 	}
@@ -46,11 +54,14 @@ public class Timer {
 		return false;
 	}
 	
-	private int convertTimerToSecond() {
+	private int convertTimerToSecond() throws Exception {
+		testAvailableHour();
 		return heure * 3600 + minute * 60 + seconde;
 	}
 	
 	private static Timer convertSecondToTimer(int seconde) {
+		assert seconde >= 0 & seconde <= SECONDS_IN_ONE_DAY : new Exception("le nombre de seconde est invalide");
+		
 		int h = seconde / 3600;
 		int m = (seconde % 3600) / 60;
 		int s = seconde % 60;
@@ -58,9 +69,14 @@ public class Timer {
 		return new Timer(h, m, s);
 	}
 	
-	public Timer differenceBeetweenTwoTimer(Timer timer) {
-		int differenceInSecond = Math.abs(this.convertTimerToSecond() - timer.convertTimerToSecond());
-		return convertSecondToTimer(differenceInSecond);
+	public Timer differenceBeetweenTwoTimer(Timer endTime) throws Exception {
+		int endTimeInSecond = endTime.convertTimerToSecond();
+		int launchTimeInSecond = this.convertTimerToSecond();
+		
+		if(endTimeInSecond >= launchTimeInSecond)
+			return convertSecondToTimer(endTimeInSecond - launchTimeInSecond);
+		
+		return convertSecondToTimer(SECONDS_IN_ONE_DAY - launchTimeInSecond + endTimeInSecond);
 	}
 	
 	public boolean equals(Timer timer) {
@@ -69,5 +85,9 @@ public class Timer {
 				seconde == timer.getSeconde())
 			return true;
 		return false;
+	}
+	
+	public String toString() {
+		return heure + "h " + minute + "min " + seconde + "sec";
 	}
 }
