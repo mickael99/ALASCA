@@ -43,6 +43,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		super(1, 0);
 		initialiseDishWasher();
 		initialisePort();
+		this.traceMessage("\n");
 	}
 	
 	protected DishWasher(String uriId) throws Exception {

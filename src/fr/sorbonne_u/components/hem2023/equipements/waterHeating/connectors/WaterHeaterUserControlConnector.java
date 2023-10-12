@@ -42,7 +42,7 @@ public class WaterHeaterUserControlConnector extends AbstractConnector implement
 	}
 
 	@Override
-	public void setPowerLevel(double power) throws Exception {
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception {
 		((WaterHeaterUserControlCI)this.offering).setPowerLevel(power);
 	}
 

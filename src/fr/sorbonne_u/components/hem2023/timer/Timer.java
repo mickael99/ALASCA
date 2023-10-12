@@ -8,10 +8,6 @@ package fr.sorbonne_u.components.hem2023.timer;
  *
  */
 public class Timer {
-
-	/**
-	 * 
-	 */
 	private int heure;
 	private int minute;
 	private int seconde;
@@ -48,6 +44,23 @@ public class Timer {
 		if(heure == 0 && minute == 0 && seconde == 0)
 			return true;
 		return false;
+	}
+	
+	private int convertTimerToSecond() {
+		return heure * 3600 + minute * 60 + seconde;
+	}
+	
+	private static Timer convertSecondToTimer(int seconde) {
+		int h = seconde / 3600;
+		int m = (seconde % 3600) / 60;
+		int s = seconde % 60;
+		
+		return new Timer(h, m, s);
+	}
+	
+	public Timer differenceBeetweenTwoTimer(Timer timer) {
+		int differenceInSecond = Math.abs(this.convertTimerToSecond() - timer.convertTimerToSecond());
+		return convertSecondToTimer(differenceInSecond);
 	}
 	
 	public boolean equals(Timer timer) {

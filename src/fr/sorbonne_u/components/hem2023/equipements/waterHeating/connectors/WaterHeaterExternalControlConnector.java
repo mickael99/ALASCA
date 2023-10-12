@@ -42,7 +42,7 @@ public class WaterHeaterExternalControlConnector extends AbstractConnector imple
 	}
 
 	@Override
-	public void setPowerLevel(double power) throws Exception {
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception {
 		((WaterHeaterExternalControlCI)this.offering).setPowerLevel(power);
 	}
 

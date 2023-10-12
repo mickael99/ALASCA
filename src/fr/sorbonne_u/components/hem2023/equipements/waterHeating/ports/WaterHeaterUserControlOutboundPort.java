@@ -53,7 +53,7 @@ public class WaterHeaterUserControlOutboundPort extends AbstractOutboundPort imp
 	}
 
 	@Override
-	public void setPowerLevel(double power) throws Exception {
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception {
 		((WaterHeaterUserControlCI)this.getConnector()).turnOn();
 	}
 

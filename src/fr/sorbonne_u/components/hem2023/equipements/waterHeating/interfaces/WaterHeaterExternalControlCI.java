@@ -15,6 +15,6 @@ public interface WaterHeaterExternalControlCI extends OfferedCI, RequiredCI, Wat
 	public int getTargetTemperature() throws Exception;
 	public Timer getTimer() throws Exception;
 	
-	public void setPowerLevel(double power) throws Exception;
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception;
 	public double getPowerLevel() throws Exception;
 }

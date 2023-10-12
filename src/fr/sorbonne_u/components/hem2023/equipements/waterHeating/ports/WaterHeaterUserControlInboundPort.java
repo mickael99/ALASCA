@@ -71,7 +71,7 @@ public class WaterHeaterUserControlInboundPort extends AbstractInboundPort imple
 	}
 
 	@Override
-	public void setPowerLevel(double power) throws Exception {
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception {
 		this.getOwner().handleRequest(
 				o -> {	((WaterHeaterUserControlI)o).setPowerLevel(power);
 						return null;

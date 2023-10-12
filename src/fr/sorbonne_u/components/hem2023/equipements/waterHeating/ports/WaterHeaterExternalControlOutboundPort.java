@@ -54,7 +54,7 @@ public class WaterHeaterExternalControlOutboundPort extends AbstractOutboundPort
 	}
 
 	@Override
-	public void setPowerLevel(double power) throws Exception {
+	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception {
 		((WaterHeaterExternalControlCI)this.getConnector()).setPowerLevel(power);
 	}
 
