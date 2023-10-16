@@ -90,4 +90,35 @@ public class Timer {
 	public String toString() {
 		return heure + "h " + minute + "min " + seconde + "sec";
 	}
+	
+	private void decreaseTime(int seconds) {
+	    int totalSeconds = 0;
+		try {
+			totalSeconds = convertTimerToSecond();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	    totalSeconds -= seconds;
+
+	    if (totalSeconds < 0) {
+	        totalSeconds += SECONDS_IN_ONE_DAY;
+	    }
+
+	    heure = totalSeconds / 3600;
+	    minute = (totalSeconds % 3600) / 60;
+	    seconde = totalSeconds % 60;
+	}
+	
+	public void runTimer() {
+	    while (!isFinish()) {
+	        try {
+	            System.out.println(this); // Print the current time
+	            Thread.sleep(1000); // Sleep for 1 second (1000 milliseconds)
+	            decreaseTime(1); // Decrease the time by 1 second
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    System.out.println("Timer has reached 0.");
+	}
 }
