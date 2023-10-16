@@ -17,8 +17,17 @@ public interface MicrowaveImplementationI {
 		OFF
 	}
 	
+	public static enum MicrowaveMode
+	{
+		UNFREEZE,
+		LOW,			
+		MEDDIUM,
+		HIGH
+	}
 
 	public MicrowaveState	getState() throws Exception;
+	
+	public MicrowaveMode 	getMode() throws Exception;
 	
 	
 	/**
@@ -43,12 +52,15 @@ public interface MicrowaveImplementationI {
 	 */
 	public void			turnOff() throws Exception;
 	
+	public void 		setHigh() throws Exception;
+	
+	public void 		setMeddium() throws Exception;
 
-	
-	
-	
-	public void			setPower(int newPower) throws Exception;
-	
+	public void 		setLow() throws Exception;
+
+	public void 		setUnfreez() throws Exception;
+
+		
 	public void			setTimer(Timer newTimer) throws Exception;
 
 
