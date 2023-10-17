@@ -228,9 +228,6 @@ extends AbstractComponent {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#start()
-	 */
 	@Override
 	public synchronized void	start()
 	throws ComponentStartException
@@ -247,9 +244,6 @@ extends AbstractComponent {
 		}
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#execute()
-	 */
 	@Override
 	public synchronized void execute() throws Exception
 	{
@@ -277,9 +271,6 @@ extends AbstractComponent {
 		this.logMessage("Fan Tester ends");
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#finalise()
-	 */
 	@Override
 	public synchronized void	finalise() throws Exception
 	{
@@ -287,9 +278,6 @@ extends AbstractComponent {
 		super.finalise();
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#shutdown()
-	 */
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{

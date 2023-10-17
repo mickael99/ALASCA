@@ -156,9 +156,6 @@ implements FanImplementationI {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#shutdown()
-	 */
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{
