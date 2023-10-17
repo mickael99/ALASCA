@@ -4,7 +4,6 @@
 package fr.sorbonne_u.components.hem2023.equipements.microwave;
 
 import fr.sorbonne_u.components.AbstractComponent;
-import fr.sorbonne_u.components.hem2023.equipements.fan.Fan;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
@@ -143,8 +142,8 @@ implements MicrowaveImplementationI {
 		this.mwip = new MicrowaveInboundPort(microwaveInboundPortURI, this);
 		this.mwip.publishPort();
 
-		if (Fan.VERBOSE) {
-			this.tracer.get().setTitle("Fan component");
+		if (Microwave.VERBOSE) {
+			this.tracer.get().setTitle("Microwave component");
 			this.tracer.get().setRelativePosition(1, 0);
 			this.toggleTracing();
 		}
@@ -152,10 +151,13 @@ implements MicrowaveImplementationI {
 	
 	@Override
 	public MicrowaveState getState() throws Exception {
-		if (Fan.VERBOSE) {
+		
+		if (Microwave.VERBOSE) {
 			this.traceMessage("Microwave returns its state : " +
 													this.currentState + ".\n");
+
 		}
+
 		return this.currentState;
 	}
 	
@@ -170,12 +172,12 @@ implements MicrowaveImplementationI {
 
 	@Override
 	public void turnOn() throws Exception {
-		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is turned on.\n");
+		if (Microwave.VERBOSE) {
+			this.traceMessage("Microwave is turned on.\n");
 		}
 
 		assert	this.getState() == MicrowaveState.OFF :
-				new PreconditionException("getState() == FanState.OFF");
+				new PreconditionException("getState() == MicrowaveState.OFF");
 
 		this.currentState = MicrowaveState.ON;
 		this.currentMode = MicrowaveMode.LOW;
@@ -183,12 +185,12 @@ implements MicrowaveImplementationI {
 
 	@Override
 	public void turnOff() throws Exception {
-		if (Fan.VERBOSE) {
-			this.traceMessage("Hair dryer is turned off.\n");
+		if (Microwave.VERBOSE) {
+			this.traceMessage("Microwave is turned off.\n");
 		}
 
 		assert	this.getState() == MicrowaveState.ON :
-				new PreconditionException("getState() == FanState.ON");
+				new PreconditionException("getState() == MicrowaveState.ON");
 
 		this.currentState = MicrowaveState.OFF;
 	}

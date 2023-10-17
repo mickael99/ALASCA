@@ -10,13 +10,13 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
  * @author Yukhoi
  *
  */
-public class CVMUnitTest extends AbstractCVM {
+public class CVMUnitTestFan extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public				CVMUnitTest() throws Exception
+	public				CVMUnitTestFan() throws Exception
 	{
 		
 	}
@@ -36,7 +36,7 @@ public class CVMUnitTest extends AbstractCVM {
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-					Fan.class.getCanonicalName(),
+					FanTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
@@ -45,9 +45,9 @@ public class CVMUnitTest extends AbstractCVM {
 	public static void		main(String[] args)
 	{
 		try {
-			CVMUnitTest cvm = new CVMUnitTest();
-			cvm.startStandardLifeCycle(1000L);
-			Thread.sleep(10000L);
+			CVMUnitTestFan cvm = new CVMUnitTestFan();
+			cvm.startStandardLifeCycle(100000L);
+			Thread.sleep(1000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

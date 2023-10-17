@@ -3,22 +3,19 @@
  */
 package fr.sorbonne_u.components.hem2023.equipements.microwave;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.ExecutionException;
 
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.CVMIntegrationTest;
-import fr.sorbonne_u.components.hem2023.equipements.fan.Fan;
 import fr.sorbonne_u.components.hem2023.equipements.microwave.MicrowaveImplementationI.MicrowaveMode;
 import fr.sorbonne_u.components.hem2023.equipements.microwave.MicrowaveImplementationI.MicrowaveState;
-import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanMode;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 
@@ -26,7 +23,10 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
  * @author Yukhoi
  *
  */
-public class MicrowaveTester extends AbstractComponent {
+
+@RequiredInterfaces(required = {MicrowaveUserCI.class, ClocksServerCI.class})
+public class MicrowaveTester
+extends AbstractComponent {
 	
 	// -------------------------------------------------------------------------
 	// Constants and variables
@@ -47,7 +47,7 @@ public class MicrowaveTester extends AbstractComponent {
 	 */
 	protected			MicrowaveTester(boolean isUnitTest) throws Exception
 	{
-		this(isUnitTest, Fan.INBOUND_PORT_URI);
+		this(isUnitTest, Microwave.INBOUND_PORT_URI);
 	}
 
 	/**
@@ -94,129 +94,87 @@ public class MicrowaveTester extends AbstractComponent {
 	protected void		initialise(
 			String microwaveInboundPortURI
 			) throws Exception
-		{
-			this.microwaveInboundPortURI = microwaveInboundPortURI;
-			this.mwop = new MicrowaveOutboundPort(this);
-			this.mwop.publishPort();
+	{
+		this.microwaveInboundPortURI = microwaveInboundPortURI;
+		this.mwop = new MicrowaveOutboundPort(this);
+		this.mwop.publishPort();
 
-			this.tracer.get().setTitle("Microwave tester component");
-			this.tracer.get().setRelativePosition(0, 0);
-			this.toggleTracing();		
-		}
+		this.tracer.get().setTitle("Microwave tester component");
+		this.tracer.get().setRelativePosition(0, 0);
+		this.toggleTracing();		
+	}
 	
 	// -------------------------------------------------------------------------
 	// Component internal methods
 	// -------------------------------------------------------------------------
 
-	public void			testGetState()
+	public void			testGetState() throws Exception
 	{
 		this.logMessage("testGetState()... ");
-		try {
-			assertEquals(MicrowaveState.OFF, this.mwop.getState());
-		} catch (Exception e) {
+
+		if(MicrowaveState.OFF != this.mwop.getState()) {
+		
 			this.logMessage("...KO.");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testGetMode()
+	public void			testGetMode() throws Exception
 	{
 		this.logMessage("testGetMode()... ");
-		try {
-			assertEquals(FanMode.LOW, this.mwop.getMode());
-		} catch (Exception e) {
+		if(MicrowaveMode.LOW != this.mwop.getMode()) {
+			this.logMessage("...KO... The microwave gave the wrong mode");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testTurnOnOff()
+	public void			testTurnOnOff() throws Exception
 	{
 		this.logMessage("testTurnOnOff()... ");
-		try {
-			assertEquals(MicrowaveState.OFF, this.mwop.getState());
+		if (MicrowaveState.OFF == this.mwop.getState()) {
 			this.mwop.turnOn();
-			assertEquals(MicrowaveState.ON, this.mwop.getState());
-		} catch (Exception e) {
-			assertTrue(false);
+			if(MicrowaveState.ON != this.mwop.getState()) {
+				this.logMessage("...KO...The microwave hasn't been turned on sussecefully");
+				assertTrue(false);
+			}
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.turnOn());
-		} catch (Exception e) {
+		this.mwop.turnOff();
+		if(MicrowaveState.OFF != this.mwop.getState()) {
+			this.logMessage("...KO...The microwave hasn't been turned off sussecefully");
 			assertTrue(false);
-		}
-		try {
-			this.mwop.turnOff();
-			assertEquals(MicrowaveState.OFF, this.mwop.getState());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.turnOff());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
+		} 
 		this.logMessage("...done.");
 	}
 	
-	public void			testSetMode()
+	public void			testSetMode() throws Exception
 	{
 		this.logMessage("testSetMode()... ");
-		try {
-			this.mwop.setHigh();
-			assertEquals(MicrowaveMode.HIGH, this.mwop.getMode());
-		} catch (Exception e) {
+		this.mwop.setHigh();
+		if(MicrowaveMode.HIGH != this.mwop.getMode()) {
+			this.logMessage("...KO... The micorwave hasn't been set in high mode sussecefully ");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.setHigh());
-		} catch (Exception e) {
+		this.mwop.setLow();
+		if(MicrowaveMode.LOW != this.mwop.getMode()) {
+			this.logMessage("...KO... The micorwave hasn't been set in low mode sussecefully ");
 			assertTrue(false);
 		}
-		try {
-			this.mwop.setLow();
-			assertEquals(MicrowaveMode.LOW, this.mwop.getMode());
-		} catch (Exception e) {
+		this.mwop.setMeddium();
+		if(MicrowaveMode.MEDDIUM != this.mwop.getMode()) {
+			this.logMessage("...KO... The micorwave hasn't been set in meddium mode sussecefully ");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.setLow());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			this.mwop.setMeddium();
-			assertEquals(MicrowaveMode.MEDDIUM, this.mwop.getMode());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.setMeddium());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			this.mwop.setUnfreez();
-			assertEquals(MicrowaveMode.MEDDIUM, this.mwop.getMode());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.mwop.setMeddium());
-		} catch (Exception e) {
+		this.mwop.setUnfreez();
+		if(MicrowaveMode.UNFREEZE != this.mwop.getMode()) {
+			this.logMessage("...KO... The micorwave hasn't been set in unfreeze mode sussecefully ");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 
-	protected void			runAllTests()
+	protected void			runAllTests() throws Exception
 	{
 		this.testGetState();
 		this.testGetMode();
@@ -274,7 +232,7 @@ public class MicrowaveTester extends AbstractComponent {
 			Thread.sleep(3000);
 		}
 		this.runAllTests();
-		System.out.println("Fan Tester ends");
+		this.logMessage("Microwave Tester ends");
 	}
 
 	/**
