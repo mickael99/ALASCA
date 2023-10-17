@@ -19,11 +19,8 @@ public interface FanImplementationI {
 	
 	public static enum FanMode
 	{
-		/** low mode is just warm and the fan is slower.					*/
 		LOW,			
-		
 		MEDDIUM,
-		/** high mode is hot and the fan turns faster.						*/
 		HIGH
 	}
 	
@@ -36,6 +33,8 @@ public interface FanImplementationI {
 	public FanState	getState() throws Exception;
 	
 	public FanMode	getMode() throws Exception;
+	
+	public FanMusic getMusicState() throws Exception;
 	
 	/**
 	 * turn on the fan

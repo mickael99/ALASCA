@@ -16,18 +16,15 @@ public interface FanUserCI extends FanImplementationI, OfferedCI, RequiredCI {
 	
 	public FanMode		getMode() throws Exception;
 	
+	public FanMusic getMusicState() throws Exception;
 
 	public void			turnOn() throws Exception;
-
 
 	public void			turnOff() throws Exception;
 	
 	public void			turnOnMusic() throws Exception;
 
-
 	public void			turnOffMusic() throws Exception;
-
-	
 	
 	public void			setHigh() throws Exception;
 
