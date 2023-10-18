@@ -36,6 +36,7 @@ public class WaterHeater extends AbstractComponent
 	protected WaterHeaterPowerLevel powerLevel;
 	
 	protected boolean heating;
+	protected boolean suspended;
 	
 	protected WaterHeater() throws Exception {
 		super(1, 0);
@@ -69,6 +70,7 @@ public class WaterHeater extends AbstractComponent
 		energyConsumption = 0;
 		
 		heating = false;
+		suspended = false;
 	}
 	
 	private void initialisePort() throws Exception {
@@ -231,5 +233,53 @@ public class WaterHeater extends AbstractComponent
 	@Override
 	public void removeTimer() throws Exception {
 		delayedProgram.remove();
+	}
+	
+	@Override
+	public WaterHeaterPowerLevel getWaterHeaterPowerLevel() throws Exception {
+		return powerLevel;
+	}
+	
+	@Override
+	public boolean suspended() throws Exception {
+		return suspended;
+	}
+	
+	@Override
+	public boolean suspend() throws Exception {
+		if(suspended) {
+			if(VERBOSE)
+				this.traceMessage("le chauffe eau est déjà suspendu\n");
+			return false;
+		}
+		if(VERBOSE)
+			this.traceMessage("suspension du chauffe eau\n");
+		suspended = true;
+		return true;
+	}
+	
+	@Override
+	public boolean resume() throws Exception {
+		if(!suspended) {
+			if(VERBOSE)
+				this.traceMessage("le chauffe eau est déjà lancé\n");
+			return false;
+		}
+		if(VERBOSE)
+			this.traceMessage("redémarrage du chauffe eau\n");
+		suspended = false;
+		return true;
+	}
+	
+	@Override
+	public double emergency() throws Exception {
+		double delta = Math.abs(targetTemperature - currentTemperature);
+		double ret = -1.0;
+		if (currentTemperature < MIN_TEMPERATURE || delta >= MAX_TEMPERATURE) 
+			ret = 1.0;
+		else 
+			ret = delta / MAX_TEMPERATURE;
+	
+		return ret;
 	}
 }

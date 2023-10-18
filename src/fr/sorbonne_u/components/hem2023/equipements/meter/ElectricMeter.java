@@ -52,6 +52,8 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{
 		try {
+			if(VERBOSE)
+				this.traceMessage("déconnexion des ports du compteur éléctrique");
 			this.electricMeterInboundPort.unpublishPort();
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;

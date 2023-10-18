@@ -80,4 +80,34 @@ public class WaterHeaterExternalControlInboundPort extends AbstractInboundPort i
 		return this.getOwner().handleRequest(
 				o -> ((WaterHeaterExternalControlI)o).getPowerLevel());
 	}
+	
+	@Override
+	public WaterHeaterPowerLevel getWaterHeaterPowerLevel() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((WaterHeaterExternalControlI)o).getWaterHeaterPowerLevel());
+	}
+	
+	@Override
+	public boolean suspended() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((WaterHeaterExternalControlI)o).suspended());
+	}
+	
+	@Override
+	public boolean suspend() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((WaterHeaterExternalControlI)o).suspend());
+	}
+	
+	@Override
+	public boolean resume() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((WaterHeaterExternalControlI)o).resume());
+	}
+	
+	@Override
+	public double emergency() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((WaterHeaterExternalControlI)o).emergency());
+	}
 }

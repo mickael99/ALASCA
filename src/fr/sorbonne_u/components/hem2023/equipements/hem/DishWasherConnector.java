@@ -86,7 +86,7 @@ public class DishWasherConnector extends AbstractConnector implements Adjustable
 			case INTENSIF:
 				return 3;
 			default:
-				throw new Exception("Le mode courant n'est pas valide");
+				throw new Exception("Le mode courant du lave vaisselle n'est pas valide");
 		}
 	}
 

@@ -50,5 +50,29 @@ public class WaterHeaterExternalControlConnector extends AbstractConnector imple
 	public double getPowerLevel() throws Exception {
 		return ((WaterHeaterExternalControlCI)this.offering).getPowerLevel();
 	}
-
+	
+	@Override
+	public WaterHeaterPowerLevel getWaterHeaterPowerLevel() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).getWaterHeaterPowerLevel();
+	}
+	
+	@Override
+	public boolean suspended() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).suspended();
+	}
+	
+	@Override
+	public boolean suspend() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).suspend();
+	}
+	
+	@Override
+	public boolean resume() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).resume();
+	}
+	
+	@Override
+	public double emergency() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.offering).emergency();
+	}
 }

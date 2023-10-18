@@ -62,5 +62,29 @@ public class WaterHeaterExternalControlOutboundPort extends AbstractOutboundPort
 	public double getPowerLevel() throws Exception {
 		return ((WaterHeaterExternalControlCI)this.getConnector()).getPowerLevel();
 	}
-
+	
+	@Override
+	public WaterHeaterPowerLevel getWaterHeaterPowerLevel() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.getConnector()).getWaterHeaterPowerLevel();
+	}
+	
+	@Override
+	public boolean suspended() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.getConnector()).suspended();
+	}
+	
+	@Override
+	public boolean suspend() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.getConnector()).suspend();
+	}
+	
+	@Override
+	public boolean resume() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.getConnector()).resume();
+	}
+	
+	@Override
+	public double emergency() throws Exception {
+		return ((WaterHeaterExternalControlCI)this.getConnector()).emergency();
+	}
 }

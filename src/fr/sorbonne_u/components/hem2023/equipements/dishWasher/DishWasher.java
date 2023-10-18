@@ -104,6 +104,7 @@ public class DishWasher extends AbstractComponent
 			throw new ComponentShutdownException(e);
 		}
 		super.shutdown();
+		
 	}
 	
 	/**
