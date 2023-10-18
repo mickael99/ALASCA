@@ -50,20 +50,16 @@ implements 		FanUserCI {
 	@Override
 	public FanState getState() throws Exception {
 		return ((FanUserCI)this.getConnector()).getState();
-
 	}
 
 	@Override
 	public FanMode getMode() throws Exception {
 		return ((FanUserCI)this.getConnector()).getMode();
-
 	}
 
 	@Override
 	public FanMusic getMusicState() throws Exception {
 		return ((FanUserCI)this.getConnector()).getMusicState();
-
-		
 	}
 	
 	@Override

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.microwave;
+package fr.sorbonne_u.components.hem2023.equipements.fan;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
@@ -10,13 +10,13 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
  * @author Yukhoi
  *
  */
-public class CVMUnitTest extends AbstractCVM {
+public class CVMUnitTestFan extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public				CVMUnitTest() throws Exception
+	public				CVMUnitTestFan() throws Exception
 	{
 		
 	}
@@ -32,11 +32,11 @@ public class CVMUnitTest extends AbstractCVM {
 	public void			deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					Microwave.class.getCanonicalName(),
+					Fan.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-				Microwave.class.getCanonicalName(),
+					FanTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
@@ -45,9 +45,9 @@ public class CVMUnitTest extends AbstractCVM {
 	public static void		main(String[] args)
 	{
 		try {
-			CVMUnitTest cvm = new CVMUnitTest();
-			cvm.startStandardLifeCycle(1000L);
-			Thread.sleep(10000L);
+			CVMUnitTestFan cvm = new CVMUnitTestFan();
+			cvm.startStandardLifeCycle(100000L);
+			Thread.sleep(1000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

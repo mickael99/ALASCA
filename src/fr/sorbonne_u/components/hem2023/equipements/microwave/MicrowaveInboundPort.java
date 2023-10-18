@@ -66,7 +66,7 @@ implements MicrowaveUserCI {
 	@Override
 	public void turnOff() throws Exception {
 		this.getOwner().handleRequest(
-				o -> {	((MicrowaveImplementationI)o).turnOn();
+				o -> {	((MicrowaveImplementationI)o).turnOff();
 						return null;
 				});
 	}

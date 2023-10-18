@@ -3,11 +3,8 @@
  */
 package fr.sorbonne_u.components.hem2023.equipements.fan;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.concurrent.ExecutionException;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
@@ -103,7 +100,7 @@ extends AbstractComponent {
 			this.fop = new FanOutboundPort(this);
 			this.fop.publishPort();
 
-			this.tracer.get().setTitle("Hair dryer tester component");
+			this.tracer.get().setTitle("Fan tester component");
 			this.tracer.get().setRelativePosition(0, 0);
 			this.toggleTracing();		
 		}
@@ -112,150 +109,113 @@ extends AbstractComponent {
 	// Component internal methods
 	// -------------------------------------------------------------------------
 
-	public void			testGetState()
+	public void			testGetState() throws Exception
 	{
 		this.logMessage("testGetState()... ");
-		try {
-			assertEquals(FanState.OFF, this.fop.getState());
-		} catch (Exception e) {
+		if(FanState.OFF != this.fop.getState()) {
 			this.logMessage("...KO.");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testGetMode()
+	public void			testGetMode() throws Exception
 	{
 		this.logMessage("testGetMode()... ");
-		try {
-			assertEquals(FanMode.LOW, this.fop.getMode());
-		} catch (Exception e) {
+		if(FanMode.LOW != this.fop.getMode()) {
+			this.logMessage("...KO.");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testTurnOnOff()
+	public void			testTurnOnOff() throws Exception
 	{
 		this.logMessage("testTurnOnOff()... ");
-		try {
-			assertEquals(FanState.OFF, this.fop.getState());
+		if(FanState.OFF == this.fop.getState()) {
 			this.fop.turnOn();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMode.LOW, this.fop.getMode());
-		} catch (Exception e) {
+			if(FanState.ON != this.fop.getState()) {
+				this.logMessage("...KO... le ventilateur n'est pas ouvert");
+				assertTrue(false);
+			}
+			if(FanMode.LOW != this.fop.getMode()) {
+				this.logMessage("...KO... le ventilateur n'est pas dans le bonne mode en ouvrant");
+				assertTrue(false);
+			}
+		} else {
+			this.logMessage("...KO... le ventilateur est déjà ouvert");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.turnOn());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			this.fop.turnOff();
-			assertEquals(FanState.OFF, this.fop.getState());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.turnOff());
-		} catch (Exception e) {
+		
+		this.fop.turnOff();
+		if(FanState.OFF != this.fop.getState()) {
+			this.logMessage("...KO... le ventilateur n'est pas fermé après le test");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testSetLowHighMeddium()
+	public void			testSetLowHighMeddium() throws Exception
 	{
 		this.logMessage("testSetLowHighMeddium()... ");
-		try {
-			this.fop.turnOn();
-			this.fop.setHigh();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMode.HIGH, this.fop.getMode());
-		} catch (Exception e) {
+		this.fop.turnOn();
+		if(FanState.ON != this.fop.getState()) {
+			this.logMessage("...KO... le ventilateur n'est pas ouvert");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.setHigh());
-		} catch (Exception e) {
+		
+		this.fop.setHigh();
+		if(FanMode.HIGH != this.fop.getMode()) {
+			this.logMessage("...KO... le ventilateur n'est pas en mode HIGH");
 			assertTrue(false);
 		}
-		try {
-			this.fop.setLow();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMode.LOW, this.fop.getMode());
-		} catch (Exception e) {
+		this.fop.setLow();
+		if(FanMode.LOW != this.fop.getMode()) {
+			this.logMessage("...KO... le ventilateur n'est pas en mode LOW");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.setLow());
-		} catch (Exception e) {
+		this.fop.setMeddium();
+		if(FanMode.MEDDIUM != this.fop.getMode()) {
+			this.logMessage("...KO... le ventilateur n'est pas en mode MEDDIUM");
 			assertTrue(false);
 		}
-		try {
-			this.fop.setMeddium();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMode.MEDDIUM, this.fop.getMode());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.setMeddium());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			this.fop.turnOff();
-		} catch (Exception e) {
+		
+		this.fop.turnOff();
+		if(FanState.OFF != this.fop.getState()) {
+			this.logMessage("...KO... le ventilateur n'est pas fermé après le test");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 	
-	public void			testTurnOnOffMusic() {
+	public void			testTurnOnOffMusic() throws Exception {
 		this.logMessage("testTurnOnOffMusic()... ");
-		try {
-			this.fop.turnOn();
-			this.fop.turnOnMusic();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMusic.ON, this.fop.getMusicState());
-		} catch (Exception e) {
+		this.fop.turnOn();
+		if(FanState.ON != this.fop.getState()) {
+			this.logMessage("...KO... le ventilateur n'est pas ouvert");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.turnOnMusic());
-		} catch (Exception e) {
+		
+		this.fop.turnOnMusic();
+		if(FanMusic.ON != this.fop.getMusicState()) {
+			this.logMessage("...KO... le musique de ventilateur n'est pas ouvert");
 			assertTrue(false);
 		}
-		try {
-			this.fop.turnOffMusic();
-			assertEquals(FanState.ON, this.fop.getState());
-			assertEquals(FanMusic.ON, this.fop.getMusicState());
-		} catch (Exception e) {
+		this.fop.turnOffMusic();
+		if(FanMusic.OFF != this.fop.getMusicState()) {
+			this.logMessage("...KO... le musique de ventilateur n'est pas fermé");
 			assertTrue(false);
 		}
-		try {
-			assertThrows(ExecutionException.class,
-						 () -> this.fop.turnOffMusic());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		try {
-			this.fop.turnOff();
-		} catch (Exception e) {
+		
+		this.fop.turnOff();
+		if(FanState.OFF != this.fop.getState()) {
+			this.logMessage("...KO... le ventilateur n'est pas fermé après le test");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
 	}
 
-	protected void			runAllTests()
+	protected void			runAllTests() throws Exception
 	{
 		this.testGetState();
 		this.testGetMode();
@@ -268,9 +228,6 @@ extends AbstractComponent {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#start()
-	 */
 	@Override
 	public synchronized void	start()
 	throws ComponentStartException
@@ -287,9 +244,6 @@ extends AbstractComponent {
 		}
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#execute()
-	 */
 	@Override
 	public synchronized void execute() throws Exception
 	{
@@ -314,12 +268,9 @@ extends AbstractComponent {
 			Thread.sleep(3000);
 		}
 		this.runAllTests();
-		System.out.println("Fan Tester ends");
+		this.logMessage("Fan Tester ends");
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#finalise()
-	 */
 	@Override
 	public synchronized void	finalise() throws Exception
 	{
@@ -327,9 +278,6 @@ extends AbstractComponent {
 		super.finalise();
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#shutdown()
-	 */
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{

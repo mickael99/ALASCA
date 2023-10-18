@@ -127,7 +127,7 @@ implements FanImplementationI {
 	 * post {@code getMode() == FanMusic.OFF}
 	 * </pre>
 	 * 
-	 * @param hairDryerInboundPortURI	URI of the hair dryer inbound port.
+	 * @param fanInboundPortURI	URI of the fan inbound port.
 	 * @throws Exception				<i>to do</i>.
 	 */
 	protected void		initialise(String fanInboundPortURI)
@@ -156,9 +156,6 @@ implements FanImplementationI {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#shutdown()
-	 */
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{
@@ -170,6 +167,9 @@ implements FanImplementationI {
 		super.shutdown();
 	}
 
+	// -------------------------------------------------------------------------
+	// Component Methods
+	// -------------------------------------------------------------------------
 
 	@Override
 	public FanState getState() throws Exception {
@@ -177,7 +177,6 @@ implements FanImplementationI {
 			this.traceMessage("Fan returns its state : " +
 													this.currentState + ".\n");
 		}
-
 		return this.currentState;
 	}
 
@@ -218,12 +217,12 @@ implements FanImplementationI {
 	@Override
 	public void turnOff() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Hair dryer is turned off.\n");
+			this.traceMessage("Fan is turned off.\n");
 		}
-
+		
 		assert	this.getState() == FanState.ON :
 				new PreconditionException("getState() == FanState.ON");
-
+		
 		this.currentState = FanState.OFF;
 	}
 
@@ -232,10 +231,10 @@ implements FanImplementationI {
 		if (Fan.VERBOSE) {
 			this.traceMessage("Fan's music is turned on.\n");
 		}
-
+		
 		assert	this.getMusicState() == FanMusic.OFF :
 				new PreconditionException("getMusicState() == FanMusic.OFF");
-
+		
 		this.currentMusicState = FanMusic.ON;
 	}
 

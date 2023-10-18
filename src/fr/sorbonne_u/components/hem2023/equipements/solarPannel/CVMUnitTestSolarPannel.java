@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.fan;
+package fr.sorbonne_u.components.hem2023.equipements.solarPannel;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
@@ -10,13 +10,13 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
  * @author Yukhoi
  *
  */
-public class CVMUnitTest extends AbstractCVM {
+public class CVMUnitTestSolarPannel extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public				CVMUnitTest() throws Exception
+	public CVMUnitTestSolarPannel() throws Exception
 	{
 		
 	}
@@ -29,29 +29,28 @@ public class CVMUnitTest extends AbstractCVM {
 	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
 	 */
 	@Override
-	public void			deploy() throws Exception
+	public void	deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					Fan.class.getCanonicalName(),
+					SolarPannel.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-					Fan.class.getCanonicalName(),
+					SolarPannelTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
 	}
 
-	public static void		main(String[] args)
+	public static void main(String[] args)
 	{
 		try {
-			CVMUnitTest cvm = new CVMUnitTest();
-			cvm.startStandardLifeCycle(1000L);
-			Thread.sleep(10000L);
+			CVMUnitTestSolarPannel cvm = new CVMUnitTestSolarPannel();
+			cvm.startStandardLifeCycle(100000L);
+			Thread.sleep(1000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 }
-// -----------------------------------------------------------------------------

@@ -43,9 +43,7 @@ public class CVMIntegrationTest extends AbstractCVM {
 		AbstractComponent.createComponent(
 				Microwave.class.getCanonicalName(),
 				new Object[]{});
-		// At this stage, the tester for the hair dryer is added only
-		// to show the hair dryer functioning; later on, it will be replaced
-		// by a simulation of users' actions.
+
 		AbstractComponent.createComponent(
 				FanTester.class.getCanonicalName(),
 				new Object[]{false});
@@ -55,9 +53,7 @@ public class CVMIntegrationTest extends AbstractCVM {
 				new Object[]{false});
 
 
-		// At this stage, the tester for the heater is added only
-		// to switch on and off the heater; later on, it will be replaced
-		// by a simulation of users' actions.
+
 
 
 
