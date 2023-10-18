@@ -31,4 +31,10 @@ public interface GasGeneratorImplementationI {
 	public void	turnOff() throws Exception;
 	
 	public int getBattery() throws Exception;
+	
+	public void	setHigh() throws Exception;
+
+	public void	setLow() throws Exception;
+	
+	public void	setMeddium() throws Exception;
 }

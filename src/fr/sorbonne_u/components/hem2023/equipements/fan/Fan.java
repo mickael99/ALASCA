@@ -167,6 +167,9 @@ implements FanImplementationI {
 		super.shutdown();
 	}
 
+	// -------------------------------------------------------------------------
+	// Component Methods
+	// -------------------------------------------------------------------------
 
 	@Override
 	public FanState getState() throws Exception {

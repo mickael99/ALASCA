@@ -4,8 +4,6 @@
 package fr.sorbonne_u.components.hem2023.gasGenerator;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
-import fr.sorbonne_u.components.hem2023.gasGenerator.GasGeneratorImplementationI.GasGeneratorState;
-import fr.sorbonne_u.components.hem2023.gasGenerator.GasGeneratorImplementationI.GasGeneretorMode;
 
 /**
  * @author Yukhoi
@@ -36,6 +34,21 @@ public class GasGeneratorConnector extends AbstractConnector implements GasGener
 	@Override
 	public int getBattery() throws Exception {
 		return ((GasGeneratorUserCI)this.offering).getBattery();
+	}
+
+	@Override
+	public void setHigh() throws Exception {
+		((GasGeneratorUserCI)this.offering).setHigh();		
+	}
+
+	@Override
+	public void setLow() throws Exception {
+		((GasGeneratorUserCI)this.offering).setLow();		
+	}
+
+	@Override
+	public void setMeddium() throws Exception {
+		((GasGeneratorUserCI)this.offering).setMeddium();		
 	}
 
 }

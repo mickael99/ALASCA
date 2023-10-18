@@ -22,6 +22,7 @@ public interface SolarPannelImplementationI {
 	public void	turnOff() throws Exception;
 	
 	public int getBattery() throws Exception;
+	
 
 
 	

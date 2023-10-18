@@ -162,7 +162,11 @@ public class SolarPannel extends AbstractComponent implements SolarPannelUserCI 
 		}
 		super.shutdown();
 	}
-
+	
+	// -------------------------------------------------------------------------
+	// Component Methods
+	// -------------------------------------------------------------------------
+	
 	@Override
 	public SolarPannelState getState() throws Exception {
 		if (SolarPannel.VERBOSE) {
