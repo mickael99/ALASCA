@@ -89,7 +89,6 @@ extends AbstractComponent {
 	
 	/**
 	 * @param microwaveInboundPortURI
-
 	 */
 	protected void		initialise(
 			String microwaveInboundPortURI
@@ -124,7 +123,7 @@ extends AbstractComponent {
 	{
 		this.logMessage("testGetMode()... ");
 		if(MicrowaveMode.LOW != this.mwop.getMode()) {
-			this.logMessage("...KO... The microwave gave the wrong mode");
+			this.logMessage("...KO...");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
@@ -136,13 +135,13 @@ extends AbstractComponent {
 		if (MicrowaveState.OFF == this.mwop.getState()) {
 			this.mwop.turnOn();
 			if(MicrowaveState.ON != this.mwop.getState()) {
-				this.logMessage("...KO...The microwave hasn't been turned on sussecefully");
+				this.logMessage("...KO...Le micro-onde n'est pas allumé");
 				assertTrue(false);
 			}
 		}
 		this.mwop.turnOff();
 		if(MicrowaveState.OFF != this.mwop.getState()) {
-			this.logMessage("...KO...The microwave hasn't been turned off sussecefully");
+			this.logMessage("...KO...Le micro-onde n'est pas éteint");
 			assertTrue(false);
 		} 
 		this.logMessage("...done.");
@@ -153,22 +152,22 @@ extends AbstractComponent {
 		this.logMessage("testSetMode()... ");
 		this.mwop.setHigh();
 		if(MicrowaveMode.HIGH != this.mwop.getMode()) {
-			this.logMessage("...KO... The micorwave hasn't been set in high mode sussecefully ");
+			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode HIGH ");
 			assertTrue(false);
 		}
 		this.mwop.setLow();
 		if(MicrowaveMode.LOW != this.mwop.getMode()) {
-			this.logMessage("...KO... The micorwave hasn't been set in low mode sussecefully ");
+			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode LOW ");
 			assertTrue(false);
 		}
 		this.mwop.setMeddium();
 		if(MicrowaveMode.MEDDIUM != this.mwop.getMode()) {
-			this.logMessage("...KO... The micorwave hasn't been set in meddium mode sussecefully ");
+			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode MEDDIUM ");
 			assertTrue(false);
 		}
 		this.mwop.setUnfreez();
 		if(MicrowaveMode.UNFREEZE != this.mwop.getMode()) {
-			this.logMessage("...KO... The micorwave hasn't been set in unfreeze mode sussecefully ");
+			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode UNFREEZE ");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
@@ -218,21 +217,21 @@ extends AbstractComponent {
 					this.clocksServerOutboundPort.getPortURI(),
 					ClocksServer.STANDARD_INBOUNDPORT_URI,
 					ClocksServerConnector.class.getCanonicalName());
-			System.out.println("Fan Tester gets the clock");
+			System.out.println("Microwave Tester gets the clock");
 			AcceleratedClock ac =
 					this.clocksServerOutboundPort.getClock(
 										CVMIntegrationTest.TEST_CLOCK_URI);
 
-			System.out.println("Fan Tester waits until start");
+			System.out.println("Microwave Tester waits until start");
 			ac.waitUntilStart();
-			System.out.println("Fan Tester waits to perform tests");
+			System.out.println("Microwave Tester waits to perform tests");
 			this.doPortDisconnection(
 						this.clocksServerOutboundPort.getPortURI());
 			this.clocksServerOutboundPort.unpublishPort();
 			Thread.sleep(3000);
 		}
 		this.runAllTests();
-		this.logMessage("Microwave Tester ends");
+		this.logMessage("Le test pour le micro-ondes est réussi!");
 	}
 
 	/**
