@@ -13,7 +13,8 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.Wate
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserControlCI;
 
 @OfferedInterfaces(offered={WaterHeaterUserControlCI.class, WaterHeaterExternalControlCI.class})
-public class WaterHeater extends AbstractComponent implements WaterHeaterExternalControlI, WaterHeaterUserControlI {
+public class WaterHeater extends AbstractComponent 
+	implements WaterHeaterExternalControlI, WaterHeaterUserControlI {
 	public static final boolean VERBOSE = true;
 	
 	public static final String URI_EXTERNAL_CONTROL_INBOUND_PORT = "URI_EXTERNAL_CONTROL_INBOUND_PORT";

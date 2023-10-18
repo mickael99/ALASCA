@@ -21,4 +21,5 @@ public interface DishWasherInternalAndControlI {
 	
 	public void startWashing() throws Exception;
 	public void stopWashing() throws Exception;
+	public void setWashingMode(WashingMode washingMode)throws Exception;
 }

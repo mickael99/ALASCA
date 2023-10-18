@@ -6,9 +6,7 @@ public interface DishWasherUserControlI extends DishWasherInternalAndControlI {
 	public void turnOn() throws Exception;
 	public void turnOff() throws Exception;
 	public boolean isOn() throws Exception;
-	
-	public void setWashingMode(WashingMode washingMode)throws Exception;
-	
+		
 	public void enableDryingMode() throws Exception;
 	public void disableDryingMode() throws Exception;
 	

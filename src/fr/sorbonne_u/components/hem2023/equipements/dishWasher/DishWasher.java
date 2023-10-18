@@ -13,7 +13,8 @@ import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 @OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
-public class DishWasher extends AbstractComponent implements DishWasherUserControlI, DishWasherInternalControlI {
+public class DishWasher extends AbstractComponent 
+	implements DishWasherUserControlI, DishWasherInternalControlI {
 	public static final boolean VERBOSE = true;
 	
 	public static final String URI_USER_CONTROL_INBOUND_PORT = 
@@ -31,6 +32,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 	protected Timer delayedProgram;
 	protected DoorState doorState;
 	protected boolean washing;
+	protected boolean suspended;
 	
 	protected double waterQuantityInLiter;
 	protected static final double MAX_WATER_QUANTITY_IN_LITER = 15.0;
@@ -69,6 +71,7 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 		doorState = DoorState.CLOSE;
 		waterQuantityInLiter = MAX_WATER_QUANTITY_IN_LITER;
 		washing = false;
+		suspended = false;
 	}
 	
 	private void initialisePort() throws Exception {
@@ -374,5 +377,44 @@ public class DishWasher extends AbstractComponent implements DishWasherUserContr
 			this.traceMessage("\n");
 		
 		return false;
+	}
+	
+	public boolean isSuspended() throws Exception {
+		if(VERBOSE)
+			this.traceMessage("test si le lave vaisselle est suspendu\n");
+		return suspended;
+	}
+	
+	@Override 
+	public boolean suspend() throws Exception {
+		if(suspended) {
+			if(VERBOSE)
+				this.traceMessage("le lave vaissel est déjà suspendu\n");
+			return false;
+		}
+		if(VERBOSE)
+			this.traceMessage("suspension du lave vaisselle\n");
+		suspended = true;
+		return true;
+	}
+	
+	@Override 
+	public boolean resume() throws Exception {
+		if(!suspended) {
+			if(VERBOSE)
+				this.traceMessage("le lave vaissel est déjà lancé\n");
+			return false;
+		}
+		if(VERBOSE)
+			this.traceMessage("redémarrage du lave vaisselle\n");
+		suspended = false;
+		return true;
+	}
+	
+	@Override 
+	public double emergency() throws Exception {
+		if((isDoorOpen() && isWashing()) || (isWashing() && isCuveWaterIsEmpty()))
+			return 1.0;
+		return 0.0;
 	}
 }

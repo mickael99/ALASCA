@@ -17,4 +17,10 @@ public interface DishWasherInternalControlCI extends OfferedCI, RequiredCI, Dish
 	public boolean isWashing() throws Exception;
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception;
 	public boolean isCuveWaterIsEmpty() throws Exception;
+	public void setWashingMode(WashingMode washingMode)throws Exception;
+	public boolean isSuspended() throws Exception;
+	
+	public boolean suspend() throws Exception;
+	public boolean resume() throws Exception;
+	public double emergency() throws Exception;
 }

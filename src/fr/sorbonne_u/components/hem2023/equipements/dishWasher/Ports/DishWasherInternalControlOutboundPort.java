@@ -71,4 +71,29 @@ public class DishWasherInternalControlOutboundPort extends AbstractOutboundPort 
 	public boolean isWashing() throws Exception {
 		return ((DishWasherInternalControlCI)this.getConnector()).isWashing();
 	}
+	
+	@Override 
+	public void setWashingMode(WashingMode washingMode)throws Exception {
+		((DishWasherInternalControlCI)this.getConnector()).setWashingMode(washingMode);
+	}
+	
+	@Override 
+	public boolean isSuspended() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).isSuspended();
+	}
+	
+	@Override 
+	public boolean suspend() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).suspend();
+	}
+	
+	@Override 
+	public boolean resume() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).resume();
+	}
+	
+	@Override 
+	public double emergency() throws Exception {
+		return ((DishWasherInternalControlCI)this.getConnector()).emergency();
+	}
 }

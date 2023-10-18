@@ -12,4 +12,9 @@ public interface DishWasherInternalControlI extends DishWasherInternalAndControl
 	public double getWaterQuantity() throws Exception;
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception;
 	public boolean isCuveWaterIsEmpty() throws Exception;
+	public boolean isSuspended() throws Exception;
+	
+	public boolean suspend() throws Exception;
+	public boolean resume() throws Exception;
+	public double emergency() throws Exception;
 }

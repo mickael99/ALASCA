@@ -66,7 +66,7 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 	@Override
 	public double		getCurrentConsumption() throws Exception {
 		if (VERBOSE) 
-			this.traceMessage("consommation courrante -> 0 \n");
+			this.traceMessage("consommation courrante -> 0 watts\n");
 
 		return 0.0;
 	}
@@ -74,7 +74,7 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 	@Override
 	public double getCurrentProduction() throws Exception {
 		if (VERBOSE) 
-			this.traceMessage("production courrante -> 0 \n");
+			this.traceMessage("production courrante -> 0 watts\n");
 		
 		return 0.0;
 	}

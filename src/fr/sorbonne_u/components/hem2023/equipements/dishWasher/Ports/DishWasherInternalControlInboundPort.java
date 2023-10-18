@@ -72,6 +72,13 @@ public class DishWasherInternalControlInboundPort extends AbstractInboundPort im
 				});
 	}
 	
+	public void setWashingMode(WashingMode washingMode)throws Exception {
+		this.getOwner().handleRequest(
+				o -> {	((DishWasherInternalControlI)o).setWashingMode(washingMode);
+						return null;
+				});
+	}
+	
 	@Override
 	public boolean removeWaterQuantity(double waterQuantityToRemove) throws Exception {
 		return this.getOwner().handleRequest(
@@ -88,5 +95,29 @@ public class DishWasherInternalControlInboundPort extends AbstractInboundPort im
 	public boolean isWashing() throws Exception {
 		return this.getOwner().handleRequest(
 				o -> ((DishWasherInternalControlI)o).isWashing());
+	}
+	
+	@Override 
+	public boolean isSuspended() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((DishWasherInternalControlI)o).isSuspended());
+	}
+	
+	@Override 
+	public boolean suspend() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((DishWasherInternalControlI)o).suspend());
+	}
+	
+	@Override 
+	public boolean resume() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((DishWasherInternalControlI)o).resume());
+	}
+	
+	@Override 
+	public double emergency() throws Exception {
+		return this.getOwner().handleRequest(
+				o -> ((DishWasherInternalControlI)o).emergency());
 	}
 }

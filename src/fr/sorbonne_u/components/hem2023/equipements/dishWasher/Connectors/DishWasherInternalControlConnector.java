@@ -60,4 +60,29 @@ public class DishWasherInternalControlConnector extends AbstractConnector implem
 	public boolean isWashing() throws Exception {
 		return ((DishWasherInternalControlCI)this.offering).isWashing();
 	}
+	
+	@Override 
+	public void setWashingMode(WashingMode washingMode)throws Exception {
+		((DishWasherInternalControlCI)this.offering).setWashingMode(washingMode);
+	}
+	
+	@Override
+	public boolean isSuspended() throws Exception {
+		return ((DishWasherInternalControlCI)this.offering).isSuspended();
+	}
+	
+	@Override
+	public boolean suspend() throws Exception{
+		return ((DishWasherInternalControlCI)this.offering).suspend();
+	}
+	
+	@Override
+	public boolean resume() throws Exception {
+		return ((DishWasherInternalControlCI)this.offering).resume();
+	}
+	
+	@Override
+	public double emergency() throws Exception {
+		return ((DishWasherInternalControlCI)this.offering).emergency();
+	}
 }
