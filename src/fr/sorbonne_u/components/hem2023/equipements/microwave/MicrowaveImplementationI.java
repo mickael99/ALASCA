@@ -35,8 +35,6 @@ public interface MicrowaveImplementationI {
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
-	 *
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			turnOn() throws Exception;
@@ -46,21 +44,53 @@ public interface MicrowaveImplementationI {
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
-	 * 
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			turnOff() throws Exception;
 	
+	/**
+	 * set the microwave in mode high.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void 		setHigh() throws Exception;
 	
+	/**
+	 * set the microwave in mode low.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void 		setMeddium() throws Exception;
 
+	/**
+	 * set the microwave in mode medium.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void 		setLow() throws Exception;
 
+	/**
+	 * set the microwave in mode unfreeze.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void 		setUnfreez() throws Exception;
 
-		
+	/**
+	 * set the timer of the microwave.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * @throws Exception	<i>to do</i>.
+	 */	
 	public void			setTimer(Timer newTimer) throws Exception;
 
 

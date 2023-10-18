@@ -69,7 +69,6 @@ extends AbstractComponent {
 	 * @param isUnitTest
 	 * @param microwaveInboundPortURI
 	 * @param reflectionInboundPortURI
-
 	 */
 	protected			MicrowaveTester(
 			boolean isUnitTest,
@@ -185,9 +184,6 @@ extends AbstractComponent {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#start()
-	 */
 	@Override
 	public synchronized void	start()
 	throws ComponentStartException
@@ -204,9 +200,6 @@ extends AbstractComponent {
 		}
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#execute()
-	 */
 	@Override
 	public synchronized void execute() throws Exception
 	{
@@ -234,9 +227,6 @@ extends AbstractComponent {
 		this.logMessage("Le test pour le micro-ondes est réussi!");
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#finalise()
-	 */
 	@Override
 	public synchronized void	finalise() throws Exception
 	{
@@ -244,9 +234,6 @@ extends AbstractComponent {
 		super.finalise();
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.AbstractComponent#shutdown()
-	 */
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{
@@ -257,6 +244,5 @@ extends AbstractComponent {
 		}
 		super.shutdown();
 	}
-
-
 }
+//--------------------------------------------------------------------------------

@@ -9,8 +9,6 @@ import fr.sorbonne_u.components.hem2023.equipements.fan.Fan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanTester;
 import fr.sorbonne_u.components.hem2023.equipements.microwave.Microwave;
 import fr.sorbonne_u.components.hem2023.equipements.microwave.MicrowaveTester;
-import fr.sorbonne_u.exceptions.ContractException;
-import fr.sorbonne_u.utils.aclocks.ClocksServer;
 
 /**
  * @author Yukhoi
@@ -22,20 +20,13 @@ public class CVMIntegrationTest extends AbstractCVM {
 
 	public				CVMIntegrationTest() throws Exception
 	{
-		ContractException.VERBOSE = true;
-		ClocksServer.VERBOSE = true;
+		super();
 	}
 
-	/**
-	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
-	 */
 	@Override
 	public void			deploy() throws Exception
 	{
-		AbstractComponent.createComponent(
-				ClocksServer.class.getCanonicalName(),
-				new Object[]{});
-
+		
 		AbstractComponent.createComponent(
 				Fan.class.getCanonicalName(),
 				new Object[]{});
@@ -46,16 +37,11 @@ public class CVMIntegrationTest extends AbstractCVM {
 
 		AbstractComponent.createComponent(
 				FanTester.class.getCanonicalName(),
-				new Object[]{false});
+				new Object[]{true});
 		
 		AbstractComponent.createComponent(
 				MicrowaveTester.class.getCanonicalName(),
-				new Object[]{false});
-
-
-
-
-
+				new Object[]{true});
 
 		super.deploy();
 	}
@@ -71,5 +57,4 @@ public class CVMIntegrationTest extends AbstractCVM {
 			e.printStackTrace();
 		}
 	}
-	
 }

@@ -30,3 +30,4 @@ public interface MicrowaveUserCI extends MicrowaveImplementationI, OfferedCI, Re
 
 	public void			setTimer(Timer newTimer) throws Exception;
 }
+//-------------------------------------------------------------------------------------------
