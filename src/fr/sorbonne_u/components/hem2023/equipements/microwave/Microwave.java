@@ -19,20 +19,21 @@ implements MicrowaveImplementationI {
 	// Constants and variables
 	// -------------------------------------------------------------------------
 
-	/** URI of the fan inbound port used in tests.					*/
+	/** URI of the microwave inbound port used in tests.					*/
 	public static final String			INBOUND_PORT_URI =
 												"MICROWAVE-INBOUND-PORT-URI";
+	
 	/** when true, methods trace their actions.								*/
-	public static final boolean			VERBOSE = true;
+	public static final boolean				VERBOSE = true;
 	public static final MicrowaveState		INITIAL_STATE = MicrowaveState.OFF;
 	public static final MicrowaveMode		INITIAL_MODE = MicrowaveMode.LOW;
 
-	/** current state (on, off) of the fan.							*/
-	protected MicrowaveState			currentState;
-	/** current mode of operation (low, high) of the fan.			*/
+	/** current state (on, off) of the microwave.							*/
+	protected MicrowaveState		currentState;
+	/** current mode of operation (low, high) of the microwave.			*/
 	protected MicrowaveMode			currentMode;
 
-	/** inbound port offering the <code>HairDryerCI</code> interface.		*/
+	/** inbound port offering the <code>MicrowaveCI</code> interface.		*/
 	protected MicrowaveInboundPort	mwip;
 
 	// -------------------------------------------------------------------------
@@ -61,7 +62,7 @@ implements MicrowaveImplementationI {
 	}
 	
 	/**
-	 * create a fan component.
+	 * create a microwave component.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -72,7 +73,7 @@ implements MicrowaveImplementationI {
 	 * post	{@code getMode() == FanMode.LOW}
 	 * </pre>
 	 * 
-	 * @param hairDryerInboundPortURI	URI of the microwave inbound port.
+	 * @param microwaveInboundPortURI	URI of the microwave inbound port.
 	 * @throws Exception				<i>to do</i>.
 	 */
 	protected Microwave(String microwaveInboundPortURI)
@@ -83,7 +84,7 @@ implements MicrowaveImplementationI {
 	}
 
 	/**
-	 * create a fan component with the given reflection inbound port URI.
+	 * create a microwave component with the given reflection inbound port URI.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -91,8 +92,8 @@ implements MicrowaveImplementationI {
 	 * pre	{@code microwaveInboundPortURI != null}
 	 * pre	{@code !microwaveInboundPortURI.isEmpty()}
 	 * pre	{@code reflectionInboundPortURI != null}
-	 * post	{@code getState() == FanState.OFF}
-	 * post	{@code getMode() == FanMode.LOW}
+	 * post	{@code getState() == MicrowaveState.OFF}
+	 * post	{@code getMode() == MicrowaveMode.LOW}
 	 * </pre>
 	 *
 	 * @param microwaveInboundPortURI	URI of the microwave inbound port.
@@ -112,19 +113,18 @@ implements MicrowaveImplementationI {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * initialise the fan component.
+	 * initialize the microwave component.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
 	 * <pre>
 	 * pre	{@code microwaveInboundPortURI != null}
 	 * pre	{@code !microwaveInboundPortURI.isEmpty()}
-	 * post	{@code getState() == FanState.OFF}
-	 * post	{@code getMode() == FanMode.LOW}
-	 * post {@code getMode() == FanMusic.OFF}
+	 * post	{@code getState() == MicrowaveState.OFF}
+	 * post	{@code getMode() == MicrowaveMode.LOW}
 	 * </pre>
 	 * 
-	 * @param hairDryerInboundPortURI	URI of the hair dryer inbound port.
+	 * @param microwaveInboundPortURI	URI of the microwave inbound port.
 	 * @throws Exception				<i>to do</i>.
 	 */
 	protected void		initialise(String microwaveInboundPortURI)
@@ -153,7 +153,7 @@ implements MicrowaveImplementationI {
 	public MicrowaveState getState() throws Exception {
 		
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave returns its state : " +
+			this.traceMessage("Le micro-ondes renvoie son état : " +
 													this.currentState + ".\n");
 
 		}
@@ -164,7 +164,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public MicrowaveMode getMode() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave returns its mode : " +
+			this.traceMessage("Le micro-ondes renvoie son mode : " +
 													this.currentMode + ".\n");
 		}
 		return this.currentMode;
@@ -173,7 +173,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public void turnOn() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is turned on.\n");
+			this.traceMessage("Le micro-ondes est allumé.\n");
 		}
 
 		assert	this.getState() == MicrowaveState.OFF :
@@ -186,7 +186,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public void turnOff() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is turned off.\n");
+			this.traceMessage("Le micro-ondes est éteint.\n");
 		}
 
 		assert	this.getState() == MicrowaveState.ON :
@@ -197,14 +197,13 @@ implements MicrowaveImplementationI {
 
 	@Override
 	public void setTimer(Timer newTimer) throws Exception {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setHigh() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is set high.\n");
+			this.traceMessage("Le micro-onde est reglé en mode HIGH.\n");
 		}
 
 		assert	this.getMode() != MicrowaveMode.HIGH :
@@ -216,7 +215,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public void setMeddium() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is set meddium.\n");
+			this.traceMessage("Le micro-onde est reglé en mode MEDDIUM.\n");
 		}
 
 		assert	this.getMode() != MicrowaveMode.MEDDIUM :
@@ -228,7 +227,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public void setLow() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is set low.\n");
+			this.traceMessage("Le micro-onde est reglé en mode LOW.\n");
 		}
 
 		assert	this.getMode() != MicrowaveMode.LOW :
@@ -240,7 +239,7 @@ implements MicrowaveImplementationI {
 	@Override
 	public void setUnfreez() throws Exception {
 		if (Microwave.VERBOSE) {
-			this.traceMessage("Microwave is set unfreeze.\n");
+			this.traceMessage("Le micro-onde est reglé en mode UNFREEZE.\n");
 		}
 
 		assert	this.getMode() != MicrowaveMode.UNFREEZE :
@@ -250,3 +249,4 @@ implements MicrowaveImplementationI {
 	}
 
 }
+//-------------------------------------------------------------------------------

@@ -60,5 +60,5 @@ public class FanConnector extends AbstractConnector implements FanUserCI {
 	public void setMeddium() throws Exception {
 		((FanUserCI)this.offering).setMeddium();
 	}
-
 }
+//------------------------------------------------------------

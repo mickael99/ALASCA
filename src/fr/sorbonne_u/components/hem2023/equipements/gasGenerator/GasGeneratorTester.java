@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.gasGenerator;
+package fr.sorbonne_u.components.hem2023.equipements.gasGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,8 +10,8 @@ import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.CVMIntegrationTest;
-import fr.sorbonne_u.components.hem2023.gasGenerator.GasGeneratorImplementationI.GasGeneratorState;
-import fr.sorbonne_u.components.hem2023.gasGenerator.GasGeneratorImplementationI.GasGeneretorMode;
+import fr.sorbonne_u.components.hem2023.equipements.gasGenerator.GasGeneratorImplementationI.GasGeneratorState;
+import fr.sorbonne_u.components.hem2023.equipements.gasGenerator.GasGeneratorImplementationI.GasGeneretorMode;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;

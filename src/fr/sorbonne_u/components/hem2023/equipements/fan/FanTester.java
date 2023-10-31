@@ -70,7 +70,6 @@ extends AbstractComponent {
 	 * @param isUnitTest
 	 * @param fanInboundPortURI
 	 * @param reflectionInboundPortURI
-
 	 */
 	protected			FanTester(
 			boolean isUnitTest,
@@ -90,7 +89,6 @@ extends AbstractComponent {
 	
 	/**
 	 * @param fanInboundPortURI
-
 	 */
 	protected void		initialise(
 			String fanInboundPortURI
@@ -113,7 +111,7 @@ extends AbstractComponent {
 	{
 		this.logMessage("testGetState()... ");
 		if(FanState.OFF != this.fop.getState()) {
-			this.logMessage("...KO.");
+			this.logMessage("...KO... ");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
@@ -135,7 +133,7 @@ extends AbstractComponent {
 		if(FanState.OFF == this.fop.getState()) {
 			this.fop.turnOn();
 			if(FanState.ON != this.fop.getState()) {
-				this.logMessage("...KO... le ventilateur n'est pas ouvert");
+				this.logMessage("...KO... le ventilateur n'a pas été allumé");
 				assertTrue(false);
 			}
 			if(FanMode.LOW != this.fop.getMode()) {
@@ -149,7 +147,7 @@ extends AbstractComponent {
 		
 		this.fop.turnOff();
 		if(FanState.OFF != this.fop.getState()) {
-			this.logMessage("...KO... le ventilateur n'est pas fermé après le test");
+			this.logMessage("...KO... le ventilateur n'a pas été éteint après le test");
 			assertTrue(false);
 		}
 		this.logMessage("...done.");
@@ -160,23 +158,23 @@ extends AbstractComponent {
 		this.logMessage("testSetLowHighMeddium()... ");
 		this.fop.turnOn();
 		if(FanState.ON != this.fop.getState()) {
-			this.logMessage("...KO... le ventilateur n'est pas ouvert");
+			this.logMessage("...KO... le ventilateur n'a pas été allumé");
 			assertTrue(false);
 		}
 		
 		this.fop.setHigh();
 		if(FanMode.HIGH != this.fop.getMode()) {
-			this.logMessage("...KO... le ventilateur n'est pas en mode HIGH");
+			this.logMessage("...KO... le ventilateur n'a pas été réglé correctement en mode HIGH");
 			assertTrue(false);
 		}
 		this.fop.setLow();
 		if(FanMode.LOW != this.fop.getMode()) {
-			this.logMessage("...KO... le ventilateur n'est pas en mode LOW");
+			this.logMessage("...KO... le ventilateur n'a pas été réglé correctement en mode LOW");
 			assertTrue(false);
 		}
 		this.fop.setMeddium();
 		if(FanMode.MEDDIUM != this.fop.getMode()) {
-			this.logMessage("...KO... le ventilateur n'est pas en mode MEDDIUM");
+			this.logMessage("...KO... le ventilateur n'a pas été réglé correctement en mode MEDDIUM");
 			assertTrue(false);
 		}
 		
@@ -268,7 +266,7 @@ extends AbstractComponent {
 			Thread.sleep(3000);
 		}
 		this.runAllTests();
-		this.logMessage("Fan Tester ends");
+		this.logMessage("Le test pour le ventilateur est réussi!");
 	}
 
 	@Override
@@ -288,7 +286,6 @@ extends AbstractComponent {
 		}
 		super.shutdown();
 	}
-
 }
 //-----------------------------------------------------------------------------
 

@@ -43,7 +43,7 @@ implements FanImplementationI {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * create a hair dryer component.
+	 * create a fan component.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -174,7 +174,7 @@ implements FanImplementationI {
 	@Override
 	public FanState getState() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan returns its state : " +
+			this.traceMessage("Le ventilateur renvoie son état : " +
 													this.currentState + ".\n");
 		}
 		return this.currentState;
@@ -183,7 +183,7 @@ implements FanImplementationI {
 	@Override
 	public FanMode getMode() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan returns its mode : " +
+			this.traceMessage("Le ventilateur renvoie son mode : " +
 													this.currentMode + ".\n");
 		}
 
@@ -193,7 +193,7 @@ implements FanImplementationI {
 	@Override
 	public FanMusic getMusicState() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan returns its music mode : " +
+			this.traceMessage("Le ventilateur renvoie son état de musique : " +
 													this.currentMusicState + ".\n");
 		}
 
@@ -203,7 +203,7 @@ implements FanImplementationI {
 	@Override
 	public void turnOn() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is turned on.\n");
+			this.traceMessage("Le ventilateur est ouvert.\n");
 		}
 
 		assert	this.getState() == FanState.OFF :
@@ -217,7 +217,7 @@ implements FanImplementationI {
 	@Override
 	public void turnOff() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is turned off.\n");
+			this.traceMessage("Le ventilateur est fermé.\n");
 		}
 		
 		assert	this.getState() == FanState.ON :
@@ -229,7 +229,7 @@ implements FanImplementationI {
 	@Override
 	public void turnOnMusic() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan's music is turned on.\n");
+			this.traceMessage("La musique du ventilateur est allumé.\n");
 		}
 		
 		assert	this.getMusicState() == FanMusic.OFF :
@@ -241,7 +241,7 @@ implements FanImplementationI {
 	@Override
 	public void turnOffMusic() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan's music is turned off.\n");
+			this.traceMessage("La musique du ventilateur est éteint.\n");
 		}
 
 		assert	this.getState() == FanState.ON :
@@ -255,7 +255,7 @@ implements FanImplementationI {
 	@Override
 	public void setHigh() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is set high.\n");
+			this.traceMessage("Le ventilateur est reglé en mode HIGH.\n");
 		}
 
 		assert	this.getState() == FanState.ON :
@@ -269,7 +269,7 @@ implements FanImplementationI {
 	@Override
 	public void setLow() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is set low.\n");
+			this.traceMessage("Le ventilateur est reglé en mode LOW.\n");
 		}
 
 		assert	this.getState() == FanState.ON :
@@ -283,7 +283,7 @@ implements FanImplementationI {
 	@Override
 	public void setMeddium() throws Exception {
 		if (Fan.VERBOSE) {
-			this.traceMessage("Fan is set low.\n");
+			this.traceMessage("Le ventilateur est reglé en mode MEDDIUM.\n");
 		}
 
 		assert	this.getState() == FanState.ON :

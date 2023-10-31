@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.gasGenerator;
+package fr.sorbonne_u.components.hem2023.equipements.gasGenerator;
 
 /**
  * @author Yukhoi

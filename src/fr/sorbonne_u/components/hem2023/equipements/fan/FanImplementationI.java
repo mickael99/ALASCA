@@ -40,9 +40,6 @@ public interface FanImplementationI {
 	 * turn on the fan
 	 * 
 	 * <p><strong>Contract</strong></p>
-	 * 
-	 *
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			turnOn() throws Exception;
@@ -51,22 +48,22 @@ public interface FanImplementationI {
 	 * turn off the fan.
 	 * 
 	 * <p><strong>Contract</strong></p>
-	 * 
-	 * 
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			turnOff() throws Exception;
 	
+	/**
+	 * turn on the music of the fan.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void			turnOnMusic() throws Exception;
 
 	/**
 	 * turn off the music of the fan.
 	 * 
 	 * <p><strong>Contract</strong></p>
-	 * 
-	 * 
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			turnOffMusic() throws Exception;
@@ -75,12 +72,8 @@ public interface FanImplementationI {
 	 * set the fan in high mode.
 	 * 
 	 * <p><strong>Contract</strong></p>
-	 * 
-	 *
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
-	
 	
 	public void			setHigh() throws Exception;
 
@@ -88,13 +81,16 @@ public interface FanImplementationI {
 	 * set the fan in low mode.
 	 * 
 	 * <p><strong>Contract</strong></p>
-	 * 
-	 *
-	 *
 	 * @throws Exception	<i>to do</i>.
 	 */
 	public void			setLow() throws Exception;
 	
+	/**
+	 * set the fan in medium mode.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * @throws Exception	<i>to do</i>.
+	 */
 	public void			setMeddium() throws Exception;
 	
 	

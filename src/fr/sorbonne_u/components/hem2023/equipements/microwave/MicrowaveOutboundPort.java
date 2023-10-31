@@ -98,5 +98,5 @@ public class MicrowaveOutboundPort extends AbstractOutboundPort implements Micro
 		((MicrowaveUserCI)this.getConnector()).setUnfreez();
 		
 	}
-
 }
+//--------------------------------------------------------------

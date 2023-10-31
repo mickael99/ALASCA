@@ -25,9 +25,6 @@ public class CVMUnitTestFan extends AbstractCVM {
 	// CVM life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
-	 */
 	@Override
 	public void			deploy() throws Exception
 	{

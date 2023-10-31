@@ -70,37 +70,31 @@ implements 		FanUserCI {
 	@Override
 	public void turnOff() throws Exception {
 		((FanUserCI)this.getConnector()).turnOff();
-
 	}
 
 	@Override
 	public void turnOnMusic() throws Exception {
 		((FanUserCI)this.getConnector()).turnOnMusic();
-
 	}
 
 	@Override
 	public void turnOffMusic() throws Exception {
 		((FanUserCI)this.getConnector()).turnOffMusic();
-
 	}
 
 	@Override
 	public void setHigh() throws Exception {
 		((FanUserCI)this.getConnector()).setHigh();
-
 	}
 
 	@Override
 	public void setLow() throws Exception {
 		((FanUserCI)this.getConnector()).setLow();
-
 	}
 
 	@Override
 	public void setMeddium() throws Exception {
 		((FanUserCI)this.getConnector()).setMeddium();
-
 	}
-
 }
+//----------------------------------------------------------------------
