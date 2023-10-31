@@ -58,7 +58,7 @@ public class DishWasher extends AbstractComponent
 	private void initialiseDishWasher() throws Exception {
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Dishwasher component");
-			this.tracer.get().setRelativePosition(0, 0);
+			this.tracer.get().setRelativePosition(4, 0);
 			this.toggleTracing();
 			
 			this.traceMessage("Initialisation des variables du lave vaisselle\n");

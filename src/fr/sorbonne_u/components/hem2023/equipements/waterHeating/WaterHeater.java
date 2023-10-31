@@ -149,7 +149,7 @@ public class WaterHeater extends AbstractComponent
 	public void setTargetWaterTemperature(int degree) throws Exception {
 		if(VERBOSE) 
 			this.traceMessage("changement de la température cible à " + degree + " degrés\n\n");
-		assert degree >= MIN_TEMPERATURE && degree <= MAX_TEMPERATURE :
+		assert degree >= currentTemperature && degree <= MAX_TEMPERATURE:
 			new PreconditionException("la température de l'eau n'est pas valide");
 		targetTemperature = degree;
 	}
@@ -208,7 +208,9 @@ public class WaterHeater extends AbstractComponent
 	public boolean isHeating() throws Exception {
 		if(VERBOSE) 
 			this.traceMessage("test si le chauffe eau est en route ou non\n\n");
-		return heating;
+		if(this.currentTemperature < this.targetTemperature)
+			return true;
+		return false;
 	}
 
 	@Override

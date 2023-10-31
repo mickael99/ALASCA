@@ -216,7 +216,8 @@ public class WaterHeaterTest extends AbstractComponent {
 	protected void testStopHeating() throws Exception {
 		this.traceMessage("début testStopHeating\n");
 		
-		waterHeaterExternalControlOutboundPort.stopHeating();
+		waterHeaterUserControlOutboundPort.setTargetWaterTemperature(
+				waterHeaterExternalControlOutboundPort.getCurrentTemperature());
 		
 		if(waterHeaterExternalControlOutboundPort.isHeating()) {
 			this.traceMessage

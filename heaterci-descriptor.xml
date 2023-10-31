@@ -1,0 +1,113 @@
+<control-adapter
+    xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
+    uid="1A10000"
+    offered="fr.sorbonne_u.components.hem2023e1.equipments.heater.HeaterExternalControlCI">
+  <consumption nominal="2000" min="0" max="2000"/>
+  <required>java.lang.Math</required>
+  <instance-var modifiers= "protected static" type="int" name="MAX_MODE"
+                static-init="6"/>
+  <instance-var modifiers= "protected static" type="double"
+                name="MIN_ADMISSIBLE_TEMP" static-init="12.0"/>
+  <instance-var modifiers= "protected static" type="double"
+                name="MAX_ADMISSIBLE_DELTA" static-init="10.0"/>
+  <instance-var modifiers= "protected" type="int" name="currentMode"
+                static-init="MAX_MODE"/>
+  <instance-var modifiers= "protected" type="boolean" name="isSuspended"
+                static-init="false"/>
+  <internal modifiers= "protected" type="void"
+            name="computeAndSetNewPowerLevel">
+    <parameter type="int" name="newMode"/>
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="heater">
+      double maxPowerLevel = heater.getMaxPowerLevel();
+      double newPowerLevel = (newMode - 1) * maxPowerLevel/(MAX_MODE - 1);
+      heater.setCurrentPowerLevel(newPowerLevel);
+    </body>
+  </internal>
+  <maxMode><body>return MAX_MODE;</body></maxMode>
+  <upMode>
+    <body>
+      try {
+        computeAndSetNewPowerLevel(currentMode + 1);
+        currentMode++;
+      } catch(Exception e) {
+        return false;
+      }
+      return true;
+    </body>
+  </upMode>
+  <downMode>
+    <body>
+      try {
+        computeAndSetNewPowerLevel(currentMode - 1);
+        currentMode--;
+      } catch(Exception e) {
+        return false;
+      }
+      return true;
+    </body>
+  </downMode>
+  <setMode>
+    <parameter name="modeIndex"/>
+    <body>
+      try {
+        computeAndSetNewPowerLevel(modeIndex);
+        currentMode = modeIndex;
+      } catch(Exception e) {
+        return false;
+      }
+      return true;
+    </body>
+  </setMode>
+  <currentMode>
+    <body>
+      if (suspended()) {
+        return 0;
+      } else {
+        return currentMode;
+      }
+    </body>
+  </currentMode>
+  <suspended>
+    <body>
+      return isSuspended;
+    </body>
+  </suspended>
+  <suspend>
+    <body equipmentRef="heater">
+      try {
+        heater.setCurrentPowerLevel(0.0);
+        isSuspended = true;
+      } catch(Exception e) {
+        return false;
+      }
+      return true;
+    </body>
+  </suspend>
+  <resume>
+    <body equipmentRef="heater">
+      try {
+        computeAndSetNewPowerLevel(currentMode);
+        isSuspended = false;
+      } catch(Exception e) {
+        return false;
+      }
+      return true;
+    </body>
+  </resume>
+  <emergency>
+    <body equipmentRef="heater">
+      double currentTemperature = heater.getCurrentTemperature();
+      double targetTemperature = heater.getTargetTemperature();
+      double delta = Math.abs(targetTemperature - currentTemperature);
+      double ret = -1.0;
+      if (currentTemperature &lt; MIN_ADMISSIBLE_TEMP ||
+                                    delta &gt;= MAX_ADMISSIBLE_DELTA) {
+        ret = 1.0;
+      } else {
+        ret = delta/MAX_ADMISSIBLE_DELTA;
+      }
+      return ret;
+    </body>
+  </emergency>
+</control-adapter>

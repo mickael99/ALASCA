@@ -113,7 +113,6 @@ public class HEM extends AbstractComponent {
 	
 	/**
 	 * 			METHODES DE TEST
-	 * @throws Exception 
 	 */
 	
 	public void runTest() throws Exception {
