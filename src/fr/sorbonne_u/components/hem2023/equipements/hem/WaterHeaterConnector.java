@@ -7,6 +7,8 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.Wate
 
 public class WaterHeaterConnector extends AbstractConnector implements AdjustableCI {
 	protected static final int MAX_MODE = 2;
+	protected int currentMode = 0;
+	protected boolean suspended = false;
 	
 	@Override
 	public int maxMode() throws Exception {
@@ -27,6 +29,7 @@ public class WaterHeaterConnector extends AbstractConnector implements Adjustabl
 			default:
 				return false;
 		}
+		currentMode++;
 		return true;
 	}
 
@@ -83,17 +86,26 @@ public class WaterHeaterConnector extends AbstractConnector implements Adjustabl
 
 	@Override
 	public boolean suspended() throws Exception {
-		return ((WaterHeaterExternalControlCI)this.offering).suspended();
+		return suspended;
 	}
 
 	@Override
 	public boolean suspend() throws Exception {
-		return ((WaterHeaterExternalControlCI)this.offering).suspend();
+		if(((WaterHeaterExternalControlCI)this.offering).suspend()) {
+			this.suspended = true;
+			return true;
+		}
+		return false;
+			
 	}
 
 	@Override
 	public boolean resume() throws Exception {
-		return ((WaterHeaterExternalControlCI)this.offering).resume();
+		if(((WaterHeaterExternalControlCI)this.offering).resume()) {
+			suspended = false;
+			return true;
+		}
+		return false;
 	}
 
 	@Override

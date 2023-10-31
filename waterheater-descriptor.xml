@@ -1,0 +1,121 @@
+<control-adapter
+    xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
+    uid="1A10000"
+    offered="fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterExternalControlCI">
+    <consumption nominal="50" min="45" max="60"/>
+    <instance-var modifiers= "protected static" type="int" name="MAX_MODE"
+                    static-init="2"/>
+    <instance-var modifiers= "protected static" type="int"
+                    name="MAX_TEMPERATURE" static-init="60"/>
+    <instance-var modifiers= "protected static" type="double"
+                    name="MIN_TEMPERATURE" static-init="45"/>
+    <instance-var modifiers= "protected static" type="int"
+                name="INITIALISE_TEMPERATURE" static-init="50"/>              
+    <instance-var modifiers= "protected" type="boolean" name="suspended"
+                static-init="false"/>
+
+    <maxMode>
+        <body>
+            return MAX_MODE;
+        </body>
+    </maxMode>
+    
+    <internal modifiers= "public" type="boolean"
+            name="upMode">
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        switch(currentMode) {
+            case 0: 
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.Normal);
+                break;
+            case 1:
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.High);
+                break;
+            default:
+                return false;
+        }
+        currentMode++;
+        return currentMode;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="downMode">
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        switch(currentMode) {
+            case 1: 
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.Low);
+                break;
+            case 2:
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.Normal);
+                break;
+            default:
+                return false;
+        }
+        currentMode--;
+        return currentMode;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="setMode">
+    <parameter type = int name = modeIndex/>
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        switch(modeIndex) {
+            case 0:
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.Low);
+                break;
+            case 1: 
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.Normal);
+                break;
+            case 2:
+                waterHeater.setPowerLevel(WaterHeaterPowerLevel.HIGH);
+                break;
+            default:
+                return false;
+        }
+        currentMode = modeIndex;
+        return true;
+    </body>
+  </internal>
+
+  <suspended>
+    <body>
+        return suspended;
+    </body>
+  </suspended>
+
+  <internal modifiers= "public" type="boolean"
+            name="suspend">
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        if(waterHeater.suspend()) {
+            suspended = true;
+            return true;
+        } 
+        return false
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="resume">
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        if(waterHeater.resume()) {
+            suspended = false;
+            return true;
+        } 
+        return false
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="emergency">
+    <thrown>java.lang.Exception</thrown>
+    <body equipmentRef="waterHeater">
+        return waterHeater.emergency();
+    </body>
+  </internal>
+</control-adapter>
