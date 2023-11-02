@@ -6,7 +6,7 @@
     <instance-var modifiers= "protected static" type="int" name="MAX_MODE"
                     static-init="2"/>
     <instance-var modifiers= "protected static" type="int"
-                    name="MAX_TEMPERATURE" static-init="60"/>
+                    name="MAX_TEMPERATURE" static-init="60"></instance-var>
     <instance-var modifiers= "protected static" type="double"
                     name="MIN_TEMPERATURE" static-init="45"/>
     <instance-var modifiers= "protected static" type="int"
@@ -60,7 +60,7 @@
 
   <internal modifiers= "public" type="boolean"
             name="setMode">
-    <parameter type = int name = modeIndex/>
+    <parameter type = "int" name = "modeIndex"/>
     <thrown>java.lang.Exception</thrown>
     <body equipmentRef="waterHeater">
         switch(modeIndex) {

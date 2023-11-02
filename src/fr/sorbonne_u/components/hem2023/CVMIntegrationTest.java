@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.sorbonne_u.components.hem2023;
 
 import fr.sorbonne_u.components.AbstractComponent;

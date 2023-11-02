@@ -45,7 +45,7 @@ public class HEM extends AbstractComponent {
 		
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Home Energy Manager component");
-			this.tracer.get().setRelativePosition(0, 0);
+			this.tracer.get().setRelativePosition(2, 0);
 			this.toggleTracing();
 			this.traceMessage("\n");
 		}
