@@ -6,11 +6,11 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherInternalControlConnector;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Connectors.DishWasherUserControlConnector;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherInternalControlOutboundPort;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherUserControlOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherInternalControlOutboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherUserControlOutboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 
 import static org.junit.Assert.assertTrue;

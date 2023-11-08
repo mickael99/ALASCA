@@ -11,7 +11,7 @@ public class WaterHeaterConnector extends AbstractConnector implements Adjustabl
 	protected boolean suspended = false;
 	
 	@Override
-	public int maxMode() throws Exception {
+	public int maxMode() {
 		return MAX_MODE;
 	}
 

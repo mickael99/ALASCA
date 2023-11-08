@@ -21,11 +21,11 @@ public class CVMIntegrationTestModularEquipement extends AbstractCVM {
 
 		AbstractComponent.createComponent(
 				DishWasher.class.getCanonicalName(),
-				new Object[]{});
+				new Object[]{"URI_DISHWASHER"});
 
 		AbstractComponent.createComponent(
 				WaterHeater.class.getCanonicalName(),
-				new Object[]{});
+				new Object[]{"URI_WATER_HEATER"});
 
 		AbstractComponent.createComponent(
 				HEM.class.getCanonicalName(),
