@@ -13,7 +13,7 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 {
 	public static final String	ELECTRIC_METER_INBOUND_PORT_URI =
 															"ELECTRIC-METER";
-	public static final boolean	VERBOSE = true;
+	public static final boolean	VERBOSE = false;
 
 	protected ElectricMeterInboundPort	electricMeterInboundPort;
 
@@ -39,7 +39,7 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 
 		if (VERBOSE) {
 			this.tracer.get().setTitle("Electric meter component");
-			this.tracer.get().setRelativePosition(0, 1);
+			this.tracer.get().setRelativePosition(2, 1);
 			this.toggleTracing();
 		}
 	}

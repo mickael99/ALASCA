@@ -55,3 +55,4 @@ public class CVMIntegrationTest extends AbstractCVM {
 		}
 	}
 }
+

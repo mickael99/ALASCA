@@ -12,7 +12,7 @@ public class CVMUnitWaterHeaterTest extends AbstractCVM {
 	public void deploy() throws Exception {
 		AbstractComponent.createComponent(
 				WaterHeater.class.getCanonicalName(), 
-				new Object[]{});
+				new Object[]{"URI_WATER_HEATER", false});
 		
 		AbstractComponent.createComponent(
 				WaterHeaterTest.class.getCanonicalName(), 

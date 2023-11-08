@@ -12,7 +12,7 @@ public class CVMUnitDishWasherTest extends AbstractCVM {
 	public void deploy() throws Exception {
 		AbstractComponent.createComponent(
 				DishWasher.class.getCanonicalName(), 
-				new Object[]{});
+				new Object[]{"URI_DISHWASHER"});
 		
 		AbstractComponent.createComponent(
 				DishWasherTest.class.getCanonicalName(), 
