@@ -1,6 +1,5 @@
 package fr.sorbonne_u.components.hem2023.classCreator;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -106,12 +105,7 @@ public class ClassCreator {
 		cs.detach(); 
 		oi.detach();
 		
-		/**CustomClassLoader customClassLoader = new CustomClassLoader(this.getClass().getClassLoader());
-	    byte[] classBytes = ctClass.toBytecode();
-	    Class<?> ret = customClassLoader.defineClass(ctClass.getName(), classBytes); */
-		
 	    Class<?> ret = ctClass.toClass();
-	    
 		ctClass.writeFile(".");
 
 	    // Décharge ctClass

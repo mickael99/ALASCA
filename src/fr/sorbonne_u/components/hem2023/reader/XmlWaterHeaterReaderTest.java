@@ -12,7 +12,7 @@ public class XmlWaterHeaterReaderTest {
 	public void testUid() throws Exception {
 		XmlReader xml = new XmlReader("waterheater-descriptor.xml");
 		String uid = xml.getUid();
-		assert uid.equals("1A10000");
+		assert uid.equals("WaterHeater");
 	}
 	
 	@Test
@@ -38,12 +38,12 @@ public class XmlWaterHeaterReaderTest {
 		ArrayList<Attribute> attributes = xml.getInstanceVar();
 		ArrayList<Attribute> res = new ArrayList<Attribute>();
 		
-		res.add(new Attribute("public static final", "double", "MAX_MODE", "2"));
-		res.add(new Attribute("public static final", "double", "MAX_TEMPERATURE", "60"));
-		res.add(new Attribute("public static final", "double", "MIN_TEMPERATURE", "45"));
-		res.add(new Attribute("public static final", "double", "INITIALISE_TEMPERATURE", "50"));
-		res.add(new Attribute("public", "boolean", "suspended", "false"));
-		res.add(new Attribute("public", "int", "currentMode", "0"));
+		res.add(new Attribute("protected static final", "int", "MAX_MODE", "2"));
+		res.add(new Attribute("protected static final", "int", "MAX_TEMPERATURE", "60"));
+		res.add(new Attribute("protected static final", "int", "MIN_TEMPERATURE", "45"));
+		res.add(new Attribute("protected static final", "int", "INITIALISE_TEMPERATURE", "50"));
+		res.add(new Attribute("protected", "boolean", "suspended", "false"));
+		res.add(new Attribute("protected", "int", "currentMode", "0"));
 		
 		assert res.size() == attributes.size();
 				

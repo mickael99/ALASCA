@@ -1,19 +1,19 @@
 <control-adapter
     xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
-    uid="A10000"
+    uid="WaterHeater"
     offered="fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterExternalControlCI">
     <consumption nominal="50" min="45" max="60"/>
-    <instance-var modifiers= "public static final" type="int" name="MAX_MODE"
+    <instance-var modifiers= "protected static final" type="int" name="MAX_MODE"
                     static-init="2"/>
-    <instance-var modifiers= "public static final" type="int"
+    <instance-var modifiers= "protected static final" type="int"
                     name="MAX_TEMPERATURE" static-init="60"/>
-    <instance-var modifiers= "public static final" type="int"
+    <instance-var modifiers= "protected static final" type="int"
                     name="MIN_TEMPERATURE" static-init="45"/>
-    <instance-var modifiers= "public static final" type="int"
+    <instance-var modifiers= "protected static final" type="int"
                 name="INITIALISE_TEMPERATURE" static-init="50"/>              
-    <instance-var modifiers= "public" type="boolean" name="suspended"
+    <instance-var modifiers= "protected" type="boolean" name="suspended"
                 static-init="false"/>
-     <instance-var modifiers= "public" type="int" name="currentMode"
+     <instance-var modifiers= "protected" type="int" name="currentMode"
                 static-init="0"/>
 
 	<internal modifiers= "public" type="int"

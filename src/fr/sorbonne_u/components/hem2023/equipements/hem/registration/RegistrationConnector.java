@@ -7,6 +7,7 @@ public class RegistrationConnector extends AbstractConnector implements Registra
 
 	@Override
 	public boolean registered(String uid) throws Exception {
+		System.out.println("valeur de uid dans le connecteur " + uid);
 		return ((RegistrationCI)this.offering).registered(uid);
 	}
 

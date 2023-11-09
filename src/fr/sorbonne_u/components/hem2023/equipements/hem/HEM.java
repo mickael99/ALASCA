@@ -1,6 +1,6 @@
 package fr.sorbonne_u.components.hem2023.equipements.hem;
 
-import java.lang.reflect.Constructor;
+import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -72,7 +72,7 @@ public class HEM extends AbstractComponent
 		super.start();		
 		try {
 			if(VERBOSE)
-				this.traceMessage("connexion des ports du gestionnaire");
+				this.traceMessage("connexion des ports du gestionnaire\n\n");
 			
 			this.doPortConnection(electricMeterOutboundPort.getPortURI(), 
 					ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI, 
@@ -95,7 +95,7 @@ public class HEM extends AbstractComponent
 	@Override
 	public synchronized void finalise() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("déconnexion des liaisons entre les ports");
+			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
 		this.doPortDisconnection(adjustableOutboundPortForDishWasher.getPortURI());
 		this.doPortDisconnection(adjustableOutboundPortForWaterHeater.getPortURI());
@@ -134,8 +134,8 @@ public class HEM extends AbstractComponent
 		double currentProduction = this.electricMeterOutboundPort.getCurrentProduction();
 		
 		if(VERBOSE) {
-			this.traceMessage("la consommation total est de " + currentConsumption + " watts");
-			this.traceMessage("la production total est de " + currentProduction + " watts");
+			this.traceMessage("la consommation total est de " + currentConsumption + " watts\n");
+			this.traceMessage("la production total est de " + currentProduction + " watts\n\n");
 		}
 	}
 	
@@ -168,28 +168,37 @@ public class HEM extends AbstractComponent
 	
 	public void testWaterHeater() throws Exception {
 		if(VERBOSE) {
-			this.traceMessage("test de la connexion entre le chauffe eau et le gestionnaire\n");
+			this.traceMessage("test de la connexion entre le chauffe eau et le gestionnaire\n\n");
 			
-			this.traceMessage("le mode maximum est de -> " + 
-					this.adjustableOutboundPortForWaterHeater.maxMode() + "\n\n");
+			this.traceMessage("test de maxMode, résultat attendu -> 2\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.maxMode() != 2)
+				assertTrue(false);
 			
-			this.traceMessage("le chauffe eau est en mode " + 
-					this.adjustableOutboundPortForWaterHeater.currentMode() + "\n\n");
+			this.traceMessage("test de currentMode, résultat attendu -> 0\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 0)
+				assertTrue(false);
 			
-			this.traceMessage("On augmente le mode\n");
-			this.adjustableOutboundPortForWaterHeater.upMode();
-			this.traceMessage("le chauff eeau est en mode " + 
-					this.adjustableOutboundPortForWaterHeater.currentMode() + "\n\n");
-			
-			this.traceMessage("On diminue le mode\n");
-			this.adjustableOutboundPortForWaterHeater.downMode();
-			this.traceMessage("le chauffe eau est en mode " + 
-					this.adjustableOutboundPortForWaterHeater.currentMode() + "\n\n");
-			
-			this.traceMessage("On change le mode\n");
+			this.traceMessage("test de upMode, résultat attendu -> true et le chauffe eau est en mode 1\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.upMode() != true)
+				assertTrue(false);
+			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 1)
+				assertTrue(false);
 			this.adjustableOutboundPortForWaterHeater.setMode(2);
-			this.traceMessage("le chauffe eau est en mode " + 
-					this.adjustableOutboundPortForWaterHeater.currentMode() + "\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.upMode() != false)
+				assertTrue(false);
+			
+			this.traceMessage("test de downMode, résultat attendu -> true et le chauffe eau est en mode 0\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.downMode() != true)
+				assertTrue(false);
+			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 1)
+				assertTrue(false);
+			this.adjustableOutboundPortForWaterHeater.setMode(0);
+			if(this.adjustableOutboundPortForWaterHeater.downMode() != false)
+				assertTrue(false);
+			
+			this.traceMessage("test de setMode, résultat attendu -> true et le chauffe eau est en mode 2\n\n");
+			if(this.adjustableOutboundPortForWaterHeater.setMode(2) != true)
+				assertTrue(false);
 		}
 	}
 	
@@ -200,8 +209,7 @@ public class HEM extends AbstractComponent
 	@Override
 	public boolean registered(String uid) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Verification de l'inscription de " + uid);
-		
+			this.traceMessage("Verification de l'inscription de " + uid + "\n\n");
 		if(this.registeredUriModularEquipement.containsKey(uid))
 			return true;
 		return false;
@@ -210,7 +218,7 @@ public class HEM extends AbstractComponent
 	@Override
 	public boolean register(String uid, String controlPortURI, String path2xmlControlAdapter) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("Inscription de " + uid);
+			this.traceMessage("Inscription de " + uid + "\n\n");
 		
 		if(registered(uid))
 			return false;
@@ -218,21 +226,6 @@ public class HEM extends AbstractComponent
 		this.registeredUriModularEquipement.put(uid, controlPortURI);
 		ClassCreator classCreator = new ClassCreator(path2xmlControlAdapter);
 		Class<?> classConnector = classCreator.createClass();
-		
-		Constructor<?>[] constructeurs = classConnector.getConstructors();
-		if(constructeurs.length == 0)
-			System.out.println("pas de constructeur");
-        for (Constructor<?> constructeur : constructeurs) {
-            System.out.println("Nom : " + constructeur.getName());
-            System.out.println("Modificateurs : " + constructeur.getModifiers());
-
-            Class<?>[] parametres = constructeur.getParameterTypes();
-            System.out.print("Paramètres : ");
-            for (Class<?> parametre : parametres) {
-                System.out.print(parametre.getName() + " ");
-            }
-            System.out.println();
-        }
 		
 		this.doPortConnection(adjustableOutboundPortForWaterHeater.getPortURI(), 
 				controlPortURI, 
@@ -244,7 +237,7 @@ public class HEM extends AbstractComponent
 	@Override
 	public void unregister(String uid) throws Exception {		
 		if(VERBOSE)
-			this.traceMessage("Désinscription de " + uid);
+			this.traceMessage("Désinscription de " + uid + "\n\n");
 		if(registered(uid))
 			this.registeredUriModularEquipement.remove(uid);
 	}

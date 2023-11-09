@@ -18,6 +18,7 @@ private static final long serialVersionUID = 1L;
 	
 	@Override
 	public boolean registered(String uid) throws Exception {
+		System.out.println("valeur de uid dans le port sortant " + uid);
 		return ((RegistrationCI)this.getConnector()).registered(uid);
 	}
 

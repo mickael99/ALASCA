@@ -85,7 +85,7 @@ public class WaterHeater extends AbstractComponent
 	
 	private void initialisePort() throws Exception {
 		if(VERBOSE) 	
-			this.traceMessage("Initialisation des ports du lave vaisselle\n");
+			this.traceMessage("Initialisation des ports du lave vaisselle\n\n");
 		
 		this.waterHeaterExternalControlInboundPort = 
 				new WaterHeaterExternalControlInboundPort(URI_EXTERNAL_CONTROL_INBOUND_PORT, this);
@@ -111,7 +111,7 @@ public class WaterHeater extends AbstractComponent
 		super.start();
 		try {
 			if(VERBOSE)
-				this.traceMessage("Connexion des ports");
+				this.traceMessage("Connexion des ports\n");
 		
 			if(registrationRequired) 
 				this.doPortConnection(registrationOutboundPort.getPortURI(), HEM.URI_REGISTRATION_INBOUND_PORT, 
@@ -120,10 +120,8 @@ public class WaterHeater extends AbstractComponent
 			//inscription du chauffe eau au gestionnaire d'energie
 			if(this.registrationRequired) {
 				if(VERBOSE)
-					this.traceMessage("Inscription du chauffe eau au gestionnaire d'energie");
+					this.traceMessage("Inscription du chauffe eau au gestionnaire d'energie\n");
 				this.register();
-				if(VERBOSE && !this.registered()) 
-					this.traceMessage("Le chauffe eau n'est pas connecté alors qu'il le devrait !");
 			}
 			
 		} catch(Exception e) {
@@ -133,13 +131,18 @@ public class WaterHeater extends AbstractComponent
 	
 	@Override
 	public synchronized void execute() throws Exception {
+		if(VERBOSE)
+			this.traceMessage("Test si le chauffe eau est bien enregistré au gestionnaire\n\n");
+		System.out.println("appel registered depuis le waterHeater\n");
+		if(!this.registered())
+			this.traceMessage("Chauffe eau non connecté\n\n");
 		super.execute();
 	}
 	
 	@Override 
 	public synchronized void finalise() throws Exception {
 		if(VERBOSE) 
-			this.traceMessage("Déconnexion des liaisons entre les ports");
+			this.traceMessage("Déconnexion des liaisons entre les ports\n\n");
 		
 		if(registrationRequired) {
 			this.unregister();
@@ -223,7 +226,7 @@ public class WaterHeater extends AbstractComponent
 	@Override
 	public int getCurrentTemperature() throws Exception {
 		if(VERBOSE) 
-			this.traceMessage("la température courante est de " + currentTemperature + " degrés");
+			this.traceMessage("la température courante est de " + currentTemperature + " degrés\n\n");
 		return currentTemperature;
 	}
 	
@@ -317,11 +320,11 @@ public class WaterHeater extends AbstractComponent
 	public boolean suspend() throws Exception {
 		if(suspended) {
 			if(VERBOSE)
-				this.traceMessage("le chauffe eau est déjà suspendu\n");
+				this.traceMessage("le chauffe eau est déjà suspendu\n\n");
 			return false;
 		}
 		if(VERBOSE)
-			this.traceMessage("suspension du chauffe eau\n");
+			this.traceMessage("suspension du chauffe eau\n\n");
 		suspended = true;
 		return true;
 	}
@@ -330,11 +333,11 @@ public class WaterHeater extends AbstractComponent
 	public boolean resume() throws Exception {
 		if(!suspended) {
 			if(VERBOSE)
-				this.traceMessage("le chauffe eau est déjà lancé\n");
+				this.traceMessage("le chauffe eau est déjà lancé\n\n");
 			return false;
 		}
 		if(VERBOSE)
-			this.traceMessage("redémarrage du chauffe eau\n");
+			this.traceMessage("redémarrage du chauffe eau\n\n");
 		suspended = false;
 		return true;
 	}
@@ -357,6 +360,7 @@ public class WaterHeater extends AbstractComponent
 	 */
 	
 	public boolean registered() throws Exception {
+		System.out.println("valeur de uid dans waterheater " + Uri);
 		return this.registrationOutboundPort.registered(Uri);
 	}
 
