@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports;
+package fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;

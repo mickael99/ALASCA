@@ -1,0 +1,135 @@
+<control-adapter
+    xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
+    uid="A10000"
+    offered="fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterExternalControlCI">
+    <consumption nominal="50" min="45" max="60"/>
+    <instance-var modifiers= "public static final" type="int" name="MAX_MODE"
+                    static-init="2"/>
+    <instance-var modifiers= "public static final" type="int"
+                    name="MAX_TEMPERATURE" static-init="60"/>
+    <instance-var modifiers= "public static final" type="int"
+                    name="MIN_TEMPERATURE" static-init="45"/>
+    <instance-var modifiers= "public static final" type="int"
+                name="INITIALISE_TEMPERATURE" static-init="50"/>              
+    <instance-var modifiers= "public" type="boolean" name="suspended"
+                static-init="false"/>
+     <instance-var modifiers= "public" type="int" name="currentMode"
+                static-init="0"/>
+
+	<internal modifiers= "public" type="int"
+            name="maxMode">
+    <thrown>java.lang.Exception</thrown>
+	    <body>
+	        return MAX_MODE;
+	    </body>
+  	</internal>
+	
+	<internal modifiers= "public" type= "int"
+		name="currentMode">
+		<thrown>java.lang.Exception</thrown>
+		<body>
+			return currentMode;
+		</body>
+	</internal>
+	
+    <internal modifiers= "public" type="boolean"
+            name="upMode">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(currentMode) {
+            case 0: 
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.NORMAL);
+                break;
+            case 1:
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.HIGH);
+                break;
+            default:
+                return false;
+        }
+        currentMode++;
+        return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="downMode">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(currentMode) {
+            case 1: 
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.LOW);
+                break;
+            case 2:
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.NORMAL);
+                break;
+            default:
+                return false;
+        }
+        currentMode--;
+        return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="setMode">
+    <parameter type = "int" name ="modeIndex"/>
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(modeIndex) {
+            case 0:
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.LOW);
+                break;
+            case 1: 
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.NORMAL);
+                break;
+            case 2:
+                ((WaterHeaterExternalControlCI)this.offering).setPowerLevel(fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserAndExternalControlI.WaterHeaterPowerLevel.HIGH);
+                break;
+            default:
+                return false;
+        }
+        currentMode = modeIndex;
+        return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="suspended">
+  <thrown>java.lang.Exception</thrown>
+    <body>
+        return suspended;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="suspend">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        if(((WaterHeaterExternalControlCI)this.offering).suspend()) {
+            suspended = true;
+            return true;
+        } 
+        return false;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="resume">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        if(((WaterHeaterExternalControlCI)this.offering).resume()) {
+            suspended = false;
+            return true;
+        } 
+        return false;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="double"
+            name="emergency">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        return ((WaterHeaterExternalControlCI)this.offering).emergency();
+    </body>
+  </internal>
+</control-adapter>

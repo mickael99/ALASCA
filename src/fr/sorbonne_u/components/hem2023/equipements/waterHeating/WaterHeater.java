@@ -3,12 +3,16 @@ package fr.sorbonne_u.components.hem2023.equipements.waterHeating;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterExternalControlI;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserControlI;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeaterExternalControlInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeaterUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
+import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationConnector;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterExternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.WaterHeaterUserControlCI;
 
@@ -16,11 +20,16 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.Wate
 public class WaterHeater extends AbstractComponent 
 	implements WaterHeaterExternalControlI, WaterHeaterUserControlI {
 	public static final boolean VERBOSE = true;
+	protected String path2xmlControlAdapter;
+	private boolean registrationRequired = true;
 	
+	protected String Uri ;
 	public static final String URI_EXTERNAL_CONTROL_INBOUND_PORT = "URI_EXTERNAL_CONTROL_INBOUND_PORT";
 	public static final String URI_USER_CONTROL_INBOUND_PORT = "URI_USER_CONTROL_INBOUND_PORT";
+	public static final String URI_REGISTRATION_OUTBOUND_PORT = "URI_REGISTRATION_OUTBOUND_PORT";
 	protected WaterHeaterExternalControlInboundPort waterHeaterExternalControlInboundPort;
 	protected WaterHeaterUserControlInboundPort waterHeaterUserControlInboundPort;
+	protected RegistrationOutboundPort registrationOutboundPort;
 	
 	public static final int INITIALISE_TEMPERATURE = 50;
 	public static final int MIN_TEMPERATURE = 45;
@@ -38,24 +47,23 @@ public class WaterHeater extends AbstractComponent
 	protected boolean heating;
 	protected boolean suspended;
 	
-	protected WaterHeater() throws Exception {
-		super(1, 0);
+	protected WaterHeater(String uriId) throws Exception {
+		super(uriId, 1, 0);
+		Uri = uriId;
 		initialiseWaterHeater();
 		initialisePort();
 		this.traceMessage("\n");
 	}
 	
-	protected WaterHeater(String uriId) throws Exception {
-		super(uriId, 1, 0);
-		initialiseWaterHeater();
-		initialisePort();
-		this.traceMessage("\n");
+	protected WaterHeater(String uriId, boolean registrationRequired) throws Exception {
+		this(uriId);
+		this.registrationRequired = registrationRequired;
 	}
 	
 	private void initialiseWaterHeater() throws Exception {
 		if(VERBOSE) {
 			this.tracer.get().setTitle("WaterHeater component");
-			this.tracer.get().setRelativePosition(0, 0);
+			this.tracer.get().setRelativePosition(2, 0);
 			this.toggleTracing();
 			
 			this.traceMessage("Initialisation des variables du chauffe eau\n");
@@ -71,6 +79,8 @@ public class WaterHeater extends AbstractComponent
 		
 		heating = false;
 		suspended = false;
+		
+		this.path2xmlControlAdapter = new String("waterheater-descriptor.xml");
 	}
 	
 	private void initialisePort() throws Exception {
@@ -84,11 +94,60 @@ public class WaterHeater extends AbstractComponent
 		this.waterHeaterUserControlInboundPort = 
 				new WaterHeaterUserControlInboundPort(URI_USER_CONTROL_INBOUND_PORT, this);
 		this.waterHeaterUserControlInboundPort.publishPort();
+		
+		if(registrationRequired) {
+			this.registrationOutboundPort = 
+					new RegistrationOutboundPort(URI_REGISTRATION_OUTBOUND_PORT, this);
+			this.registrationOutboundPort.publishPort();
+		}
 	}
 	
 	/**
 	 * 			LIFE CYCLE
 	 */
+	
+	@Override 
+	public synchronized void start() throws ComponentStartException {
+		super.start();
+		try {
+			if(VERBOSE)
+				this.traceMessage("Connexion des ports");
+		
+			if(registrationRequired) 
+				this.doPortConnection(registrationOutboundPort.getPortURI(), HEM.URI_REGISTRATION_INBOUND_PORT, 
+						RegistrationConnector.class.getCanonicalName());
+			
+			//inscription du chauffe eau au gestionnaire d'energie
+			if(this.registrationRequired) {
+				if(VERBOSE)
+					this.traceMessage("Inscription du chauffe eau au gestionnaire d'energie");
+				this.register();
+				if(VERBOSE && !this.registered()) 
+					this.traceMessage("Le chauffe eau n'est pas connecté alors qu'il le devrait !");
+			}
+			
+		} catch(Exception e) {
+			throw new ComponentStartException(e);
+		}
+	}
+	
+	@Override
+	public synchronized void execute() throws Exception {
+		super.execute();
+	}
+	
+	@Override 
+	public synchronized void finalise() throws Exception {
+		if(VERBOSE) 
+			this.traceMessage("Déconnexion des liaisons entre les ports");
+		
+		if(registrationRequired) {
+			this.unregister();
+			this.doPortDisconnection(this.registrationOutboundPort.getPortURI());
+		}
+		
+		super.finalise();
+	}
 	
 	@Override 
 	public synchronized void shutdown() throws ComponentShutdownException {
@@ -98,6 +157,9 @@ public class WaterHeater extends AbstractComponent
 			
 			this.waterHeaterExternalControlInboundPort.unpublishPort();
 			this.waterHeaterUserControlInboundPort.unpublishPort();
+			
+			if(registrationRequired) 
+				this.registrationOutboundPort.unpublishPort();
 		} catch(Exception e) {
 			throw new ComponentShutdownException(e);
 		}
@@ -107,6 +169,10 @@ public class WaterHeater extends AbstractComponent
 	/**
 	 * 			AUTRES METHODES
 	 */
+	
+	public String getUri() {
+		return Uri;
+	}
 	
 	@Override
 	public Timer getTimer() throws Exception {
@@ -149,7 +215,7 @@ public class WaterHeater extends AbstractComponent
 	public void setTargetWaterTemperature(int degree) throws Exception {
 		if(VERBOSE) 
 			this.traceMessage("changement de la température cible à " + degree + " degrés\n\n");
-		assert degree >= MIN_TEMPERATURE && degree <= MAX_TEMPERATURE :
+		assert degree >= currentTemperature && degree <= MAX_TEMPERATURE:
 			new PreconditionException("la température de l'eau n'est pas valide");
 		targetTemperature = degree;
 	}
@@ -208,7 +274,9 @@ public class WaterHeater extends AbstractComponent
 	public boolean isHeating() throws Exception {
 		if(VERBOSE) 
 			this.traceMessage("test si le chauffe eau est en route ou non\n\n");
-		return heating;
+		if(this.currentTemperature < this.targetTemperature)
+			return true;
+		return false;
 	}
 
 	@Override
@@ -281,5 +349,23 @@ public class WaterHeater extends AbstractComponent
 			ret = delta / MAX_TEMPERATURE;
 	
 		return ret;
+	}
+
+
+	/**
+	 * 		S'ENREGISTRER ET SE DESENREGISTRER DU GESTIONNAIRE
+	 */
+	
+	public boolean registered() throws Exception {
+		return this.registrationOutboundPort.registered(Uri);
+	}
+
+	public boolean register() throws Exception {
+		return this.registrationOutboundPort.register
+				(Uri, URI_EXTERNAL_CONTROL_INBOUND_PORT, this.path2xmlControlAdapter);
+	}
+
+	public void unregister() throws Exception {
+		this.registrationOutboundPort.unregister(Uri);
 	}
 }

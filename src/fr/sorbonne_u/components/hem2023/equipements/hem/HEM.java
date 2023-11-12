@@ -1,51 +1,63 @@
 package fr.sorbonne_u.components.hem2023.equipements.hem;
 
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.classCreator.ClassCreator;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationI;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterOutboundPort;
-import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
 
-public class HEM extends AbstractComponent {
+public class HEM extends AbstractComponent 
+	implements RegistrationI {
 	public static final boolean VERBOSE = true;
 	
 	public static final String URI_ELECTRIC_METER_PORT = "URI_ELECTRIC_METER_PORT";
 	public static final String URI_DISH_WASHER_PORT = "URI_DISH_WASHER_PORT";
 	public static final String URI_WATER_HEATER_PORT = "URI_WATER_HEATER_PORT";
+	public static final String URI_REGISTRATION_INBOUND_PORT = "URI_REGISTRATION_INBOUND_PORT";
 
 	protected ElectricMeterOutboundPort electricMeterOutboundPort; 
 	protected AdjustableOutboundPort adjustableOutboundPortForDishWasher;
 	protected AdjustableOutboundPort adjustableOutboundPortForWaterHeater;
+	protected RegistrationInboundPort registrationInboundPort;
+	
+	protected HashMap<String, String> registeredUriModularEquipement;
 
 	/**
 	 * 
 	 * 				CONSTRUCTORS
 	 */
 	public HEM() throws Exception {
-		super(1, 1);
-		initialisePort();	
+		super(2, 1);
+		initialiseHEM();	
 	}
 	
 	public HEM(String uriId) throws Exception {
 		super(uriId, 1, 1);
-		initialisePort();
+		initialiseHEM();
 	}
 	
-	private void initialisePort() throws Exception {
+	private void initialiseHEM() throws Exception {
+		registeredUriModularEquipement = new HashMap<String, String>();
 		electricMeterOutboundPort = new ElectricMeterOutboundPort(URI_ELECTRIC_METER_PORT, this);
 		adjustableOutboundPortForDishWasher = new AdjustableOutboundPort(URI_DISH_WASHER_PORT, this);
 		adjustableOutboundPortForWaterHeater = new AdjustableOutboundPort(URI_WATER_HEATER_PORT, this);
+		registrationInboundPort = new RegistrationInboundPort(URI_REGISTRATION_INBOUND_PORT, this);
 		
 		electricMeterOutboundPort.publishPort();
 		adjustableOutboundPortForDishWasher.publishPort();
 		adjustableOutboundPortForWaterHeater.publishPort();
+		registrationInboundPort.publishPort();
 		
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Home Energy Manager component");
-			this.tracer.get().setRelativePosition(0, 0);
+			this.tracer.get().setRelativePosition(1, 1);
 			this.toggleTracing();
 			this.traceMessage("\n");
 		}
@@ -57,8 +69,7 @@ public class HEM extends AbstractComponent {
 	
 	@Override
 	public synchronized void start() throws ComponentStartException {
-		super.start();
-		
+		super.start();		
 		try {
 			if(VERBOSE)
 				this.traceMessage("connexion des ports du gestionnaire");
@@ -70,10 +81,6 @@ public class HEM extends AbstractComponent {
 			this.doPortConnection(adjustableOutboundPortForDishWasher.getPortURI(), 
 					DishWasher.URI_INTERNAL_CONTROL_INBOUND_PORT, 
 					DishWasherConnector.class.getCanonicalName());
-			
-			this.doPortConnection(adjustableOutboundPortForWaterHeater.getPortURI(), 
-					WaterHeater.URI_EXTERNAL_CONTROL_INBOUND_PORT, 
-					WaterHeaterConnector.class.getCanonicalName());
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -88,7 +95,7 @@ public class HEM extends AbstractComponent {
 	@Override
 	public synchronized void finalise() throws Exception {
 		if(VERBOSE)
-			this.traceMessage("déconnexion des ports du gestionnaire");
+			this.traceMessage("déconnexion des liaisons entre les ports");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
 		this.doPortDisconnection(adjustableOutboundPortForDishWasher.getPortURI());
 		this.doPortDisconnection(adjustableOutboundPortForWaterHeater.getPortURI());
@@ -105,6 +112,7 @@ public class HEM extends AbstractComponent {
 			this.electricMeterOutboundPort.unpublishPort();
 			this.adjustableOutboundPortForDishWasher.unpublishPort();
 			this.adjustableOutboundPortForWaterHeater.unpublishPort();
+			registrationInboundPort.unpublishPort();
 		} catch(Exception e) {
 			throw new ComponentShutdownException(e);
 		}
@@ -113,7 +121,6 @@ public class HEM extends AbstractComponent {
 	
 	/**
 	 * 			METHODES DE TEST
-	 * @throws Exception 
 	 */
 	
 	public void runTest() throws Exception {
@@ -184,5 +191,61 @@ public class HEM extends AbstractComponent {
 			this.traceMessage("le chauffe eau est en mode " + 
 					this.adjustableOutboundPortForWaterHeater.currentMode() + "\n\n");
 		}
+	}
+	
+	/**
+	 * 			REGISTRATION
+	 */
+
+	@Override
+	public boolean registered(String uid) throws Exception {
+		if(VERBOSE)
+			this.traceMessage("Verification de l'inscription de " + uid);
+		
+		if(this.registeredUriModularEquipement.containsKey(uid))
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean register(String uid, String controlPortURI, String path2xmlControlAdapter) throws Exception {
+		if(VERBOSE)
+			this.traceMessage("Inscription de " + uid);
+		
+		if(registered(uid))
+			return false;
+	
+		this.registeredUriModularEquipement.put(uid, controlPortURI);
+		ClassCreator classCreator = new ClassCreator(path2xmlControlAdapter);
+		Class<?> classConnector = classCreator.createClass();
+		
+		Constructor<?>[] constructeurs = classConnector.getConstructors();
+		if(constructeurs.length == 0)
+			System.out.println("pas de constructeur");
+        for (Constructor<?> constructeur : constructeurs) {
+            System.out.println("Nom : " + constructeur.getName());
+            System.out.println("Modificateurs : " + constructeur.getModifiers());
+
+            Class<?>[] parametres = constructeur.getParameterTypes();
+            System.out.print("Paramètres : ");
+            for (Class<?> parametre : parametres) {
+                System.out.print(parametre.getName() + " ");
+            }
+            System.out.println();
+        }
+		
+		this.doPortConnection(adjustableOutboundPortForWaterHeater.getPortURI(), 
+				controlPortURI, 
+				classConnector.getName());
+		
+		return true;
+	}
+
+	@Override
+	public void unregister(String uid) throws Exception {		
+		if(VERBOSE)
+			this.traceMessage("Désinscription de " + uid);
+		if(registered(uid))
+			this.registeredUriModularEquipement.remove(uid);
 	}
 }

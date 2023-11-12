@@ -3,20 +3,21 @@ package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherInternalControlInboundPort;
-import fr.sorbonne_u.components.hem2023.equipements.dishWasher.Ports.DishWasherUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlI;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherInternalControlInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 @OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasher extends AbstractComponent 
 	implements DishWasherUserControlI, DishWasherInternalControlI {
-	public static final boolean VERBOSE = true;
+	public static final boolean VERBOSE = false;
 	
+	public String Uri;
 	public static final String URI_USER_CONTROL_INBOUND_PORT = 
 									"URI_USER_CONTROL_INBOUND_PORT";
 	public static final String URI_INTERNAL_CONTROL_INBOUND_PORT = 
@@ -41,15 +42,10 @@ public class DishWasher extends AbstractComponent
 	 * 
 	 * 				CONSTRUCTORS
 	 */
-	protected DishWasher() throws Exception {
-		super(1, 0);
-		initialiseDishWasher();
-		initialisePort();
-		this.traceMessage("\n");
-	}
 	
 	protected DishWasher(String uriId) throws Exception {
 		super(uriId, 1, 0);
+		Uri = uriId;
 		initialiseDishWasher();
 		initialisePort();
 		this.traceMessage("\n");
@@ -58,7 +54,7 @@ public class DishWasher extends AbstractComponent
 	private void initialiseDishWasher() throws Exception {
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Dishwasher component");
-			this.tracer.get().setRelativePosition(0, 0);
+			this.tracer.get().setRelativePosition(1, 0);
 			this.toggleTracing();
 			
 			this.traceMessage("Initialisation des variables du lave vaisselle\n");

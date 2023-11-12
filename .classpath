@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="/BCM4Java-19092023-sources/commons-math3-3.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/BCM4Java-19092023-sources/isorelax.jar"/>
 	<classpathentry exported="true" kind="lib" path="/BCM4Java-19092023-sources/javassist.jar"/>
@@ -11,10 +12,18 @@
 	<classpathentry exported="true" kind="lib" path="BCM4Java-19092023.jar"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+=======
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.J
+RE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-13">
+>>>>>>> 0841361d5dd864477bf4ec24ff5dc680ce386145
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="/ALASCA-etape2/NeoSim4Java-17102023.jar"/>
+=======
+	<classpathentry kind="lib" path="BCM4Java-19092023.jar"/>
+>>>>>>> 0841361d5dd864477bf4ec24ff5dc680ce386145
 	<classpathentry kind="output" path="bin"/>
 </classpath>
