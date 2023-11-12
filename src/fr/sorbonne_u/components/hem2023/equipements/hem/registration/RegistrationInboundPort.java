@@ -20,9 +20,8 @@ public class RegistrationInboundPort extends AbstractInboundPort implements Regi
 	
 	@Override
 	public boolean registered(String uid) throws Exception {
-		System.out.println("valeur de uid dans le port entrant " + uid);
 		return this.getOwner().handleRequest(
-				o -> ((RegistrationI)o).registered(uri));
+				o -> ((RegistrationI)o).registered(uid));
 	}
 
 	@Override

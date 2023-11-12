@@ -13,7 +13,7 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 {
 	public static final String	ELECTRIC_METER_INBOUND_PORT_URI =
 															"ELECTRIC-METER";
-	public static final boolean	VERBOSE = false;
+	public static final boolean	VERBOSE = true;
 
 	protected ElectricMeterInboundPort	electricMeterInboundPort;
 

@@ -23,7 +23,7 @@ public class WaterHeater extends AbstractComponent
 	protected String path2xmlControlAdapter;
 	private boolean registrationRequired = true;
 	
-	protected String Uri ;
+	public static String Uri ;
 	public static final String URI_EXTERNAL_CONTROL_INBOUND_PORT = "URI_EXTERNAL_CONTROL_INBOUND_PORT";
 	public static final String URI_USER_CONTROL_INBOUND_PORT = "URI_USER_CONTROL_INBOUND_PORT";
 	public static final String URI_REGISTRATION_OUTBOUND_PORT = "URI_REGISTRATION_OUTBOUND_PORT";
@@ -133,7 +133,6 @@ public class WaterHeater extends AbstractComponent
 	public synchronized void execute() throws Exception {
 		if(VERBOSE)
 			this.traceMessage("Test si le chauffe eau est bien enregistré au gestionnaire\n\n");
-		System.out.println("appel registered depuis le waterHeater\n");
 		if(!this.registered())
 			this.traceMessage("Chauffe eau non connecté\n\n");
 		super.execute();
@@ -360,7 +359,6 @@ public class WaterHeater extends AbstractComponent
 	 */
 	
 	public boolean registered() throws Exception {
-		System.out.println("valeur de uid dans waterheater " + Uri);
 		return this.registrationOutboundPort.registered(Uri);
 	}
 

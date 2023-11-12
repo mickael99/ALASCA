@@ -40,7 +40,6 @@ public class XmlReader {
         res.put("min", Integer.parseInt(consumption.getAttribute("min")));
         res.put("max", Integer.parseInt(consumption.getAttribute("max")));
         
-        System.out.println(res.get("nominal"));
         return res;
 	}
 	

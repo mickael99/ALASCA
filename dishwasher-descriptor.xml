@@ -1,0 +1,138 @@
+<control-adapter
+    xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
+    uid="DishWasher"
+    offered="fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI">
+    <consumption nominal="50" min="45" max="60"/>
+    <instance-var modifiers= "protected static final" type="int" name="MAX_MODE"
+                    static-init="3"/>             
+    <instance-var modifiers= "protected" type="boolean" name="suspended"
+                static-init="false"/>
+     <instance-var modifiers= "protected" type="int" name="currentMode"
+                static-init="0"/>
+
+	<internal modifiers= "public" type="int"
+            name="maxMode">
+    <thrown>java.lang.Exception</thrown>
+	    <body>
+	        return MAX_MODE;
+	    </body>
+  	</internal>
+	
+	<internal modifiers= "public" type= "int"
+		name="currentMode">
+		<thrown>java.lang.Exception</thrown>
+		<body>
+			return currentMode;
+		</body>
+	</internal>
+	
+    <internal modifiers= "public" type="boolean"
+            name="upMode">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(currentMode) {
+			case 0:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.FAST);
+				break;
+			case 1:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.NORMAL);
+				break;
+			case 2:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.INTENSIF);
+				break;
+			default:
+				return false;
+		}
+		currentMode++;
+		return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="downMode">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(currentMode) {
+			case 1:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.ECO);
+				break;
+			case 2:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.FAST);
+				break;
+			case 3:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.NORMAL);
+				break;
+			default:
+				return false;
+		}
+		currentMode--;
+		return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="setMode">
+    <parameter type = "int" name ="modeIndex"/>
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        switch(modeIndex) {
+			case 0:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.ECO);
+				break;
+			case 1:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.FAST);
+				break;
+			case 2:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.NORMAL);
+				break;
+			case 3:
+				((DishWasherInternalControlCI)this.offering).setWashingMode(fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalAndControlI.WashingMode.INTENSIF);
+				break;
+			default:
+				return false;
+		}
+		currentMode = modeIndex;
+		return true;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="suspended">
+  <thrown>java.lang.Exception</thrown>
+    <body>
+        return suspended;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="suspend">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        if(((DishWasherInternalControlCI)this.offering).suspend()) {
+            suspended = true;
+            return true;
+        } 
+        return false;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="boolean"
+            name="resume">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        if(((DishWasherInternalControlCI)this.offering).resume()) {
+            suspended = false;
+            return true;
+        } 
+        return false;
+    </body>
+  </internal>
+
+  <internal modifiers= "public" type="double"
+            name="emergency">
+    <thrown>java.lang.Exception</thrown>
+    <body>
+        return ((DishWasherInternalControlCI)this.offering).emergency();
+    </body>
+  </internal>
+</control-adapter>

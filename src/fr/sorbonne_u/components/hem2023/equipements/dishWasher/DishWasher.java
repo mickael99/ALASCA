@@ -3,29 +3,35 @@ package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherInternalControlInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherUserControlInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationConnector;
+import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationOutboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 @OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasher extends AbstractComponent 
 	implements DishWasherUserControlI, DishWasherInternalControlI {
-	public static final boolean VERBOSE = false;
+	public static final boolean VERBOSE = true;
+	private boolean registrationRequired = true;
 	
-	public String Uri;
+	public static String Uri;
 	public static final String URI_USER_CONTROL_INBOUND_PORT = 
 									"URI_USER_CONTROL_INBOUND_PORT";
 	public static final String URI_INTERNAL_CONTROL_INBOUND_PORT = 
 									"URI_INTERNAL_CONTROL_INBOUND_PORT";
+	public static final String URI_REGISTRATION_OUTBOUND_PORT = 
+									"URI_REGISTRATION_OUTBOUND_PORT";
 	
 	protected DishWasherUserControlInboundPort dishWasherUserControlInboundPort;
 	protected DishWasherInternalControlInboundPort dishWasherInternalControlInboundPort;
-
 	
 	protected DishWasherState dishWasherState;
 	protected WashingMode washingMode;
@@ -34,9 +40,12 @@ public class DishWasher extends AbstractComponent
 	protected DoorState doorState;
 	protected boolean washing;
 	protected boolean suspended;
+	protected String path2xmlControlAdapter;
 	
 	protected double waterQuantityInLiter;
 	protected static final double MAX_WATER_QUANTITY_IN_LITER = 15.0;
+	
+	protected RegistrationOutboundPort registrationOutboundPort;
 	
 	/**
 	 * 
@@ -51,13 +60,18 @@ public class DishWasher extends AbstractComponent
 		this.traceMessage("\n");
 	}
 	
+	protected DishWasher(String uriId, boolean registrationRequired) throws Exception {
+		this(uriId);
+		this.registrationRequired = registrationRequired;
+	}
+	
 	private void initialiseDishWasher() throws Exception {
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Dishwasher component");
 			this.tracer.get().setRelativePosition(1, 0);
 			this.toggleTracing();
 			
-			this.traceMessage("Initialisation des variables du lave vaisselle\n");
+			this.traceMessage("Initialisation des variables du lave vaisselle\n\n");
 		}
 		
 		dishWasherState = DishWasherState.OFF;
@@ -68,11 +82,12 @@ public class DishWasher extends AbstractComponent
 		waterQuantityInLiter = MAX_WATER_QUANTITY_IN_LITER;
 		washing = false;
 		suspended = false;
+		this.path2xmlControlAdapter = new String("dishwasher-descriptor.xml");
 	}
 	
 	private void initialisePort() throws Exception {
 		if(VERBOSE) 	
-			this.traceMessage("Initialisation des ports du lave vaisselle\n");
+			this.traceMessage("Initialisation des ports du lave vaisselle\n\n");
 		
 		
 		this.dishWasherInternalControlInboundPort = 
@@ -82,11 +97,63 @@ public class DishWasher extends AbstractComponent
 		this.dishWasherUserControlInboundPort = 
 				new DishWasherUserControlInboundPort(URI_USER_CONTROL_INBOUND_PORT, this);
 		this.dishWasherUserControlInboundPort.publishPort();
+		
+		if(registrationRequired) {
+			this.registrationOutboundPort = 
+					new RegistrationOutboundPort(URI_REGISTRATION_OUTBOUND_PORT, this);
+			this.registrationOutboundPort.publishPort();
+		}
 	}
 	
 	/**
 	 * 			LIFE CYCLE
 	 */
+	
+	@Override 
+	public synchronized void start() throws ComponentStartException {
+		super.start();
+		try {
+			if(VERBOSE)
+				this.traceMessage("Connexion des ports\n\n");
+		
+			if(registrationRequired) 
+				this.doPortConnection(registrationOutboundPort.getPortURI(), HEM.URI_REGISTRATION_INBOUND_PORT, 
+						RegistrationConnector.class.getCanonicalName());
+			
+			//inscription du lave vaisselle au gestionnaire d'energie
+			if(this.registrationRequired) {
+				if(VERBOSE)
+					this.traceMessage("Inscription du lave vaisselle au gestionnaire d'energie\n\n");
+				this.register();
+			}
+			
+		} catch(Exception e) {
+			throw new ComponentStartException(e);
+		}
+	}
+	
+	@Override
+	public synchronized void execute() throws Exception {
+		if(VERBOSE)
+			this.traceMessage("Test si le lave vaisselle est bien enregistré au gestionnaire\n\n");
+		if(!this.registered())
+			this.traceMessage("lave vaisselle non connecté\n\n");
+		super.execute();
+	}
+	
+	@Override 
+	public synchronized void finalise() throws Exception {
+		if(VERBOSE) 
+			this.traceMessage("Déconnexion des liaisons entre les ports\n\n");
+		
+		if(registrationRequired) {
+			this.unregister();
+			this.doPortDisconnection(this.registrationOutboundPort.getPortURI());
+		}
+		
+		super.finalise();
+	}
+	
 	
 	@Override 
 	public synchronized void shutdown() throws ComponentShutdownException {
@@ -96,6 +163,9 @@ public class DishWasher extends AbstractComponent
 			
 			this.dishWasherInternalControlInboundPort.unpublishPort();
 			this.dishWasherUserControlInboundPort.unpublishPort();
+			
+			if(registrationRequired) 
+				this.registrationOutboundPort.unpublishPort();
 		} catch(Exception e) {
 			throw new ComponentShutdownException(e);
 		}
@@ -413,5 +483,22 @@ public class DishWasher extends AbstractComponent
 		if((isDoorOpen() && isWashing()) || (isWashing() && isCuveWaterIsEmpty()))
 			return 1.0;
 		return 0.0;
+	}
+	
+	/**
+	 * 		S'ENREGISTRER ET SE DESENREGISTRER DU GESTIONNAIRE
+	 */
+	
+	public boolean registered() throws Exception {
+		return this.registrationOutboundPort.registered(Uri);
+	}
+
+	public boolean register() throws Exception {
+		return this.registrationOutboundPort.register
+				(Uri, URI_INTERNAL_CONTROL_INBOUND_PORT, this.path2xmlControlAdapter);
+	}
+
+	public void unregister() throws Exception {
+		this.registrationOutboundPort.unregister(Uri);
 	}
 }

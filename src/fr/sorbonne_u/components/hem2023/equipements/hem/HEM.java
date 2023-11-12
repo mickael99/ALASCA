@@ -12,6 +12,7 @@ import fr.sorbonne_u.components.hem2023.equipements.hem.registration.Registratio
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterOutboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
 
 public class HEM extends AbstractComponent 
 	implements RegistrationI {
@@ -22,12 +23,10 @@ public class HEM extends AbstractComponent
 	public static final String URI_WATER_HEATER_PORT = "URI_WATER_HEATER_PORT";
 	public static final String URI_REGISTRATION_INBOUND_PORT = "URI_REGISTRATION_INBOUND_PORT";
 
-	protected ElectricMeterOutboundPort electricMeterOutboundPort; 
-	protected AdjustableOutboundPort adjustableOutboundPortForDishWasher;
-	protected AdjustableOutboundPort adjustableOutboundPortForWaterHeater;
+	protected ElectricMeterOutboundPort electricMeterOutboundPort;
 	protected RegistrationInboundPort registrationInboundPort;
 	
-	protected HashMap<String, String> registeredUriModularEquipement;
+	protected HashMap<String, AdjustableOutboundPort> registeredUriModularEquipement;
 
 	/**
 	 * 
@@ -44,15 +43,11 @@ public class HEM extends AbstractComponent
 	}
 	
 	private void initialiseHEM() throws Exception {
-		registeredUriModularEquipement = new HashMap<String, String>();
+		registeredUriModularEquipement = new HashMap<String, AdjustableOutboundPort>();
 		electricMeterOutboundPort = new ElectricMeterOutboundPort(URI_ELECTRIC_METER_PORT, this);
-		adjustableOutboundPortForDishWasher = new AdjustableOutboundPort(URI_DISH_WASHER_PORT, this);
-		adjustableOutboundPortForWaterHeater = new AdjustableOutboundPort(URI_WATER_HEATER_PORT, this);
 		registrationInboundPort = new RegistrationInboundPort(URI_REGISTRATION_INBOUND_PORT, this);
 		
 		electricMeterOutboundPort.publishPort();
-		adjustableOutboundPortForDishWasher.publishPort();
-		adjustableOutboundPortForWaterHeater.publishPort();
 		registrationInboundPort.publishPort();
 		
 		if(VERBOSE) {
@@ -77,10 +72,6 @@ public class HEM extends AbstractComponent
 			this.doPortConnection(electricMeterOutboundPort.getPortURI(), 
 					ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI, 
 					ElectricMeterConnector.class.getCanonicalName());
-			
-			this.doPortConnection(adjustableOutboundPortForDishWasher.getPortURI(), 
-					DishWasher.URI_INTERNAL_CONTROL_INBOUND_PORT, 
-					DishWasherConnector.class.getCanonicalName());
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -97,9 +88,9 @@ public class HEM extends AbstractComponent
 		if(VERBOSE)
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
-		this.doPortDisconnection(adjustableOutboundPortForDishWasher.getPortURI());
-		this.doPortDisconnection(adjustableOutboundPortForWaterHeater.getPortURI());
-		
+		for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
+			this.doPortDisconnection(ao.getPortURI());
+
 		super.finalise();
 	}
 	
@@ -110,9 +101,9 @@ public class HEM extends AbstractComponent
 				this.traceMessage("supréssion des ports du gestionnaire d'energie\n\n");
 			
 			this.electricMeterOutboundPort.unpublishPort();
-			this.adjustableOutboundPortForDishWasher.unpublishPort();
-			this.adjustableOutboundPortForWaterHeater.unpublishPort();
 			registrationInboundPort.unpublishPort();
+			for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
+				ao.unpublishPort();
 		} catch(Exception e) {
 			throw new ComponentShutdownException(e);
 		}
@@ -141,63 +132,76 @@ public class HEM extends AbstractComponent
 	
 	public void testDishWasher() throws Exception {
 		if(VERBOSE) {
+			AdjustableOutboundPort adjustableOutboundPortForDishWasher = registeredUriModularEquipement.get(DishWasher.Uri);
+			
 			this.traceMessage("test de la connexion entre le lave vaisselle et le gestionnaire\n");
+				
+			this.traceMessage("test de maxMode, résultat attendu -> 3\n\n");
+			if(adjustableOutboundPortForDishWasher.maxMode() != 3)
+				assertTrue(false);
 			
-			this.traceMessage("le mode maximum est de -> " + 
-					this.adjustableOutboundPortForDishWasher.maxMode() + "\n\n");
+			this.traceMessage("test de currentMode, résultat attendu -> 0\n\n");
+			if(adjustableOutboundPortForDishWasher.currentMode() != 0)
+				assertTrue(false);
 			
-			this.traceMessage("le lave vaisselle est en mode " + 
-					this.adjustableOutboundPortForDishWasher.currentMode() + "\n\n");
+			this.traceMessage("test de upMode, résultat attendu -> true et le lave vaisselle est en mode 1\n\n");
+			if(adjustableOutboundPortForDishWasher.upMode() != true)
+				assertTrue(false);
+			if(adjustableOutboundPortForDishWasher.currentMode() != 1)
+				assertTrue(false);
+			adjustableOutboundPortForDishWasher.setMode(3);
+			if(adjustableOutboundPortForDishWasher.upMode() != false)
+				assertTrue(false);
 			
-			this.traceMessage("On augmente le mode\n");
-			this.adjustableOutboundPortForDishWasher.upMode();
-			this.traceMessage("le lave vaisselle est en mode " + 
-					this.adjustableOutboundPortForDishWasher.currentMode() + "\n\n");
+			this.traceMessage("test de downMode, résultat attendu -> true et le lave vaisselle est en mode 0\n\n");
+			if(adjustableOutboundPortForDishWasher.downMode() != true)
+				assertTrue(false);
+			if(adjustableOutboundPortForDishWasher.currentMode() != 2)
+				assertTrue(false);
+			adjustableOutboundPortForDishWasher.setMode(0);
+			if(adjustableOutboundPortForDishWasher.downMode() != false)
+				assertTrue(false);
 			
-			this.traceMessage("On diminue le mode\n");
-			this.adjustableOutboundPortForDishWasher.downMode();
-			this.traceMessage("le lave vaisselle est en mode " + 
-					this.adjustableOutboundPortForDishWasher.currentMode() + "\n\n");
-			
-			this.traceMessage("On change le mode\n");
-			this.adjustableOutboundPortForDishWasher.setMode(3);
-			this.traceMessage("le lave vaisselle est en mode " + 
-					this.adjustableOutboundPortForDishWasher.currentMode() + "\n\n");	
+			this.traceMessage("test de setMode, résultat attendu -> true et le lave vaisselle est en mode 2\n\n");
+			if(adjustableOutboundPortForDishWasher.setMode(2) != true)
+				assertTrue(false);	
 		}
 	}
 	
 	public void testWaterHeater() throws Exception {
 		if(VERBOSE) {
+			AdjustableOutboundPort adjustableOutboundPortForWaterHeater = registeredUriModularEquipement.get(WaterHeater.Uri);
+			
 			this.traceMessage("test de la connexion entre le chauffe eau et le gestionnaire\n\n");
 			
 			this.traceMessage("test de maxMode, résultat attendu -> 2\n\n");
-			if(this.adjustableOutboundPortForWaterHeater.maxMode() != 2)
+			if(adjustableOutboundPortForWaterHeater.maxMode() != 2)
 				assertTrue(false);
 			
 			this.traceMessage("test de currentMode, résultat attendu -> 0\n\n");
-			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 0)
+			if(adjustableOutboundPortForWaterHeater.currentMode() != 0)
 				assertTrue(false);
 			
 			this.traceMessage("test de upMode, résultat attendu -> true et le chauffe eau est en mode 1\n\n");
-			if(this.adjustableOutboundPortForWaterHeater.upMode() != true)
+			if(adjustableOutboundPortForWaterHeater.upMode() != true)
 				assertTrue(false);
-			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 1)
+			if(adjustableOutboundPortForWaterHeater.currentMode() != 1)
 				assertTrue(false);
-			this.adjustableOutboundPortForWaterHeater.setMode(2);
-			if(this.adjustableOutboundPortForWaterHeater.upMode() != false)
+			adjustableOutboundPortForWaterHeater.setMode(2);
+			if(adjustableOutboundPortForWaterHeater.upMode() != false)
 				assertTrue(false);
 			
 			this.traceMessage("test de downMode, résultat attendu -> true et le chauffe eau est en mode 0\n\n");
-			if(this.adjustableOutboundPortForWaterHeater.downMode() != true)
+			if(adjustableOutboundPortForWaterHeater.downMode() != true)
 				assertTrue(false);
-			if(this.adjustableOutboundPortForWaterHeater.currentMode() != 1)
+			if(adjustableOutboundPortForWaterHeater.currentMode() != 1)
 				assertTrue(false);
-			this.adjustableOutboundPortForWaterHeater.setMode(0);
-			if(this.adjustableOutboundPortForWaterHeater.downMode() != false)
+			adjustableOutboundPortForWaterHeater.setMode(0);
+			if(adjustableOutboundPortForWaterHeater.downMode() != false)
 				assertTrue(false);
 			
 			this.traceMessage("test de setMode, résultat attendu -> true et le chauffe eau est en mode 2\n\n");
-			if(this.adjustableOutboundPortForWaterHeater.setMode(2) != true)
+			if(adjustableOutboundPortForWaterHeater.setMode(2) != true)
 				assertTrue(false);
 		}
 	}
@@ -223,11 +227,12 @@ public class HEM extends AbstractComponent
 		if(registered(uid))
 			return false;
 	
-		this.registeredUriModularEquipement.put(uid, controlPortURI);
+		AdjustableOutboundPort ao = new AdjustableOutboundPort(this);
+		ao.publishPort();
+		this.registeredUriModularEquipement.put(uid, ao);
 		ClassCreator classCreator = new ClassCreator(path2xmlControlAdapter);
 		Class<?> classConnector = classCreator.createClass();
-		
-		this.doPortConnection(adjustableOutboundPortForWaterHeater.getPortURI(), 
+		this.doPortConnection(ao.getPortURI(), 
 				controlPortURI, 
 				classConnector.getName());
 		
