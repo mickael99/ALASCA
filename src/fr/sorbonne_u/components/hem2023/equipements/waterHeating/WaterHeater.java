@@ -131,10 +131,12 @@ public class WaterHeater extends AbstractComponent
 	
 	@Override
 	public synchronized void execute() throws Exception {
-		if(VERBOSE)
-			this.traceMessage("Test si le chauffe eau est bien enregistré au gestionnaire\n\n");
-		if(!this.registered())
-			this.traceMessage("Chauffe eau non connecté\n\n");
+		if(this.registrationRequired) {
+			if(VERBOSE)
+				this.traceMessage("Test si le chauffe eau est bien enregistré au gestionnaire\n\n");
+			if(!this.registered())
+				this.traceMessage("Chauffe eau non connecté\n\n");
+		}
 		super.execute();
 	}
 	
