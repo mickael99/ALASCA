@@ -34,7 +34,7 @@ public class CVMIntegrationTestModularEquipement extends AbstractCVM {
 		super.deploy();
 	}
 
-	public static void	main(String[] args)
+	public static void main(String[] args)
 	{
 		try {
 			CVMIntegrationTestModularEquipement cvm = new CVMIntegrationTestModularEquipement();

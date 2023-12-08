@@ -91,10 +91,5 @@ public interface MicrowaveImplementationI {
 	 * 
 	 * @throws Exception	<i>to do</i>.
 	 */	
-	public void			setTimer(Timer newTimer) throws Exception;
-
-
-	
-	
-	
+	public void			setTimer(Timer newTimer) throws Exception;	
 }

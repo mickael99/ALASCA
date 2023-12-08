@@ -102,7 +102,7 @@ public class			Electricity
 	public static double	computeConsumption(Duration d, double i)
 	{
 		double h = toHours(d);
-		return h*i/1000.0;
+		return h * i / 1000.0;
 	}
 }
 // -----------------------------------------------------------------------------
