@@ -134,10 +134,12 @@ public class DishWasher extends AbstractComponent
 	
 	@Override
 	public synchronized void execute() throws Exception {
-		if(VERBOSE)
-			this.traceMessage("Test si le lave vaisselle est bien enregistré au gestionnaire\n\n");
-		if(!this.registered())
-			this.traceMessage("lave vaisselle non connecté\n\n");
+		if(registrationRequired) {
+			if(VERBOSE)
+				this.traceMessage("Test si le lave vaisselle est bien enregistré au gestionnaire\n\n");
+			if(!this.registered())
+				this.traceMessage("lave vaisselle non connecté\n\n");
+		}
 		super.execute();
 	}
 	
