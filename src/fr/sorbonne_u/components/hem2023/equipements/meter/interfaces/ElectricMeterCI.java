@@ -5,10 +5,9 @@ import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 
 public interface		ElectricMeterCI
-extends		ElectricMeterImplementationI, RequiredCI, OfferedCI {
-	@Override
+extends	RequiredCI, OfferedCI {
+
 	public double getCurrentConsumption() throws Exception;
 	
-	@Override
 	public double getCurrentProduction() throws Exception;
 }

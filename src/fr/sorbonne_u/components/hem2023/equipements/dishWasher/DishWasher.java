@@ -4,6 +4,7 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.equipements.ModularEquipementI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
@@ -18,7 +19,7 @@ import fr.sorbonne_u.exceptions.PreconditionException;
 
 @OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasher extends AbstractComponent 
-	implements DishWasherUserControlI, DishWasherInternalControlI {
+	implements DishWasherUserControlI, DishWasherInternalControlI, ModularEquipementI {
 	public static final boolean VERBOSE = true;
 	private boolean registrationRequired = true;
 	

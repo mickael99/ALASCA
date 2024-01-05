@@ -10,6 +10,7 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeat
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeaterUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
+import fr.sorbonne_u.components.hem2023.equipements.ModularEquipementI;
 import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationConnector;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationOutboundPort;
@@ -18,7 +19,7 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.Wate
 
 @OfferedInterfaces(offered={WaterHeaterUserControlCI.class, WaterHeaterExternalControlCI.class})
 public class WaterHeater extends AbstractComponent 
-	implements WaterHeaterExternalControlI, WaterHeaterUserControlI {
+	implements WaterHeaterExternalControlI, WaterHeaterUserControlI, ModularEquipementI {
 	public static final boolean VERBOSE = true;
 	protected String path2xmlControlAdapter;
 	private boolean registrationRequired = true;

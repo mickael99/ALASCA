@@ -60,7 +60,7 @@ public class FanElectricityModel extends AtomicHIOA {
 	public static double			LOW_MODE_CONSUMPTION = 20.0; // Watts
 	public static double			MEDDIUM_MODE_CONSUMPTION = 50.0; // Watts
 	public static double			HIGH_MODE_CONSUMPTION = 100.0; // Watts
-	public static double			MUSIC_MODE_CONSUMPTION = 5.0; // Watts
+	public static double			MUSIC_MODE_CONSUMPTION = 1.0; // Watts
 	public static double			TENSION = 220.0; // Volts
 
 	protected State					currentState = State.OFF;
