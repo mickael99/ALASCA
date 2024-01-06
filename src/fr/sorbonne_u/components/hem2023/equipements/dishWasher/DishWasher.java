@@ -4,7 +4,7 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
-import fr.sorbonne_u.components.hem2023.equipements.ModularEquipementI;
+import fr.sorbonne_u.components.hem2023.equipements.battery.ports.BatteryProductionInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlCI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherInternalControlI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.interfaces.DishWasherUserControlCI;
@@ -14,12 +14,13 @@ import fr.sorbonne_u.components.hem2023.equipements.dishWasher.ports.DishWasherU
 import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationConnector;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationOutboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.production.interfaces.ProductionEquipmentI;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 @OfferedInterfaces(offered={DishWasherUserControlCI.class, DishWasherInternalControlCI.class})
 public class DishWasher extends AbstractComponent 
-	implements DishWasherUserControlI, DishWasherInternalControlI, ModularEquipementI {
+	implements DishWasherUserControlI, DishWasherInternalControlI, ProductionEquipmentI {
 	public static final boolean VERBOSE = true;
 	private boolean registrationRequired = true;
 	
@@ -30,9 +31,15 @@ public class DishWasher extends AbstractComponent
 									"URI_INTERNAL_CONTROL_INBOUND_PORT";
 	public static final String URI_REGISTRATION_OUTBOUND_PORT = 
 									"URI_REGISTRATION_OUTBOUND_PORT";
+	public static final String URI_PRODUCTION_PORT = "URI_PRODUCTION_PORT";
 	
 	protected DishWasherUserControlInboundPort dishWasherUserControlInboundPort;
 	protected DishWasherInternalControlInboundPort dishWasherInternalControlInboundPort;
+	protected BatteryProductionInboundPort productionOutboundPort;
+	
+	protected double currentBattery;
+	public static final double MAX_BATTERY = 50000.0;
+	public static final double INITIAL_CURRENT_BATTERY = 5000.0;
 	
 	protected DishWasherState dishWasherState;
 	protected WashingMode washingMode;
@@ -75,6 +82,8 @@ public class DishWasher extends AbstractComponent
 			this.traceMessage("Initialisation des variables du lave vaisselle\n\n");
 		}
 		
+		currentBattery = INITIAL_CURRENT_BATTERY;
+		
 		dishWasherState = DishWasherState.OFF;
 		washingMode = WashingMode.NORMAL;
 		enableDrying = false;
@@ -98,6 +107,10 @@ public class DishWasher extends AbstractComponent
 		this.dishWasherUserControlInboundPort = 
 				new DishWasherUserControlInboundPort(URI_USER_CONTROL_INBOUND_PORT, this);
 		this.dishWasherUserControlInboundPort.publishPort();
+		
+		this.productionOutboundPort = 
+				new BatteryProductionInboundPort(URI_PRODUCTION_PORT, this);
+		this.productionOutboundPort.publishPort();
 		
 		if(registrationRequired) {
 			this.registrationOutboundPort = 
@@ -166,6 +179,7 @@ public class DishWasher extends AbstractComponent
 			
 			this.dishWasherInternalControlInboundPort.unpublishPort();
 			this.dishWasherUserControlInboundPort.unpublishPort();
+			this.productionOutboundPort.unpublishPort();
 			
 			if(registrationRequired) 
 				this.registrationOutboundPort.unpublishPort();
@@ -503,5 +517,26 @@ public class DishWasher extends AbstractComponent
 
 	public void unregister() throws Exception {
 		this.registrationOutboundPort.unregister(Uri);
+	}
+	
+	/*
+	 * 	GESTION DE LA BATTERIE
+	 * 
+	 */
+	
+	@Override
+	public boolean addElectricityQuantity(double quantity) throws Exception {
+		if(this.currentBattery + quantity > MAX_BATTERY) {
+			if(VERBOSE) 
+				this.traceMessage("impossible to add battery");
+			return false;
+		}
+		
+		if(VERBOSE) 
+			this.traceMessage("add " + quantity + " watts");
+		
+		this.currentBattery += quantity;
+		
+		return true;
 	}
 }

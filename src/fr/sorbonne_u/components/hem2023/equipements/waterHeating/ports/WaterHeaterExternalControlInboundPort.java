@@ -27,12 +27,6 @@ public class WaterHeaterExternalControlInboundPort extends AbstractInboundPort i
 	}
 
 	@Override
-	public int getEnergyConsumption() throws Exception {
-		return this.getOwner().handleRequest(
-				o -> ((WaterHeaterExternalControlI)o).getEnergyConsumption());
-	}
-
-	@Override
 	public boolean isHeating() throws Exception {
 		return this.getOwner().handleRequest(
 				o -> ((WaterHeaterExternalControlI)o).isHeating());

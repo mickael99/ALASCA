@@ -6,7 +6,6 @@ import fr.sorbonne_u.components.interfaces.RequiredCI;
 
 public interface WaterHeaterExternalControlCI extends OfferedCI, RequiredCI, WaterHeaterExternalControlI {
 	public int getCurrentTemperature() throws Exception;
-	public int getEnergyConsumption() throws Exception;
 	
 	public boolean isHeating() throws Exception;
 	public void startHeating() throws Exception;

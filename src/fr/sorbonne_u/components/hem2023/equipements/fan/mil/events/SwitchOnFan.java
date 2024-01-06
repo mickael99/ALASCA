@@ -3,8 +3,6 @@
  */
 package fr.sorbonne_u.components.hem2023.equipements.fan.mil.events;
 
-import java.util.ArrayList;
-
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanElectricityModel;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;

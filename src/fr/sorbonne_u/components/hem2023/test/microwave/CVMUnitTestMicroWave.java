@@ -1,22 +1,24 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.fan;
+package fr.sorbonne_u.components.hem2023.test.microwave;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.microwave.Microwave;
+import fr.sorbonne_u.components.hem2023.equipements.microwave.MicrowaveTester;
 
 /**
  * @author Yukhoi
  *
  */
-public class CVMUnitTestFan extends AbstractCVM {
+public class CVMUnitTestMicroWave extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public				CVMUnitTestFan() throws Exception
+	public				CVMUnitTestMicroWave() throws Exception
 	{
 		
 	}
@@ -25,15 +27,18 @@ public class CVMUnitTestFan extends AbstractCVM {
 	// CVM life-cycle
 	// -------------------------------------------------------------------------
 
+	/**
+	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
+	 */
 	@Override
 	public void			deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					Fan.class.getCanonicalName(),
+					Microwave.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-					FanTester.class.getCanonicalName(),
+				MicrowaveTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
@@ -42,9 +47,9 @@ public class CVMUnitTestFan extends AbstractCVM {
 	public static void		main(String[] args)
 	{
 		try {
-			CVMUnitTestFan cvm = new CVMUnitTestFan();
+			CVMUnitTestMicroWave cvm = new CVMUnitTestMicroWave();
 			cvm.startStandardLifeCycle(100000L);
-			Thread.sleep(1000L);
+			Thread.sleep(10000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

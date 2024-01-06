@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023;
+package fr.sorbonne_u.components.hem2023.test;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;

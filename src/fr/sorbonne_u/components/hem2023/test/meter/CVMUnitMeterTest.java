@@ -1,8 +1,10 @@
-package fr.sorbonne_u.components.hem2023.equipements.meter;
+package fr.sorbonne_u.components.hem2023.test.meter;
 
 import fr.sorbonne_u.components.AbstractComponent;
 
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeterUnitTester;
 
 public class CVMUnitMeterTest extends AbstractCVM {
 

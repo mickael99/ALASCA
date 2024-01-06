@@ -1,18 +1,17 @@
-package fr.sorbonne_u.components.hem2023.equipements.productionUnit;
+package fr.sorbonne_u.components.hem2023.test.productionUnit.solarPannel;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
+import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryI.TEST_TYPE;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.CVMTestGasGenerator;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.GasGenerator;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
 
-public class CVMTestProductionUnitTogether extends AbstractCVM {
+public class CVMTestSolarPannel extends AbstractCVM {
 	public static final String	TEST_CLOCK_URI = "test-clock";
 	public static final long	DELAY_TO_START_IN_MILLIS = 3000;
 
-	public	CVMTestProductionUnitTogether() throws Exception {
+	public	CVMTestSolarPannel() throws Exception {
 		super();
 	}
 
@@ -21,24 +20,18 @@ public class CVMTestProductionUnitTogether extends AbstractCVM {
 		
 		AbstractComponent.createComponent(
 				Battery.class.getCanonicalName(),
-				new Object[]{"batteryURI"});
+				new Object[]{"batteryURI", TEST_TYPE.PRODUCTION_UNIT});
 		
 		AbstractComponent.createComponent(
 				ElectricMeter.class.getCanonicalName(),
 				new Object[]{"electricMeterURI"});
-	
-		AbstractComponent.createComponent(
-				GasGenerator.class.getCanonicalName(),
-				new Object[]{"gasGeneratorInboundPortURI",
-						 		"gasGeneratorReflectionInboundPortURI",
-						 		"gasGeneratorEnergyTransferOutboundPortURI",
-						 		"gasGeneratorproductionUnitProductionOutboundPort"});
+		
 		AbstractComponent.createComponent(
 				SolarPannel.class.getCanonicalName(),
 				new Object[]{"solarPannelInboundPortURI",
-						 		"solarPannelreflectionInboundPortURI",
-						 		"solarPanneltransferEnergyOutboundPortURI",
-						 		"solarPannelproductionOutboundPortURI"});
+						 		"reflectionInboundPortURI",
+						 		"transferEnergyOutboundPortURI",
+						 		"productionOutboundPortURI"});
 
 		super.deploy();
 	}
@@ -46,8 +39,8 @@ public class CVMTestProductionUnitTogether extends AbstractCVM {
 	public static void main(String[] args)
 	{
 		try {
-			CVMTestProductionUnitTogether cvm = 
-						new CVMTestProductionUnitTogether();
+			CVMTestSolarPannel cvm = 
+						new CVMTestSolarPannel();
 			cvm.startStandardLifeCycle(12000L);
 			Thread.sleep(30000L);
 			System.exit(0);

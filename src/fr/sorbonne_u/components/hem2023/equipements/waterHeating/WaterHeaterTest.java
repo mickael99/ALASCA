@@ -98,7 +98,6 @@ public class WaterHeaterTest extends AbstractComponent {
 		testScheduleHeating();
 		testCurrentTemperature();
 		testPowerLevel();
-		testEnergyConsumption();
 		testStartHeating();
 		testStopHeating();
 		this.traceMessage("tous les tests du chauffe eau ont réussit !");
@@ -179,20 +178,6 @@ public class WaterHeaterTest extends AbstractComponent {
 		}
 		
 		this.traceMessage("testPowerLevel réussit\n\n");
-	}
-	
-	//a modifier lorsqu'on aura automatisé la consommation d'energie
-	@Test
-	protected void testEnergyConsumption() throws Exception {
-		this.traceMessage("début testEnergyConsumption\n");
-		
-		if(waterHeaterExternalControlOutboundPort.getEnergyConsumption() != 0) {
-			this.traceMessage
-				("Le test testEnergyConsumption a échoué\n");
-			assertTrue(false);
-		}
-		
-		this.traceMessage("testEnergyConsumption réussit\n\n");
 	}
 	
 	@Test

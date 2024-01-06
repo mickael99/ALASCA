@@ -1,22 +1,24 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.microwave;
+package fr.sorbonne_u.components.hem2023.test.productionUnit.solarPannel;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannelTester;
 
 /**
  * @author Yukhoi
  *
  */
-public class CVMUnitTestMicroWave extends AbstractCVM {
+public class CVMUnitTestSolarPannel extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public				CVMUnitTestMicroWave() throws Exception
+	public CVMUnitTestSolarPannel() throws Exception
 	{
 		
 	}
@@ -29,29 +31,28 @@ public class CVMUnitTestMicroWave extends AbstractCVM {
 	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
 	 */
 	@Override
-	public void			deploy() throws Exception
+	public void	deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					Microwave.class.getCanonicalName(),
+					SolarPannel.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-				MicrowaveTester.class.getCanonicalName(),
+					SolarPannelTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
 	}
 
-	public static void		main(String[] args)
+	public static void main(String[] args)
 	{
 		try {
-			CVMUnitTestMicroWave cvm = new CVMUnitTestMicroWave();
+			CVMUnitTestSolarPannel cvm = new CVMUnitTestSolarPannel();
 			cvm.startStandardLifeCycle(100000L);
-			Thread.sleep(10000L);
+			Thread.sleep(1000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 }
-// -----------------------------------------------------------------------------

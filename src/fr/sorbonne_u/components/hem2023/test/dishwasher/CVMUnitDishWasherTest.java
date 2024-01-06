@@ -1,6 +1,8 @@
-package fr.sorbonne_u.components.hem2023.equipements.dishWasher;
+package fr.sorbonne_u.components.hem2023.test.dishwasher;
 
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
+import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasherTest;
 import fr.sorbonne_u.components.AbstractComponent;
 
 public class CVMUnitDishWasherTest extends AbstractCVM {

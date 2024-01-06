@@ -1,22 +1,24 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator;
+package fr.sorbonne_u.components.hem2023.test.fan;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.fan.Fan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.FanTester;
 
 /**
  * @author Yukhoi
  *
  */
-public class CVMUnitTestGasGenerator extends AbstractCVM {
+public class CVMUnitTestFan extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public CVMUnitTestGasGenerator() throws Exception
+	public				CVMUnitTestFan() throws Exception
 	{
 		
 	}
@@ -25,27 +27,24 @@ public class CVMUnitTestGasGenerator extends AbstractCVM {
 	// CVM life-cycle
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @see fr.sorbonne_u.components.cvm.AbstractCVM#deploy()
-	 */
 	@Override
-	public void	deploy() throws Exception
+	public void			deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					GasGenerator.class.getCanonicalName(),
+					Fan.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-					GasGeneratorTester.class.getCanonicalName(),
+					FanTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
 	}
 
-	public static void main(String[] args)
+	public static void		main(String[] args)
 	{
 		try {
-			CVMUnitTestGasGenerator cvm = new CVMUnitTestGasGenerator();
+			CVMUnitTestFan cvm = new CVMUnitTestFan();
 			cvm.startStandardLifeCycle(100000L);
 			Thread.sleep(1000L);
 			System.exit(0);
@@ -54,3 +53,4 @@ public class CVMUnitTestGasGenerator extends AbstractCVM {
 		}
 	}
 }
+// -----------------------------------------------------------------------------

@@ -1,7 +1,9 @@
-package fr.sorbonne_u.components.hem2023.equipements.waterHeating;
+package fr.sorbonne_u.components.hem2023.test.waterHeater;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
+import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeaterTest;
 
 public class CVMUnitWaterHeaterTest extends AbstractCVM {
 	public CVMUnitWaterHeaterTest() throws Exception {

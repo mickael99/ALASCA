@@ -1,10 +1,11 @@
-package fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator;
+package fr.sorbonne_u.components.hem2023.test.productionUnit.gasGenerator;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
+import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryI.TEST_TYPE;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.GasGenerator;
 
 public class CVMTestGasGenerator extends AbstractCVM {
 	public static final String	TEST_CLOCK_URI = "test-clock";
@@ -19,7 +20,7 @@ public class CVMTestGasGenerator extends AbstractCVM {
 		
 		AbstractComponent.createComponent(
 				Battery.class.getCanonicalName(),
-				new Object[]{"batteryURI"});
+				new Object[]{"batteryURI", TEST_TYPE.PRODUCTION_UNIT});
 		
 		AbstractComponent.createComponent(
 				ElectricMeter.class.getCanonicalName(),

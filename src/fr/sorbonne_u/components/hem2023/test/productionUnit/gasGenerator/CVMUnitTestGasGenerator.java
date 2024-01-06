@@ -1,22 +1,24 @@
 /**
  * 
  */
-package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel;
+package fr.sorbonne_u.components.hem2023.test.productionUnit.gasGenerator;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.GasGenerator;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.GasGeneratorTester;
 
 /**
  * @author Yukhoi
  *
  */
-public class CVMUnitTestSolarPannel extends AbstractCVM {
+public class CVMUnitTestGasGenerator extends AbstractCVM {
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
-	public CVMUnitTestSolarPannel() throws Exception
+	public CVMUnitTestGasGenerator() throws Exception
 	{
 		
 	}
@@ -32,11 +34,11 @@ public class CVMUnitTestSolarPannel extends AbstractCVM {
 	public void	deploy() throws Exception
 	{
 		AbstractComponent.createComponent(
-					SolarPannel.class.getCanonicalName(),
+					GasGenerator.class.getCanonicalName(),
 					new Object[]{});
 
 		AbstractComponent.createComponent(
-					SolarPannelTester.class.getCanonicalName(),
+					GasGeneratorTester.class.getCanonicalName(),
 					new Object[]{true});
 
 		super.deploy();
@@ -45,7 +47,7 @@ public class CVMUnitTestSolarPannel extends AbstractCVM {
 	public static void main(String[] args)
 	{
 		try {
-			CVMUnitTestSolarPannel cvm = new CVMUnitTestSolarPannel();
+			CVMUnitTestGasGenerator cvm = new CVMUnitTestGasGenerator();
 			cvm.startStandardLifeCycle(100000L);
 			Thread.sleep(1000L);
 			System.exit(0);
