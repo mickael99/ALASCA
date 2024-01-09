@@ -83,6 +83,9 @@ public class Battery extends AbstractComponent
 		
 		this.consomationOutboundPorts.put(WaterHeater.Uri, c1);
 		this.consomationOutboundPorts.put(DishWasher.Uri, c2);
+		
+		System.out.println(consomationOutboundPorts.get(WaterHeater.Uri).getServerPortURI());
+		System.out.println(consomationOutboundPorts.get(DishWasher.Uri).getServerPortURI());
 	}
 	
 	/**
@@ -97,14 +100,15 @@ public class Battery extends AbstractComponent
 				this.traceMessage("connexion des ports de la batterie\n\n");
 			
 			if(testType == TEST_TYPE.ALL) {
-				this.doPortConnection(this.consomationOutboundPorts.get(WaterHeater.Uri).getPortURI(), 
+				this.doPortConnection(this.consomationOutboundPorts.get(DishWasher.Uri).getPortURI(), 
 						WaterHeater.URI_PRODUCTION_PORT, 
 						ProductionEquipmentConnector.class.getCanonicalName());
 				
-				this.doPortConnection(this.consomationOutboundPorts.get(DishWasher.Uri).getPortURI(), 
+				this.doPortConnection(this.consomationOutboundPorts.get(WaterHeater.Uri).getPortURI(), 
 						DishWasher.URI_PRODUCTION_PORT, 
 						ProductionEquipmentConnector.class.getCanonicalName());
 			}
+		
 			
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
@@ -182,7 +186,7 @@ public class Battery extends AbstractComponent
 	@Override
 	public boolean sendBatteryToAModularEquipment(String uri, double quantity) throws Exception {
 		if(VERBOSE)
-			this.traceMessage("prepare to send " + quantity + " watts to a modular equipment");
+			this.traceMessage("prepare to send " + quantity + " watts to a modular equipment " + uri + "\n\n");
 			
 		assert this.batteryMode == BATTERY_MODE.CONSOMATION &&
 					this.consomationOutboundPorts.containsKey(uri);

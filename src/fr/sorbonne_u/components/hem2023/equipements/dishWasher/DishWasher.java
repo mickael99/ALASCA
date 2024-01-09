@@ -26,12 +26,12 @@ public class DishWasher extends AbstractComponent
 	
 	public static String Uri;
 	public static final String URI_USER_CONTROL_INBOUND_PORT = 
-									"URI_USER_CONTROL_INBOUND_PORT";
+									"URI_DISH_WASHER_USER_CONTROL_INBOUND_PORT";
 	public static final String URI_INTERNAL_CONTROL_INBOUND_PORT = 
-									"URI_INTERNAL_CONTROL_INBOUND_PORT";
+									"URI_INTERNAL_DISH_WASHER_CONTROL_INBOUND_PORT";
 	public static final String URI_REGISTRATION_OUTBOUND_PORT = 
-									"URI_REGISTRATION_OUTBOUND_PORT";
-	public static final String URI_PRODUCTION_PORT = "URI_PRODUCTION_PORT";
+									"URI_REGISTRATION_DISH_WASHER_OUTBOUND_PORT";
+	public static final String URI_PRODUCTION_PORT = "URI_DISH_WASHER_PRODUCTION_PORT";
 	
 	protected DishWasherUserControlInboundPort dishWasherUserControlInboundPort;
 	protected DishWasherInternalControlInboundPort dishWasherInternalControlInboundPort;

@@ -26,10 +26,10 @@ public class WaterHeater extends AbstractComponent
 	private boolean registrationRequired = true;
 	
 	public static String Uri ;
-	public static final String URI_EXTERNAL_CONTROL_INBOUND_PORT = "URI_EXTERNAL_CONTROL_INBOUND_PORT";
-	public static final String URI_USER_CONTROL_INBOUND_PORT = "URI_USER_CONTROL_INBOUND_PORT";
-	public static final String URI_REGISTRATION_OUTBOUND_PORT = "URI_REGISTRATION_OUTBOUND_PORT";
-	public static final String URI_PRODUCTION_PORT = "URI_PRODUCTION_PORT";
+	public static final String URI_EXTERNAL_CONTROL_INBOUND_PORT = "URI_WATER_HEATER_EXTERNAL_CONTROL_INBOUND_PORT";
+	public static final String URI_USER_CONTROL_INBOUND_PORT = "URI_WATER_HEATER_USER_CONTROL_INBOUND_PORT";
+	public static final String URI_REGISTRATION_OUTBOUND_PORT = "URI_WATER_HEATER_REGISTRATION_OUTBOUND_PORT";
+	public static final String URI_PRODUCTION_PORT = "URI_WATER_HEATER_PRODUCTION_PORT";
 	
 	protected WaterHeaterExternalControlInboundPort waterHeaterExternalControlInboundPort;
 	protected WaterHeaterUserControlInboundPort waterHeaterUserControlInboundPort;

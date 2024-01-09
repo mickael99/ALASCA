@@ -6,6 +6,7 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterCI;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterImplementationI;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterConsomationInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterProductionInboundPort;
 
@@ -15,11 +16,13 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 	public static final String	ELECTRIC_METER_INBOUND_PORT_URI =
 															"ELECTRIC-METER";
 	public static final String PRODUCTION_URI = "PRODUCTION_URI";
+	public static final String CONSOMATION_URI = "CONSOMATION_URI";
 	
 	public static final boolean	VERBOSE = true;
 
 	protected ElectricMeterInboundPort	electricMeterInboundPort;
 	protected ElectricMeterProductionInboundPort electricMeterProductionInboundPort;
+	protected ElectricMeterConsomationInboundPort electricMeterConsomationInboundPort;
 	
 	protected double electricProduction;
 	protected double electricConsumption;
@@ -41,7 +44,6 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 		super(uriId, 1, 0);
 		initialise();
 		
-
 		if(VERBOSE)
 			this.traceMessage("electric meter ready\n");
 	}
@@ -54,6 +56,10 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 		this.electricMeterProductionInboundPort =
 				new ElectricMeterProductionInboundPort(PRODUCTION_URI, this);
 		this.electricMeterProductionInboundPort.publishPort();
+		
+		this.electricMeterConsomationInboundPort =
+				new ElectricMeterConsomationInboundPort(CONSOMATION_URI, this);
+		this.electricMeterConsomationInboundPort.publishPort();
 		
 		electricProduction = 0.0;
 		electricConsumption = 0.0;
@@ -70,13 +76,14 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 	 */
 
 	@Override
-	public synchronized void	shutdown() throws ComponentShutdownException
+	public synchronized void shutdown() throws ComponentShutdownException
 	{
 		try {
 			if(VERBOSE)
 				this.traceMessage("déconnexion des ports du compteur éléctrique");
 			this.electricMeterInboundPort.unpublishPort();
 			this.electricMeterProductionInboundPort.unpublishPort();
+			this.electricMeterConsomationInboundPort.unpublishPort();
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;
 		}
@@ -115,6 +122,11 @@ public class ElectricMeter extends	AbstractComponent implements ElectricMeterImp
 
 	@Override
 	public synchronized void addElectricConsumption(double quantity) throws Exception {
-		this.electricConsumption += quantity;		
+		this.electricConsumption += quantity;
+		
+		if(VERBOSE) {
+			this.traceMessage("add " + quantity + "watts to the consumption\n");
+			this.traceMessage("the total consomation quantity is " + this.electricConsumption + "\n");
+		}
 	}
 }

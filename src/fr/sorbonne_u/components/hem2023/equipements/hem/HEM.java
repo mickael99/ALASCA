@@ -10,7 +10,9 @@ import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
 import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryManagementI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
 import fr.sorbonne_u.components.hem2023.equipements.hem.connectors.BatteryManagementConnector;
+import fr.sorbonne_u.components.hem2023.equipements.hem.connectors.ElectricMeterConsumptionConnector;
 import fr.sorbonne_u.components.hem2023.equipements.hem.ports.BatteryManagementOutboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.hem.ports.ElectricMeterConsumptionOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.hem.ports.ElectricMeterOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationI;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationInboundPort;
@@ -30,6 +32,7 @@ public class HEM extends AbstractComponent
 	protected ElectricMeterOutboundPort electricMeterOutboundPort;
 	protected RegistrationInboundPort registrationInboundPort;
 	protected BatteryManagementOutboundPort batteryManagementOutboundPort;
+	protected ElectricMeterConsumptionOutboundPort electricMeterConsumptionOutboundPort;
 	
 	protected HashMap<String, AdjustableOutboundPort> registeredUriModularEquipement;
 
@@ -52,11 +55,12 @@ public class HEM extends AbstractComponent
 		electricMeterOutboundPort = new ElectricMeterOutboundPort(URI_ELECTRIC_METER_PORT, this);
 		registrationInboundPort = new RegistrationInboundPort(URI_REGISTRATION_INBOUND_PORT, this);
 		batteryManagementOutboundPort = new BatteryManagementOutboundPort(this);
+		electricMeterConsumptionOutboundPort = new ElectricMeterConsumptionOutboundPort(this);
 		
 		electricMeterOutboundPort.publishPort();
 		registrationInboundPort.publishPort();
-		
 		batteryManagementOutboundPort.publishPort();
+		electricMeterConsumptionOutboundPort.publishPort();
 		
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Home Energy Manager component");
@@ -83,6 +87,9 @@ public class HEM extends AbstractComponent
 			this.doPortConnection(batteryManagementOutboundPort.getPortURI(), 
 					Battery.URI_MANAGEMENT, 
 					BatteryManagementConnector.class.getCanonicalName());
+			this.doPortConnection(electricMeterConsumptionOutboundPort.getPortURI(), 
+					ElectricMeter.CONSOMATION_URI, 
+					ElectricMeterConsumptionConnector.class.getCanonicalName());
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -96,6 +103,7 @@ public class HEM extends AbstractComponent
 		
 		if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
 				this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
+			this.addElectricConsumption(2000.0);
 			if(VERBOSE)
 				this.traceMessage("succesfull !!!");
 		}
@@ -107,6 +115,7 @@ public class HEM extends AbstractComponent
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
 		this.doPortDisconnection(batteryManagementOutboundPort.getPortURI());
+		this.doPortDisconnection(electricMeterConsumptionOutboundPort.getPortURI());
 		
 		for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 			this.doPortDisconnection(ao.getPortURI());
@@ -123,6 +132,7 @@ public class HEM extends AbstractComponent
 			this.electricMeterOutboundPort.unpublishPort();
 			registrationInboundPort.unpublishPort();
 			this.batteryManagementOutboundPort.unpublishPort();
+			electricMeterConsumptionOutboundPort.unpublishPort();
 			for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 				ao.unpublishPort();
 		} catch(Exception e) {
@@ -280,6 +290,16 @@ public class HEM extends AbstractComponent
 
 	@Override
 	public boolean sendBatteryToAModularEquipment(String uri, double quantity) throws Exception {
+		if(VERBOSE) 
+			this.traceMessage("ask sending " + quantity + " watts to an equipment " + uri + " \n\n");
+		
 		return this.batteryManagementOutboundPort.sendBatteryToAModularEquipment(uri, quantity);
+	}
+	
+	public void addElectricConsumption(double quantity) throws Exception {
+		if(VERBOSE) 
+			this.traceMessage("add " + quantity + " watts consumption\n\n");
+		
+		this.electricMeterConsumptionOutboundPort.addElectricConsumption(quantity);
 	}
 }
