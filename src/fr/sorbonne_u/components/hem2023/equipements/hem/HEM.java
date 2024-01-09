@@ -6,16 +6,20 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.classCreator.ClassCreator;
+import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
+import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryManagementI;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
+import fr.sorbonne_u.components.hem2023.equipements.hem.connectors.BatteryManagementConnector;
+import fr.sorbonne_u.components.hem2023.equipements.hem.ports.BatteryManagementOutboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.hem.ports.ElectricMeterOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationI;
 import fr.sorbonne_u.components.hem2023.equipements.hem.registration.RegistrationInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
-import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
 
 public class HEM extends AbstractComponent 
-	implements RegistrationI {
+	implements RegistrationI, BatteryManagementI {
 	public static final boolean VERBOSE = true;
 	
 	public static final String URI_ELECTRIC_METER_PORT = "URI_ELECTRIC_METER_PORT";
@@ -25,6 +29,7 @@ public class HEM extends AbstractComponent
 
 	protected ElectricMeterOutboundPort electricMeterOutboundPort;
 	protected RegistrationInboundPort registrationInboundPort;
+	protected BatteryManagementOutboundPort batteryManagementOutboundPort;
 	
 	protected HashMap<String, AdjustableOutboundPort> registeredUriModularEquipement;
 
@@ -46,9 +51,12 @@ public class HEM extends AbstractComponent
 		registeredUriModularEquipement = new HashMap<String, AdjustableOutboundPort>();
 		electricMeterOutboundPort = new ElectricMeterOutboundPort(URI_ELECTRIC_METER_PORT, this);
 		registrationInboundPort = new RegistrationInboundPort(URI_REGISTRATION_INBOUND_PORT, this);
+		batteryManagementOutboundPort = new BatteryManagementOutboundPort(this);
 		
 		electricMeterOutboundPort.publishPort();
 		registrationInboundPort.publishPort();
+		
+		batteryManagementOutboundPort.publishPort();
 		
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Home Energy Manager component");
@@ -72,6 +80,9 @@ public class HEM extends AbstractComponent
 			this.doPortConnection(electricMeterOutboundPort.getPortURI(), 
 					ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI, 
 					ElectricMeterConnector.class.getCanonicalName());
+			this.doPortConnection(batteryManagementOutboundPort.getPortURI(), 
+					Battery.URI_MANAGEMENT, 
+					BatteryManagementConnector.class.getCanonicalName());
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -80,7 +91,14 @@ public class HEM extends AbstractComponent
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
-		runTest();
+		//runTest();
+		this.setConsomationMode();
+		
+		if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
+				this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
+			if(VERBOSE)
+				this.traceMessage("succesfull !!!");
+		}
 	}
 	
 	@Override
@@ -88,6 +106,8 @@ public class HEM extends AbstractComponent
 		if(VERBOSE)
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
+		this.doPortDisconnection(batteryManagementOutboundPort.getPortURI());
+		
 		for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 			this.doPortDisconnection(ao.getPortURI());
 
@@ -102,6 +122,7 @@ public class HEM extends AbstractComponent
 			
 			this.electricMeterOutboundPort.unpublishPort();
 			registrationInboundPort.unpublishPort();
+			this.batteryManagementOutboundPort.unpublishPort();
 			for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 				ao.unpublishPort();
 		} catch(Exception e) {
@@ -245,5 +266,20 @@ public class HEM extends AbstractComponent
 			this.traceMessage("Désinscription de " + uid + "\n\n");
 		if(registered(uid))
 			this.registeredUriModularEquipement.remove(uid);
+	}
+
+	@Override
+	public void setProductionMode() throws Exception {
+		this.batteryManagementOutboundPort.setProductionMode();
+	}
+
+	@Override
+	public void setConsomationMode() throws Exception {
+		this.batteryManagementOutboundPort.setConsomationMode();		
+	}
+
+	@Override
+	public boolean sendBatteryToAModularEquipment(String uri, double quantity) throws Exception {
+		return this.batteryManagementOutboundPort.sendBatteryToAModularEquipment(uri, quantity);
 	}
 }

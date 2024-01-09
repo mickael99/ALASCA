@@ -5,6 +5,7 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
 import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryI.TEST_TYPE;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
+import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.gasGenerator.GasGenerator;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
@@ -53,6 +54,10 @@ public class CVMBatterySendWattsToEquipment extends AbstractCVM {
 						 		"solarPanneltransferEnergyOutboundPortURI",
 						 		"solarPannelproductionOutboundPortURI"});
 		
+		//hem
+		AbstractComponent.createComponent(
+				HEM.class.getCanonicalName(),
+				new Object[]{"hemURI"});
 
 		super.deploy();
 	}

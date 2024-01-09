@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipements.meter.connectors;
+package fr.sorbonne_u.components.hem2023.equipements.productionUnit.connectors;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterProductionCI;

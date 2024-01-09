@@ -6,6 +6,8 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryI;
+import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryManagementI;
+import fr.sorbonne_u.components.hem2023.equipements.battery.ports.BatteryManagementInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.battery.ports.BatteryProductionInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.consomation.ports.ConsomationEquimentOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.dishWasher.DishWasher;
@@ -13,7 +15,8 @@ import fr.sorbonne_u.components.hem2023.equipements.production.connectors.Produc
 import fr.sorbonne_u.components.hem2023.equipements.production.interfaces.ProductionEquipmentI;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
 
-public class Battery extends AbstractComponent implements BatteryI, ProductionEquipmentI {
+public class Battery extends AbstractComponent 
+	implements BatteryI, ProductionEquipmentI, BatteryManagementI {
 	public final boolean VERBOSE = true;
 	
 	protected TEST_TYPE testType;
@@ -22,6 +25,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	
 	public final static String URI_PRODUCTION = "URI_PRODUCTION";
 	public final static String URI_CONSOMMATION = "URI_CONSOMMATION";
+	public final static String URI_MANAGEMENT = "URI_MANAGEMENT";
 	
 	/** The battery can be in consomation or production mode				*/
 	protected BATTERY_MODE batteryMode;
@@ -30,6 +34,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	
 	/** Ports */
 	public BatteryProductionInboundPort batteryProductionInboundPort;
+	public BatteryManagementInboundPort batteryManagementInboundPort;
 	
 	public HashMap<String, ConsomationEquimentOutboundPort> consomationOutboundPorts;
 	
@@ -54,6 +59,9 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 				
 		batteryProductionInboundPort = new BatteryProductionInboundPort(URI_PRODUCTION, this);
 		batteryProductionInboundPort.publishPort();
+		
+		batteryManagementInboundPort = new BatteryManagementInboundPort(URI_MANAGEMENT, this);
+		batteryManagementInboundPort.publishPort();
 		
 		if(testType == TEST_TYPE.ALL)
 			consomationOutboundPorts = new HashMap<String, ConsomationEquimentOutboundPort>();
@@ -105,18 +113,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	
 	@Override
 	public synchronized void execute() throws Exception {
-		super.execute();
-		
-		if(VERBOSE)
-			this.traceMessage("consomation -> " + this.electricityQuantity);
-		
-		this.setConsomationMode();
-		
-		if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
-				this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
-			if(VERBOSE)
-				this.traceMessage("succesfull !!!");
-		}
+		super.execute();	
 	}
 	
 	@Override
@@ -139,6 +136,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 				this.traceMessage("supréssion des ports de la batterie\n\n");
 			
 			this.batteryProductionInboundPort.unpublishPort();
+			this.batteryManagementInboundPort.unpublishPort();
 			
 			if(testType == TEST_TYPE.ALL) {
 				for(ConsomationEquimentOutboundPort c : this.consomationOutboundPorts.values())

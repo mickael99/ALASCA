@@ -4,9 +4,9 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.equipements.hem.ports.ElectricMeterOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterCI;
-import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterOutboundPort;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

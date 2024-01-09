@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipements.meter.ports;
+package fr.sorbonne_u.components.hem2023.equipements.hem.ports;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterCI;
