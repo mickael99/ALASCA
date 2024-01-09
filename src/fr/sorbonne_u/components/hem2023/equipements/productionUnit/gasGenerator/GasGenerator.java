@@ -34,7 +34,7 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	
 	public static final GasGeneratorState 	INITIAL_STATE = GasGeneratorState.OFF;
 	public static final GasGeneretorMode	INITIAL_MODE = GasGeneretorMode.LOW;
-	public static final double INITIAL_CURRENT_BATTERY = 100.0;
+	public static final double INITIAL_CURRENT_BATTERY = 1000.0;
 	
 	/** current state (on, off) of the solar pannel.							*/
 	protected GasGeneratorState				currentState;
@@ -244,6 +244,10 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 			this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
 					Battery.URI_PRODUCTION, 
 					ProductionEquipmentConnector.class.getCanonicalName());
+			
+			if(sendBattery(1000.0))
+				productionToElectricMeter(1000.0);
+			
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -256,9 +260,6 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 		if(VERBOSE)
 			this.traceMessage("debut des tests\n\n");
 		
-		
-		if(sendBattery(100.0))
-			productionToElectricMeter(100.0);
 	}
 	
 	@Override

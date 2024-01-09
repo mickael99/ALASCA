@@ -26,7 +26,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	/** The battery can be in consomation or production mode				*/
 	protected BATTERY_MODE batteryMode;
 	public final static BATTERY_MODE INITIAL_BATTERY_MODE = 
-			BATTERY_MODE.CONSOMATION;
+			BATTERY_MODE.PRODUCTION;
 	
 	/** Ports */
 	public BatteryProductionInboundPort batteryProductionInboundPort;
@@ -35,7 +35,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	
 	public double electricityQuantity;
 	public final double INIT_ELECTRICITY_QUANTITY = 500.0;
-	public final double MAX_ELECTRICITY_QUANTITY = 1000.0;
+	public final double MAX_ELECTRICITY_QUANTITY = 50000000.0;
 
 	protected Battery(String uriId, TEST_TYPE testType) throws Exception {
 		super(uriId, 1, 0);
@@ -106,6 +106,17 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
+		
+		if(VERBOSE)
+			this.traceMessage("consomation -> " + this.electricityQuantity);
+		
+		this.setConsomationMode();
+		
+		if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
+				this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
+			if(VERBOSE)
+				this.traceMessage("succesfull !!!");
+		}
 	}
 	
 	@Override
@@ -137,6 +148,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 		} catch(Exception e) {
 			throw new ComponentShutdownException(e);
 		}
+		
 		super.shutdown();
 	}
 	
@@ -152,7 +164,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 	}
 
 	@Override
-	public boolean addElectricityQuantity(double quantity) throws Exception {
+	public synchronized boolean addElectricityQuantity(double quantity) throws Exception {
 		assert this.batteryMode == BATTERY_MODE.PRODUCTION;
 		
 		if(electricityQuantity + quantity > MAX_ELECTRICITY_QUANTITY) {
@@ -161,8 +173,10 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 			return false;
 		}
 		
-		if(VERBOSE) 
+		if(VERBOSE) {
 			this.traceMessage(quantity + " watts adding\n");
+			this.traceMessage(this.electricityQuantity + quantity + " total\n");
+		}
 		electricityQuantity += quantity;
 		return true;
 	}
@@ -177,7 +191,7 @@ public class Battery extends AbstractComponent implements BatteryI, ProductionEq
 		
 		if(this.electricityQuantity - quantity < 0) {
 			if(VERBOSE)
-				this.traceMessage("impossible to sens battery to a modular equipment");
+				this.traceMessage("impossible to send battery to a modular equipment");
 			
 			return false;
 		}

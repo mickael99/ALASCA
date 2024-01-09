@@ -47,7 +47,7 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	/** Maximum solar panel power storage 		*/
 	protected final double MAX_BATTERY = 1000.0;
 	/** Initial energy 							*/
-	protected final double INIT_BATTERY = 500;
+	protected final double INIT_BATTERY = 1000.0;
 
 	/** inbound port offering the <code>SolarPannelUserCI</code> interface.		*/
 	protected SolarPannelInboundPort		spip;
@@ -229,6 +229,10 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 			this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
 					ElectricMeter.PRODUCTION_URI, 
 					productionElectricMeterConnector.class.getCanonicalName());
+			
+			if(sendBattery(1000.0))
+				productionToElectricMeter(1000.0);
+			
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -239,11 +243,7 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 		super.execute();
 		
 		if(VERBOSE)
-			this.traceMessage("debut des tests\n\n");
-		
-		
-		if(sendBattery(100.0))
-				productionToElectricMeter(100.0);		
+			this.traceMessage("debut des tests\n\n");		
 	}
 	
 	@Override

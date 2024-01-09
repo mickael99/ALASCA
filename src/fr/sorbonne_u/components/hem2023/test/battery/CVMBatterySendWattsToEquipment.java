@@ -52,6 +52,7 @@ public class CVMBatterySendWattsToEquipment extends AbstractCVM {
 						 		"solarPannelreflectionInboundPortURI",
 						 		"solarPanneltransferEnergyOutboundPortURI",
 						 		"solarPannelproductionOutboundPortURI"});
+		
 
 		super.deploy();
 	}
