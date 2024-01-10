@@ -155,7 +155,7 @@ public class			RunSolarPanelUnitaryMILSimulation
 			// the set of submodels of the coupled model, given by their URIs
 			Set<String> submodels = new HashSet<String>();
 			submodels.add(SolarPanelElectricityModel.URI);
-			submodels.add(ExternalTemperatureModel.URI);
+			submodels.add(ExternalIlluminanceModel.URI);
 			submodels.add(SolarPanelUnitTesterModel.URI);
 			
 			// event exchanging connections between exporting and importing

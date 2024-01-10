@@ -37,6 +37,7 @@ public class Wash extends Event implements DishWasherEventI {
 	 *
 	 * @param timeOfOccurrence	time of occurrence of the event.
 	 */
+	
 	public	Wash(Time timeOfOccurrence)	{
 		super(timeOfOccurrence, null);
 	}
@@ -60,14 +61,14 @@ public class Wash extends Event implements DishWasherEventI {
 		assert	model instanceof DishWasherElectricityModel;
 
 		if (model instanceof DishWasherElectricityModel) {
-			DishWasherElectricityModel heater = (DishWasherElectricityModel)model;
-			assert	heater.getState() == DishWasherElectricityModel.State.ON:
+			DishWasherElectricityModel washer = (DishWasherElectricityModel)model;
+			assert	washer.getState() == DishWasherElectricityModel.State.ON:
 					new AssertionError(
 							"model not in the right state, should be "
 							+ "HeaterElectricityModel.State.ON but is "
-							+ heater.getState());
-			heater.setState(DishWasherElectricityModel.State.WASHING,
-							this.getTimeOfOccurrence());
+							+ washer.getState());
+			washer.setState(DishWasherElectricityModel.State.WASHING,
+							this.getTimeOfOccurrence());			
 		}
 	}
 }

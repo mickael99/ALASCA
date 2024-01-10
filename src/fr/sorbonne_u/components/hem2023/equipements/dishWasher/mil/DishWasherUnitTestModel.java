@@ -31,8 +31,8 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
 @ModelExternalEvents(imported = {SwitchOnDishWasher.class,
 		SwitchOffDishWasher.class,
 		SetPowerDishWasher.class,
-		 Heat.class,
-		 DoNotHeat.class})
+		 Wash.class,
+		 DoNotWash.class})
 //------------------------------------------------------------------------------
 public class DishWasherUnitTestModel extends AtomicModel {
 
@@ -98,7 +98,7 @@ public class DishWasherUnitTestModel extends AtomicModel {
 			ArrayList<EventI> ret = new ArrayList<EventI>();
 			switch (this.step) {
 			case 1:
-				ret.add(new SwitchOnWaterHeating(this.getTimeOfNextEvent()));
+				ret.add(new SwitchOnDishWasher(this.getTimeOfNextEvent()));
 				break;
 			case 2:
 				ret.add(new Wash(this.getTimeOfNextEvent()));

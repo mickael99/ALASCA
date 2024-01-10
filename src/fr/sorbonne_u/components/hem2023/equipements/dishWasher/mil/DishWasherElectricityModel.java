@@ -36,8 +36,8 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.events.Heat
 @ModelExternalEvents(imported = {SwitchOnDishWasher.class,
 		SwitchOffDishWasher.class,
 		SetPowerDishWasher.class,
-		 Heat.class,
-		 DoNotHeat.class})
+		 Wash.class,
+		 DoNotWash.class})
 @ModelExportedVariable(name = "currentIntensity", type = Double.class)
 @ModelExportedVariable(name = "currentWashingPower", type = Double.class)
 //------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ public class DishWasherElectricityModel extends AtomicHIOA {
 			this.currentIntensity.initialise(0.0);
 			this.currentWashingPower.initialise(MAX_WASHING_POWER);
 
-			StringBuffer sb = new StringBuffer("new consumption: ");
+			StringBuffer sb = new StringBuffer("initial new consumption: ");
 			sb.append(this.currentIntensity.getValue());
 			sb.append(" amperes at ");
 			sb.append(this.currentIntensity.getTime());
@@ -272,6 +272,7 @@ public class DishWasherElectricityModel extends AtomicHIOA {
 					DishWasherElectricityModel.TENSION,
 					t);
 		} else if (this.currentState == State.WASHING) {
+			System.out.println(this.getState());
 			this.currentIntensity.setNewValue(
 								this.currentWashingPower.getValue()/
 								DishWasherElectricityModel.TENSION,
@@ -297,7 +298,7 @@ public class DishWasherElectricityModel extends AtomicHIOA {
 		// get the vector of current external events
 		ArrayList<EventI> currentEvents = this.getStoredEventAndReset();
 		// when this method is called, there is at least one external event,
-		// and for the heater model, there will be exactly one by
+		// and for the wahser model, there will be exactly one by
 		// construction.
 		assert	currentEvents != null && currentEvents.size() == 1;
 
@@ -321,6 +322,7 @@ public class DishWasherElectricityModel extends AtomicHIOA {
 		// to update the current intensity of the heater electricity
 		// consumption.
 		ce.executeOn(this);
+		System.out.println(this.getState());
 	}
 	
 	// -------------------------------------------------------------------------
