@@ -124,13 +124,6 @@ public class			RunSolarPanelUnitaryMILSimulation
 							TimeUnit.HOURS,
 							null));
 			atomicModelDescriptors.put(
-					ExternalTemperatureModel.URI,
-					AtomicHIOA_Descriptor.create(
-							ExternalTemperatureModel.class,
-							ExternalTemperatureModel.URI,
-							TimeUnit.HOURS,
-							null));
-			atomicModelDescriptors.put(
 					ExternalIlluminanceModel.URI,
 					AtomicHIOA_Descriptor.create(
 							ExternalIlluminanceModel.class,

@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.hem2023.HEM_ReportI;
 import fr.sorbonne_u.components.hem2023.utils.Electricity;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.event.*;
-import fr.sorbonne_u.devs_simulation.exceptions.MissingRunParameterException;
+import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.events.WaterHeatingEventI;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA;
@@ -46,7 +46,6 @@ import fr.sorbonne_u.devs_simulation.hioa.models.vars.Value;
 import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
 import fr.sorbonne_u.devs_simulation.models.events.Event;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
-import fr.sorbonne_u.devs_simulation.models.interfaces.ModelI;
 import fr.sorbonne_u.devs_simulation.models.time.Duration;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
 import fr.sorbonne_u.devs_simulation.simulators.interfaces.AtomicSimulatorI;
@@ -147,7 +146,7 @@ extends		AtomicHIOA
 															getSimpleName();
 
 	/** power of the heater in watts.										*/
-	public static double		NOT_PRODUCING_POWER = 22.0;
+	public static double		NOT_PRODUCING_POWER = 0.0;
 	/** max power of the heater in watts.										*/
 	public static double		MAX_PRODUCING_POWER = 2000.0;
 	/** nominal tension (in Volts) of the heater.							*/
@@ -387,6 +386,41 @@ extends		AtomicHIOA
 		this.logMessage(sb.toString());
 	}
 
+	@Override
+	public void userDefinedExternalTransition(Duration elapsedTime)
+	{
+		super.userDefinedExternalTransition(elapsedTime);
+
+		// get the vector of current external events
+		ArrayList<EventI> currentEvents = this.getStoredEventAndReset();
+		// when this method is called, there is at least one external event,
+		// and for the heater model, there will be exactly one by
+		// construction.
+		assert	currentEvents != null && currentEvents.size() == 1;
+
+		Event ce = (Event) currentEvents.get(0);
+		assert	ce instanceof WaterHeatingEventI;
+
+		// compute the total consumption for the simulation report.
+		this.totalProduction +=
+				Electricity.computeConsumption(
+									elapsedTime,
+									TENSION*this.currentIntensity.getValue());
+
+		StringBuffer sb = new StringBuffer("execute the external event: ");
+		sb.append(ce.eventAsString());
+		sb.append(".\n");
+		this.logMessage(sb.toString());
+
+		// the next call will update the current state of the heater and if
+		// this state has changed, it put the boolean consumptionHasChanged
+		// at true, which in turn will trigger an immediate internal transition
+		// to update the current intensity of the heater electricity
+		// consumption.
+		ce.executeOn(this);
+	}
+	
+	
 
 	/**
 	 * @see fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA#endSimulation(fr.sorbonne_u.devs_simulation.models.time.Time)

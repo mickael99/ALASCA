@@ -109,7 +109,7 @@ extends		AtomicHIOA
 	/** minimal external illuminance.										*/
 	public static final double		MIN_EXTERNAL_ILLUMINANCE = 0.0;
 	/** maximal external illuminance.										*/
-	public static final double		MAX_EXTERNAL_ILLUMINANCE = 10000.0;
+	public static final double		MAX_EXTERNAL_ILLUMINANCE = 6000.0;
 	/** period of the illuminance variation cycle (day); the cycle begins
 	 *  at the minimal temperature and ends at the same illuminance (0 lux).		*/
 	public static final double		PERIOD = 24.0;
@@ -201,7 +201,7 @@ extends		AtomicHIOA
 			message.append(" at ");
 			message.append(this.getCurrentStateTime());
 			message.append("\n");
-			this.logMessage(message.toString());
+//			this.logMessage(message.toString());
 
 			return new Pair<>(1, 0);
 		} else {
@@ -275,7 +275,7 @@ extends		AtomicHIOA
 		message.append(" at ");
 		message.append(this.getCurrentStateTime());
 		message.append("\n");
-		this.logMessage(message.toString());
+//		this.logMessage(message.toString());
 	}
 
 	/**

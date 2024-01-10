@@ -174,7 +174,7 @@ extends		AtomicModel
 		// As long as events have to be created and sent, the next internal
 		// transition is set at one second later, otherwise, no more internal
 		// transitions are triggered (delay = infinity).
-		if (this.step < 10) {
+		if (this.step < 2) {
 			return new Duration(1.0, this.getSimulatedTimeUnit());
 		} else {
 			return Duration.INFINITY;
