@@ -30,7 +30,6 @@ import fr.sorbonne_u.devs_simulation.models.time.Time;
 								 SwitchOnMicrowave.class,
 								 SwitchOffMicrowave.class})	
 @ModelExportedVariable(name = "currentIntensity", type = Double.class)
-
 public class MicrowaveElectricityModel extends AtomicHIOA {
 
 	private static final long serialVersionUID = 1L;
@@ -67,7 +66,7 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	public static final String	TENSION_RPNAME = URI + ":TENSION";
 
 	//nominal tension (in Volts) 						
-	public static double TENSION = 4000.0; 
+	public static double TENSION = 220.0; 
 
 	//nominals values
 	protected State	currentState = State.OFF;

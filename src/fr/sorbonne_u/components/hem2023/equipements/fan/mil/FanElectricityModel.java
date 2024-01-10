@@ -12,8 +12,10 @@ import fr.sorbonne_u.components.hem2023.HEM_ReportI;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.*;
 import fr.sorbonne_u.devs_simulation.exceptions.MissingRunParameterException;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
+import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA;
 import fr.sorbonne_u.devs_simulation.hioa.models.vars.Value;
+import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
 import fr.sorbonne_u.devs_simulation.models.events.Event;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.interfaces.ModelI;
@@ -27,9 +29,16 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  * @author Yukhoi
  *
  */
+@ModelExternalEvents(imported = {SwitchOnFan.class,
+		 SwitchOffFan.class,
+		 SetLowFan.class,
+		 SetMeddiumFan.class,
+		 SetHighFan.class,
+		 SwitchOnMusicFan.class,
+		 SwitchOffMusicFan.class})
+@ModelExportedVariable(name = "currentIntensity", type = Double.class)
 public class FanElectricityModel extends AtomicHIOA {
 
-	
 	// -------------------------------------------------------------------------
 	// Inner classes and types
 	// -------------------------------------------------------------------------
@@ -343,16 +352,25 @@ public class FanElectricityModel extends AtomicHIOA {
 			}
 		String tensionName =
 				ModelI.createRunParameterName(getURI(), TENSION_RPNAME);
-		if (simParams.containsKey(tensionName)) {
-			TENSION = (double) simParams.get(tensionName);
-		}
+		
+		if(simParams.containsKey(lowName))
+			LOW_MODE_CONSUMPTION = (double)simParams.get(lowName);
+		if(simParams.containsKey(meddiumName))
+			MEDDIUM_MODE_CONSUMPTION = (double)simParams.get(meddiumName);
+		if(simParams.containsKey(highName))
+			HIGH_MODE_CONSUMPTION = (double)simParams.get(highName);
+		if(simParams.containsKey(musicName))
+			MUSIC_MODE_CONSUMPTION = (double)simParams.get(musicName);
+		if(simParams.containsKey(tensionName))
+			TENSION = (double)simParams.get(tensionName);
+		
 	}
 	
 	// -------------------------------------------------------------------------
 	// Optional DEVS simulation protocol: simulation report
 	// -------------------------------------------------------------------------
 	
-	public static class	FanElectricityReport
+	public class	FanElectricityReport
 	implements	SimulationReportI, HEM_ReportI
 	{
 		private static final long serialVersionUID = 1L;

@@ -11,6 +11,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import fr.sorbonne_u.devs_simulation.es.events.ES_EventI;
 import fr.sorbonne_u.devs_simulation.es.models.AtomicES_Model;
 import fr.sorbonne_u.devs_simulation.exceptions.MissingRunParameterException;
+import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.interfaces.ModelI;
 import fr.sorbonne_u.devs_simulation.models.time.Duration;
@@ -24,6 +25,13 @@ import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.*;
  * @author Yukhoi
  *
  */
+@ModelExternalEvents(exported = {SwitchOnFan.class,
+		 SwitchOffFan.class,
+		 SetLowFan.class,
+		 SetMeddiumFan.class,
+		 SetHighFan.class,
+		 SwitchOnMusicFan.class,
+		 SwitchOffMusicFan.class})
 public class FanUserModel extends AtomicES_Model {
 
 	// -------------------------------------------------------------------------
@@ -84,18 +92,20 @@ public class FanUserModel extends AtomicES_Model {
 		ES_EventI nextEvent = null;
 		if (current instanceof SwitchOffFan) {
 			// compute the time of occurrence for the next hair dryer usage
-			Time t2 = this.computeTimeOfNextUsage(current.getTimeOfOccurrence());
-			nextEvent = new SwitchOnFan(t2);
+			Time t = this.computeTimeOfNextUsage(current.getTimeOfOccurrence());
+			nextEvent = new SwitchOnFan(t);
 		} else {
 			// compute the time of occurrence for the next event
 			Time t = this.computeTimeOfNextEvent(current.getTimeOfOccurrence());
 			if (current instanceof SwitchOnFan) {
 				nextEvent = new SetHighFan(t);
 			} else if (current instanceof SetHighFan) {
-				nextEvent = new SetLowFan(t);
+				nextEvent = new SetMeddiumFan(t);
 			} else if (current instanceof SetMeddiumFan) {
 				nextEvent = new SetLowFan(t);
-			} else if (current instanceof SwitchOnMusicFan) {
+			}  else if (current instanceof SetLowFan) {
+				nextEvent = new SwitchOnMusicFan(t);
+			}  else if (current instanceof SwitchOnMusicFan) {
 				nextEvent = new SwitchOffMusicFan(t);
 			} else if (current instanceof SwitchOffMusicFan) {
 				nextEvent = new SwitchOffFan(t);
