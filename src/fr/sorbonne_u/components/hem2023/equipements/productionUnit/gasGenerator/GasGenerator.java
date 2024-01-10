@@ -58,6 +58,8 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	 */
 	protected ProductionUnitProductionOutboundPort productionUnitProductionOutboundPort;
 	
+	protected boolean isUnitTest = false;
+	
 
 	// -------------------------------------------------------------------------
 	// Constructors
@@ -77,9 +79,21 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	 * @throws Exception	<i>to do</i>.
 	 */
 	protected GasGenerator()
-	throws Exception
-	{
+			throws Exception {
 		super(1, 0);
+		this.initialise(INBOUND_PORT_URI);
+		
+		if (GasGenerator.VERBOSE) {
+			this.tracer.get().setTitle("Gaz generator component");
+			this.tracer.get().setRelativePosition(1, 0);
+			this.toggleTracing();
+		}
+	}
+	
+	protected GasGenerator(boolean isUnitTest)
+			throws Exception {
+		super(1, 0);
+		this.isUnitTest = isUnitTest;
 		this.initialise(INBOUND_PORT_URI);
 		
 		if (GasGenerator.VERBOSE) {
@@ -105,8 +119,8 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	 * @throws Exception				<i>to do</i>.
 	 */
 	protected GasGenerator(String gasGeneratorInboundPortURI)
-	throws Exception
-	{
+			throws Exception {
+		
 		super(1, 0);
 		this.initialise(gasGeneratorInboundPortURI);
 		
@@ -116,7 +130,7 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 			this.toggleTracing();
 		}
 	}
-
+	
 	/**
 	 * create a fan component with the given reflection inbound port URI.
 	 * 
@@ -237,16 +251,18 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 			if(VERBOSE)
 				this.traceMessage("connexion des ports du generateur de gaz\n\n");
 			
-			this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
-					ElectricMeter.PRODUCTION_URI, 
-					productionElectricMeterConnector.class.getCanonicalName());
-			
-			this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
-					Battery.URI_PRODUCTION, 
-					ProductionEquipmentConnector.class.getCanonicalName());
-			
-			if(sendBattery(1000.0))
-				productionToElectricMeter(1000.0);
+			if(!isUnitTest) {
+				this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
+						ElectricMeter.PRODUCTION_URI, 
+						productionElectricMeterConnector.class.getCanonicalName());
+				
+				this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
+						Battery.URI_PRODUCTION, 
+						ProductionEquipmentConnector.class.getCanonicalName());
+				
+				if(sendBattery(1000.0))
+					productionToElectricMeter(1000.0);
+			}
 			
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
@@ -257,8 +273,10 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	public synchronized void execute() throws Exception {
 		super.execute();
 		
-		if(VERBOSE)
-			this.traceMessage("debut des tests\n\n");
+		if(isUnitTest) {
+			if(VERBOSE)
+				this.traceMessage("debut des tests\n\n");
+		}
 		
 	}
 	
@@ -266,8 +284,11 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 	public synchronized void finalise() throws Exception {
 		if(VERBOSE)
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
-		this.doPortDisconnection(this.consomationEquimentOutboundPort.getPortURI());
-		this.doPortDisconnection(this.productionUnitProductionOutboundPort.getPortURI());
+		
+		if(!isUnitTest) {
+			this.doPortDisconnection(this.consomationEquimentOutboundPort.getPortURI());
+			this.doPortDisconnection(this.productionUnitProductionOutboundPort.getPortURI());
+		}
 		
 		super.finalise();
 	}
@@ -277,8 +298,10 @@ public class GasGenerator extends AbstractComponent implements GasGeneratorImple
 			throws ComponentShutdownException {
 		try {
 			this.spip.unpublishPort();
-			this.consomationEquimentOutboundPort.unpublishPort();
-			this.productionUnitProductionOutboundPort.unpublishPort();
+			if(!isUnitTest) {
+				this.consomationEquimentOutboundPort.unpublishPort();
+				this.productionUnitProductionOutboundPort.unpublishPort();
+			}
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;
 		}

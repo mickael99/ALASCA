@@ -35,6 +35,8 @@ public class HEM extends AbstractComponent
 	protected ElectricMeterConsumptionOutboundPort electricMeterConsumptionOutboundPort;
 	
 	protected HashMap<String, AdjustableOutboundPort> registeredUriModularEquipement;
+	
+	protected boolean isBatteryThere = true;
 
 	/**
 	 * 
@@ -45,6 +47,12 @@ public class HEM extends AbstractComponent
 		initialiseHEM();	
 	}
 	
+	public HEM(boolean isBatteryThere) throws Exception {
+		super(2, 1);
+		this.isBatteryThere = isBatteryThere;
+		initialiseHEM();	
+	}
+	
 	public HEM(String uriId) throws Exception {
 		super(uriId, 1, 1);
 		initialiseHEM();
@@ -52,15 +60,19 @@ public class HEM extends AbstractComponent
 	
 	private void initialiseHEM() throws Exception {
 		registeredUriModularEquipement = new HashMap<String, AdjustableOutboundPort>();
+		
 		electricMeterOutboundPort = new ElectricMeterOutboundPort(URI_ELECTRIC_METER_PORT, this);
 		registrationInboundPort = new RegistrationInboundPort(URI_REGISTRATION_INBOUND_PORT, this);
-		batteryManagementOutboundPort = new BatteryManagementOutboundPort(this);
 		electricMeterConsumptionOutboundPort = new ElectricMeterConsumptionOutboundPort(this);
 		
 		electricMeterOutboundPort.publishPort();
 		registrationInboundPort.publishPort();
-		batteryManagementOutboundPort.publishPort();
 		electricMeterConsumptionOutboundPort.publishPort();
+		
+		if(isBatteryThere) {
+			batteryManagementOutboundPort = new BatteryManagementOutboundPort(this);
+			batteryManagementOutboundPort.publishPort();
+		}
 		
 		if(VERBOSE) {
 			this.tracer.get().setTitle("Home Energy Manager component");
@@ -84,12 +96,15 @@ public class HEM extends AbstractComponent
 			this.doPortConnection(electricMeterOutboundPort.getPortURI(), 
 					ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI, 
 					ElectricMeterConnector.class.getCanonicalName());
-			this.doPortConnection(batteryManagementOutboundPort.getPortURI(), 
-					Battery.URI_MANAGEMENT, 
-					BatteryManagementConnector.class.getCanonicalName());
 			this.doPortConnection(electricMeterConsumptionOutboundPort.getPortURI(), 
 					ElectricMeter.CONSOMATION_URI, 
 					ElectricMeterConsumptionConnector.class.getCanonicalName());
+			
+			if(isBatteryThere) {
+				this.doPortConnection(batteryManagementOutboundPort.getPortURI(), 
+						Battery.URI_MANAGEMENT, 
+						BatteryManagementConnector.class.getCanonicalName());
+			}
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -98,14 +113,21 @@ public class HEM extends AbstractComponent
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
-		//runTest();
-		this.setConsomationMode();
 		
-		if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
-				this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
-			this.addElectricConsumption(2000.0);
+		if(!isBatteryThere) {
 			if(VERBOSE)
-				this.traceMessage("succesfull !!!");
+				this.traceMessage("debut des tests");
+			runTest();
+		}
+		else {
+			this.setConsomationMode();
+			
+			if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
+					this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
+				this.addElectricConsumption(2000.0);
+				if(VERBOSE)
+					this.traceMessage("succesfull !!!");
+			}
 		}
 	}
 	
@@ -114,8 +136,10 @@ public class HEM extends AbstractComponent
 		if(VERBOSE)
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
 		this.doPortDisconnection(electricMeterOutboundPort.getPortURI());
-		this.doPortDisconnection(batteryManagementOutboundPort.getPortURI());
 		this.doPortDisconnection(electricMeterConsumptionOutboundPort.getPortURI());
+		
+		if(isBatteryThere) 
+			this.doPortDisconnection(batteryManagementOutboundPort.getPortURI());
 		
 		for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 			this.doPortDisconnection(ao.getPortURI());
@@ -131,8 +155,10 @@ public class HEM extends AbstractComponent
 			
 			this.electricMeterOutboundPort.unpublishPort();
 			registrationInboundPort.unpublishPort();
-			this.batteryManagementOutboundPort.unpublishPort();
 			electricMeterConsumptionOutboundPort.unpublishPort();
+			
+			if(isBatteryThere)
+				this.batteryManagementOutboundPort.unpublishPort();
 			for(AdjustableOutboundPort ao : registeredUriModularEquipement.values())
 				ao.unpublishPort();
 		} catch(Exception e) {

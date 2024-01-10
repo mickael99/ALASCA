@@ -35,7 +35,7 @@ public class CVMUnitTestSolarPannel extends AbstractCVM {
 	{
 		AbstractComponent.createComponent(
 					SolarPannel.class.getCanonicalName(),
-					new Object[]{});
+					new Object[]{true});
 
 		AbstractComponent.createComponent(
 					SolarPannelTester.class.getCanonicalName(),

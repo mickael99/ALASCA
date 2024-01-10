@@ -35,7 +35,7 @@ public class CVMUnitTestGasGenerator extends AbstractCVM {
 	{
 		AbstractComponent.createComponent(
 					GasGenerator.class.getCanonicalName(),
-					new Object[]{});
+					new Object[]{true});
 
 		AbstractComponent.createComponent(
 					GasGeneratorTester.class.getCanonicalName(),

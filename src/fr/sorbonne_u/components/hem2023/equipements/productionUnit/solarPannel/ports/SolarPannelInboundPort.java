@@ -13,7 +13,7 @@ import fr.sorbonne_u.components.ports.AbstractInboundPort;
  * @author Yukhoi
  *
  */
-public class SolarPannelInboundPort extends AbstractInboundPort {
+public class SolarPannelInboundPort extends AbstractInboundPort implements SolarPannelUserCI {
 
 	// -------------------------------------------------------------------------
 	// Constants and variables

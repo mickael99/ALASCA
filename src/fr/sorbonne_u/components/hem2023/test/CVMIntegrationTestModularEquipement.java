@@ -29,7 +29,7 @@ public class CVMIntegrationTestModularEquipement extends AbstractCVM {
 
 		AbstractComponent.createComponent(
 				HEM.class.getCanonicalName(),
-				new Object[]{});
+				new Object[]{false});
 
 		super.deploy();
 	}

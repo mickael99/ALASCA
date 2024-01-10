@@ -11,7 +11,7 @@ import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.i
  * @author Yukhoi
  *
  */
-public class SolarPannelConnector extends AbstractConnector {
+public class SolarPannelConnector extends AbstractConnector implements SolarPannelUserCI {
 
 	public SolarPannelState getState() throws Exception {
 		return ((SolarPannelUserCI)this.offering).getState();

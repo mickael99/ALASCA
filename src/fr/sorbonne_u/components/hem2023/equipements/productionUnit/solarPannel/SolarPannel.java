@@ -63,6 +63,8 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	 */
 	protected ProductionUnitProductionOutboundPort productionUnitProductionOutboundPort;
 	
+	protected boolean isUnitTest = false;
+	
 
 	// -------------------------------------------------------------------------
 	// Constructors
@@ -87,6 +89,14 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 		super(1, 0);
 		this.initialise(INBOUND_PORT_URI);
 	}
+	
+	protected SolarPannel(boolean isUnitTest)
+		throws Exception {
+		
+			super(1, 0);
+			this.isUnitTest = isUnitTest;
+			this.initialise(INBOUND_PORT_URI);
+		}
 	
 	/**
 	 * create a solar pannel component.
@@ -222,16 +232,18 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 			if(VERBOSE)
 				this.traceMessage("connexion des ports du panneau solaire\n\n");
 			
-			this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
-					Battery.URI_PRODUCTION, 
-					ProductionEquipmentConnector.class.getCanonicalName());
-			
-			this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
-					ElectricMeter.PRODUCTION_URI, 
-					productionElectricMeterConnector.class.getCanonicalName());
-			
-			if(sendBattery(1000.0))
-				productionToElectricMeter(1000.0);
+			if(!isUnitTest) {
+				this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
+						Battery.URI_PRODUCTION, 
+						ProductionEquipmentConnector.class.getCanonicalName());
+				
+				this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
+						ElectricMeter.PRODUCTION_URI, 
+						productionElectricMeterConnector.class.getCanonicalName());
+				
+				if(sendBattery(1000.0))
+					productionToElectricMeter(1000.0);
+			}
 			
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
@@ -250,8 +262,11 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	public synchronized void finalise() throws Exception {
 		if(VERBOSE)
 			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
-		this.doPortDisconnection(this.consomationEquimentOutboundPort.getPortURI());
-		this.doPortDisconnection(this.productionUnitProductionOutboundPort.getPortURI());
+		
+		if(!isUnitTest) {
+			this.doPortDisconnection(this.consomationEquimentOutboundPort.getPortURI());
+			this.doPortDisconnection(this.productionUnitProductionOutboundPort.getPortURI());
+		}
 		
 		super.finalise();
 	}
@@ -260,8 +275,11 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
 			this.spip.unpublishPort();
-			this.consomationEquimentOutboundPort.unpublishPort();
-			this.productionUnitProductionOutboundPort.unpublishPort();
+			
+			if(!isUnitTest) {
+				this.consomationEquimentOutboundPort.unpublishPort();
+				this.productionUnitProductionOutboundPort.unpublishPort();
+			}
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;
 		}
