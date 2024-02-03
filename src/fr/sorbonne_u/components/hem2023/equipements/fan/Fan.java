@@ -4,26 +4,38 @@
 package fr.sorbonne_u.components.hem2023.equipements.fan;
 
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.OfferedInterfaces;
+import fr.sorbonne_u.components.cyphy.AbstractCyPhyComponent;
+import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
+import fr.sorbonne_u.components.cyphy.plugins.devs.RTAtomicSimulatorPlugin;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.MILSimulationArchitectures;
+import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 /**
  * @author Yukhoi
  *
  */
+@OfferedInterfaces(offered={FanUserCI.class})
 public class Fan 
-extends AbstractComponent 
+extends AbstractCyPhyComponent 
 implements FanImplementationI {
 	
 	// -------------------------------------------------------------------------
 	// Constants and variables
 	// -------------------------------------------------------------------------
 
+	/** URI of the hair dryer inbound port used in tests.					*/
+	public static final String			REFLECTION_INBOUND_PORT_URI =
+												"FAN-RIP-URI";	
 	/** URI of the fan inbound port used in tests.					*/
 	public static final String			INBOUND_PORT_URI =
 												"FAN-INBOUND-PORT-URI";
 	/** when true, methods trace their actions.								*/
-	public static final boolean			VERBOSE = true;
+	public static boolean				VERBOSE = true;
 	public static final FanState		INITIAL_STATE = FanState.OFF;
 	public static final FanMode			INITIAL_MODE = FanMode.LOW;
 	public static final FanMusic		INITIAL_MUSIC_STATE = FanMusic.OFF;
@@ -37,6 +49,21 @@ implements FanImplementationI {
 
 	/** inbound port offering the <code>HairDryerCI</code> interface.		*/
 	protected FanInboundPort	fip;
+	
+	// Execution/Simulation
+	protected AtomicSimulatorPlugin		asp;
+	/** current type of execution.											*/
+	protected final ExecutionType		currentExecutionType;
+	/** URI of the simulation architecture to be created or the empty string
+	 *  if the component does not execute as a SIL simulation.				*/
+	protected final String				simArchitectureURI;
+	/** URI of the local simulator used to compose the global simulation
+	 *  architecture.														*/
+	protected final String				localSimulatorURI;
+	/** acceleration factor to be used when running the real time
+	 *  simulation.															*/
+	protected double					accFactor;
+
 
 	// -------------------------------------------------------------------------
 	// Constructors
@@ -59,8 +86,7 @@ implements FanImplementationI {
 	protected Fan()
 	throws Exception
 	{
-		super(1, 0);
-		this.initialise(INBOUND_PORT_URI);
+		this(INBOUND_PORT_URI);
 	}
 	
 	/**
@@ -81,8 +107,8 @@ implements FanImplementationI {
 	protected Fan(String fanInboundPortURI)
 	throws Exception
 	{
-		super(1, 0);
-		this.initialise(fanInboundPortURI);
+		this(REFLECTION_INBOUND_PORT_URI, fanInboundPortURI,
+				 ExecutionType.STANDARD, null, null, 0.0);
 	}
 
 	/**
@@ -102,13 +128,56 @@ implements FanImplementationI {
 	 * @param reflectionInboundPortURI	URI of the reflection innbound port of the component.
 	 * @throws Exception				<i>to do</i>.
 	 */
-	protected Fan(
-		String fanInboundPortURI,
-		String reflectionInboundPortURI) throws Exception
-	{
-		super(reflectionInboundPortURI, 1, 0);
-		this.initialise(fanInboundPortURI);
-	}
+	protected			Fan(
+			String reflectionInboundPortURI,
+			String fanInboundPortURI,
+			ExecutionType currentExecutionType,
+			String simArchitectureURI,
+			String localSimulatorURI,
+			double accFactor
+			) throws Exception
+		{
+			super(reflectionInboundPortURI, 1, 0);
+
+			assert	fanInboundPortURI != null &&
+												!fanInboundPortURI.isEmpty() :
+					new PreconditionException(
+							"fanInboundPortURI != null && "
+							+ "!fanInboundPortURI.isEmpty()");
+			assert	currentExecutionType != null :
+					new PreconditionException("currentExecutionType != null");
+			assert	!currentExecutionType.isSimulated() ||
+									(simArchitectureURI != null &&
+												!simArchitectureURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(simArchitectureURI != null && "
+							+ "!simArchitectureURI.isEmpty())");
+			assert	!currentExecutionType.isSimulated() ||
+									(localSimulatorURI != null &&
+													!localSimulatorURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(localSimulatorURI != null && "
+							+ "!localSimulatorURI.isEmpty())");
+			assert	!currentExecutionType.isSIL() || accFactor > 0.0 :
+					new PreconditionException(
+							"!currentExecutionType.isSIL() || accFactor > 0.0");
+
+			this.currentExecutionType = currentExecutionType;
+			this.simArchitectureURI = simArchitectureURI;
+			this.localSimulatorURI = localSimulatorURI;
+			this.accFactor = accFactor;			
+
+			if (this.currentExecutionType.isUnitTest()) {
+				Fan.VERBOSE = true;
+			}
+
+			this.initialise(fanInboundPortURI);
+		}
+	
+	
+
 
 	// -------------------------------------------------------------------------
 	// Initialize method
@@ -144,6 +213,38 @@ implements FanImplementationI {
 		this.currentMode = INITIAL_MODE;
 		this.fip = new FanInboundPort(fanInboundPortURI, this);
 		this.fip.publishPort();
+		
+		switch (this.currentExecutionType) {
+		case MIL_SIMULATION:
+			Architecture architecture =
+				MILSimulationArchitectures.createFanMILArchitecture();
+			assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+					new AssertionError(
+							"local simulator " + this.localSimulatorURI
+							+ " does not exist!");
+			this.addLocalSimulatorArchitecture(architecture);
+			this.architecturesURIs2localSimulatorURIS.
+						put(this.simArchitectureURI, this.localSimulatorURI);
+			break;
+		case MIL_RT_SIMULATION:
+		case SIL_SIMULATION:
+			architecture =
+				MILSimulationArchitectures.
+							createFanRTArchitecture(
+									this.currentExecutionType,
+									this.accFactor);
+			assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+					new AssertionError(
+							"local simulator " + this.localSimulatorURI
+							+ " does not exist!");
+			this.addLocalSimulatorArchitecture(architecture);
+			this.architecturesURIs2localSimulatorURIS.
+					put(this.simArchitectureURI, this.localSimulatorURI);
+			break;
+		case STANDARD:
+		case UNIT_TEST:
+		default:
+		}		
 
 		if (Fan.VERBOSE) {
 			this.tracer.get().setTitle("Fan component");
@@ -156,6 +257,44 @@ implements FanImplementationI {
 	// Component life-cycle
 	// -------------------------------------------------------------------------
 
+	@Override
+	public synchronized void	start() throws ComponentStartException
+	{
+		super.start();
+
+		try {
+			switch (this.currentExecutionType) {
+			case MIL_SIMULATION:
+				this.asp = new AtomicSimulatorPlugin();
+				String uri = this.architecturesURIs2localSimulatorURIS.
+												get(this.simArchitectureURI);
+				Architecture architecture =
+					(Architecture) this.localSimulatorsArchitectures.get(uri);
+				this.asp.setPluginURI(uri);
+				this.asp.setSimulationArchitecture(architecture);
+				this.installPlugin(this.asp);
+				break;
+			case MIL_RT_SIMULATION:
+			case SIL_SIMULATION:
+				this.asp = new RTAtomicSimulatorPlugin();
+				uri = this.architecturesURIs2localSimulatorURIS.
+												get(this.simArchitectureURI);
+				architecture =
+						(Architecture) this.localSimulatorsArchitectures.get(uri);
+				((RTAtomicSimulatorPlugin)this.asp).setPluginURI(uri);
+				((RTAtomicSimulatorPlugin)this.asp).
+										setSimulationArchitecture(architecture);
+				this.installPlugin(this.asp);
+				break;
+			case STANDARD:
+			case UNIT_TEST:
+			default:
+			}		
+		} catch (Exception e) {
+			throw new ComponentStartException(e) ;
+		}		
+	}
+	
 	@Override
 	public synchronized void	shutdown() throws ComponentShutdownException
 	{

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.hem2023.HEM_ReportI;
 import fr.sorbonne_u.components.hem2023.utils.Electricity;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.event.*;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.*;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.events.WaterHeatingEventI;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelExportedVariable;

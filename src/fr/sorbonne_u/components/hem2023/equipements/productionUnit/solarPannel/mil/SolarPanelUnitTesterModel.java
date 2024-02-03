@@ -34,8 +34,8 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.event.*;
 
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.*;
 import fr.sorbonne_u.devs_simulation.models.AtomicModel;
 import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;

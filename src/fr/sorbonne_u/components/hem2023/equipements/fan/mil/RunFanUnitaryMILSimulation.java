@@ -39,17 +39,24 @@ public class RunFanUnitaryMILSimulation {
 																new HashMap<>();
 
 			atomicModelDescriptors.put(
-					FanElectricityModel.URI,
+					FanElectricityModel.MIL_URI,
 					AtomicHIOA_Descriptor.create(
 							FanElectricityModel.class,
-							FanElectricityModel.URI,
+							FanElectricityModel.MIL_URI,
 							TimeUnit.HOURS,
 							null));
 			atomicModelDescriptors.put(
-					FanUserModel.URI,
+					FanStateModel.MIL_URI,
+					AtomicModelDescriptor.create(
+							FanStateModel.class,
+							FanStateModel.MIL_URI,
+							TimeUnit.HOURS,
+							null));
+			atomicModelDescriptors.put(
+					FanUserModel.MIL_URI,
 					AtomicModelDescriptor.create(
 							FanUserModel.class,
-							FanUserModel.URI,
+							FanUserModel.MIL_URI,
 							TimeUnit.HOURS,
 							null));
 
@@ -60,8 +67,9 @@ public class RunFanUnitaryMILSimulation {
 
 			// the set of submodels of the coupled model, given by their URIs
 			Set<String> submodels = new HashSet<String>();
-			submodels.add(FanElectricityModel.URI);
-			submodels.add(FanUserModel.URI);
+			submodels.add(FanElectricityModel.MIL_URI);
+			submodels.add(FanUserModel.MIL_URI);
+			submodels.add(FanStateModel.MIL_URI);
 
 			// event exchanging connections between exporting and importing
 			// models
@@ -69,54 +77,96 @@ public class RunFanUnitaryMILSimulation {
 										new HashMap<EventSource,EventSink[]>();
 
 			connections.put(
-					new EventSource(FanUserModel.URI, SwitchOnFan.class),
+					new EventSource(FanUserModel.MIL_URI, SwitchOnFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 										  SwitchOnFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SwitchOffFan.class),
+					new EventSource(FanUserModel.MIL_URI, SwitchOffFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 										  SwitchOffFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SetHighFan.class),
+					new EventSource(FanUserModel.MIL_URI, SetHighFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 										  SetHighFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SetLowFan.class),
+					new EventSource(FanUserModel.MIL_URI, SetLowFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 										  SetLowFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SetMeddiumFan.class),
+					new EventSource(FanUserModel.MIL_URI, SetMeddiumFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 									SetMeddiumFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SwitchOnMusicFan.class),
+					new EventSource(FanUserModel.MIL_URI, SwitchOnMusicFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
 									SwitchOnMusicFan.class)
 					});
 			connections.put(
-					new EventSource(FanUserModel.URI, SwitchOffMusicFan.class),
+					new EventSource(FanUserModel.MIL_URI, SwitchOffMusicFan.class),
 					new EventSink[] {
-							new EventSink(FanElectricityModel.URI,
+							new EventSink(FanElectricityModel.MIL_URI,
+									SwitchOffMusicFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SwitchOnFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+										  SwitchOnFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SwitchOffFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+										  SwitchOffFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SetHighFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+										  SetHighFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SetLowFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+										  SetLowFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SetMeddiumFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+									SetMeddiumFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SwitchOnMusicFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
+									SwitchOnMusicFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_URI, SwitchOffMusicFan.class),
+					new EventSink[] {
+							new EventSink(FanElectricityModel.MIL_URI,
 									SwitchOffMusicFan.class)
 					});
 
 			// coupled model descriptor
 			coupledModelDescriptors.put(
-					FanCoupledModel.URI,
+					FanCoupledModel.MIL_URI,
 					new CoupledModelDescriptor(
 							FanCoupledModel.class,
-							FanCoupledModel.URI,
+							FanCoupledModel.MIL_URI,
 							submodels,
 							null,
 							null,
@@ -126,7 +176,7 @@ public class RunFanUnitaryMILSimulation {
 			// simulation architecture
 			ArchitectureI architecture =
 					new Architecture(
-							FanCoupledModel.URI,
+							FanCoupledModel.MIL_URI,
 							atomicModelDescriptors,
 							coupledModelDescriptors,
 							TimeUnit.HOURS);

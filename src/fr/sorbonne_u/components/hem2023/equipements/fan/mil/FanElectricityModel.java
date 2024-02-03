@@ -37,7 +37,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
 		 SwitchOnMusicFan.class,
 		 SwitchOffMusicFan.class})
 @ModelExportedVariable(name = "currentIntensity", type = Double.class)
-public class FanElectricityModel extends AtomicHIOA {
+public class FanElectricityModel extends AtomicHIOA implements FanOperationI {
 
 	// -------------------------------------------------------------------------
 	// Inner classes and types
@@ -61,10 +61,18 @@ public class FanElectricityModel extends AtomicHIOA {
 
 	private static final long		serialVersionUID = 1L;
 
-	/** URI for an instance model; works as long as only one instance is
-	 *  created.															*/
-	public static final String		URI = FanElectricityModel.class.
-																getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	MIL_URI = FanElectricityModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as  only one instance is created.								*/
+	public static final String	MIL_RT_URI = FanElectricityModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	SIL_URI = FanElectricityModel.class.
+													getSimpleName() + "-SIL";
 
 	public static double			LOW_MODE_CONSUMPTION = 20.0; // Watts
 	public static double			MEDDIUM_MODE_CONSUMPTION = 50.0; // Watts
@@ -111,25 +119,88 @@ public class FanElectricityModel extends AtomicHIOA {
 	// Methods
 	// -------------------------------------------------------------------------
 	
-	public void	setState(State s)
-	{
-		this.currentState = s;
+	@Override
+	public void turnOn() {
+		if (this.currentState == FanElectricityModel.State.OFF) {
+			// then put it in the state LOW
+			this.currentState = FanElectricityModel.State.LOW;
+			this.currentMusicState = FanElectricityModel.MusicState.OFF;
+		}
+		this.toggleConsumptionHasChanged();
+
 	}
-	
-	public State getState()
-	{
-		return this.currentState;
+
+	@Override
+	public void turnOff() {
+		// a SwitchOff event can be executed when the state of the 
+		// fan model is *not* in the state OFF
+		if (this.currentState != FanElectricityModel.State.OFF) {
+			// then put it in the state OFF
+			this.currentState = FanElectricityModel.State.OFF;
+			this.currentMusicState = FanElectricityModel.MusicState.OFF;
+		}
+		this.toggleConsumptionHasChanged();
+
 	}
-	
-	public void	setMusicState(MusicState s)
-	{
-		this.currentMusicState = s;
+
+	@Override
+	public void setHigh() {
+		// a SetHigh event can only be executed when the state of the
+		// fan model is not in the state HIGH
+		if (this.currentState != FanElectricityModel.State.HIGH) {
+			// then put it in the state HIGH
+			this.currentState = FanElectricityModel.State.HIGH;
+		}
+		this.toggleConsumptionHasChanged();
+
 	}
-	
-	public MusicState getMusicState()
-	{
-		return this.currentMusicState;
+
+	@Override
+	public void setLow() {
+		// a SetHigh event can only be executed when the state of the
+		// fan model is not in the state LOW
+		if (this.currentState != FanElectricityModel.State.LOW) {
+			// then put it in the state LOW
+			this.currentState = FanElectricityModel.State.LOW;
+		}
+		this.toggleConsumptionHasChanged();
+
 	}
+
+	@Override
+	public void setMeddium() {
+		// a SetHigh event can only be executed when the state of the
+		// fan model is in the state MEDDIUM
+		if (this.currentState != FanElectricityModel.State.MEDDIUM) {
+			// then put it in the state MEDDIUM
+			this.currentState = FanElectricityModel.State.MEDDIUM;
+		}
+		this.toggleConsumptionHasChanged();
+
+	}
+
+	@Override
+	public void turnOnMusic() {
+		// a turnOnMusic event can only be executed when the music state of the
+		// fan model is in the state OFF
+		if (this.currentMusicState == FanElectricityModel.MusicState.OFF) {
+			this.currentMusicState = FanElectricityModel.MusicState.ON;
+		}
+		this.toggleConsumptionHasChanged();
+
+	}
+
+	@Override
+	public void turnOffMusic() {
+		// a turnOnMusic event can only be executed when the music state of the
+		// fan model is in the state ON
+		if (this.currentMusicState == FanElectricityModel.MusicState.ON) {
+			this.currentMusicState = FanElectricityModel.MusicState.OFF;
+		}
+		this.toggleConsumptionHasChanged();
+
+	}
+
 	
 	public void	toggleConsumptionHasChanged()
 	{
@@ -306,22 +377,22 @@ public class FanElectricityModel extends AtomicHIOA {
 
 	/** run parameter name for {@code LOW_MODE_CONSUMPTION}.				*/
 	public static final String		LOW_MODE_CONSUMPTION_RPNAME =
-												URI + ":LOW_MODE_CONSUMPTION";
+												"LOW_MODE_CONSUMPTION";
 	/** run parameter name for {@code HIGH_MODE_CONSUMPTION}.				*/
 	public static final String		HIGH_MODE_CONSUMPTION_RPNAME =
-												URI + ":HIGH_MODE_CONSUMPTION";
+												"HIGH_MODE_CONSUMPTION";
 	/** run parameter name for {@code MEDDIUM_MODE_CONSUMPTION}.				*/
 	public static final String		MEDDIUM_MODE_CONSUMPTION_RPNAME =
-												URI + ":MEDDIUM_MODE_CONSUMPTION";
+												"MEDDIUM_MODE_CONSUMPTION";
 	/** run parameter name for {@code MUSIC_MODE_CONSUMPTION}.				*/
 	public static final String		MUSIC_MODE_CONSUMPTION_RPNAME =
-												URI + ":MUSIC_MODE_CONSUMPTION";
+												"MUSIC_MODE_CONSUMPTION";
 	/** run parameter name for {@code TENSION}.								*/
-	public static final String		TENSION_RPNAME = URI + ":TENSION";
+	public static final String		TENSION_RPNAME = "TENSION";
 	
 	@Override
 	public void			setSimulationRunParameters(
-		Map<String, Serializable> simParams
+		Map<String, Object> simParams
 		) throws MissingRunParameterException
 	{
 		super.setSimulationRunParameters(simParams);
@@ -416,7 +487,8 @@ public class FanElectricityModel extends AtomicHIOA {
 	@Override
 	public SimulationReportI	getFinalReport()
 	{
-		return new FanElectricityReport(URI, this.totalConsumption);
+		return new FanElectricityReport(this.getURI(), this.totalConsumption);
 	}
+
 }
 //---------------------------------------------------------------------------

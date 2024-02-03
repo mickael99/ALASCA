@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.event.SwitchOffSolarPanel;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.event.SwitchOnSolarPanel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOffSolarPanel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOnSolarPanel;
 import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.devs_simulation.architectures.ArchitectureI;
 import fr.sorbonne_u.devs_simulation.hioa.architectures.AtomicHIOA_Descriptor;

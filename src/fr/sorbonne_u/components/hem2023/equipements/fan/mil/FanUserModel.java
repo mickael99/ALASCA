@@ -39,9 +39,18 @@ public class FanUserModel extends AtomicES_Model {
 	// -------------------------------------------------------------------------
 
 	private static final long	serialVersionUID = 1L;
-	/** URI for an instance model; works as long as only one instance is
-	 *  created.															*/
-	public static final String	URI = FanUserModel.class.getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	MIL_URI = FanUserModel.class.
+												getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as only one instance is created.								*/
+	public static final String	MIL_RT_URI = FanUserModel.class.
+												getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	SIL_URI = FanUserModel.class.
+												getSimpleName() + "-SIL";
 
 	/** time interval between event outputs in hours.						*/
 	protected static double		STEP_MEAN_DURATION = 5.0/60.0; // 5 minutes
@@ -197,7 +206,7 @@ public class FanUserModel extends AtomicES_Model {
 	
 	@Override
 	public void			setSimulationRunParameters(
-		Map<String, Serializable> simParams
+		Map<String, Object> simParams
 		) throws MissingRunParameterException
 	{
 		super.setSimulationRunParameters(simParams);

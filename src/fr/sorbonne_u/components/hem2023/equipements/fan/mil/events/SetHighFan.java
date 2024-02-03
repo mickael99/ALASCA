@@ -5,6 +5,7 @@ package fr.sorbonne_u.components.hem2023.equipements.fan.mil.events;
 
 
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanOperationI;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
@@ -47,18 +48,9 @@ public class SetHighFan extends AbstractFanEvent {
 	@Override
 	public void	executeOn(AtomicModelI model)
 	{
-		assert	model instanceof FanElectricityModel;
+		assert	model instanceof FanOperationI;
 
-		FanElectricityModel m = (FanElectricityModel)model;
-
-		// a SetHigh event can only be executed when the state of the fan
-		// model is in the state LOW or MEDDIUM
-		if (m.getState() == FanElectricityModel.State.LOW  || m.getState() == FanElectricityModel.State.MEDDIUM) {
-			// then put it in the state HIGH
-			m.setState(FanElectricityModel.State.HIGH);
-			// trigger an internal transition by toggling the electricity
-			// consumption changed boolean to true
-			m.toggleConsumptionHasChanged();
-		}
+		((FanOperationI)model).setHigh();
+		
 	}
 }

@@ -7,10 +7,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="BCM4Java-19092023.jar"/>
 	<classpathentry kind="lib" path="javassist.jar"/>
 	<classpathentry kind="lib" path="commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="jfreechart-1.6.0-snapshot.jar"/>
-	<classpathentry kind="lib" path="NeoSim4Java-17102023.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Yukhoi/eclipse-workspace1/ALASCA-etape3/BCM4Java-CyPhy-22112023.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Yukhoi/eclipse-workspace1/ALASCA/NeoSim4Java-06122023.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Yukhoi/eclipse-workspace1/ALASCA/BCM4Java-28112023.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
