@@ -13,9 +13,19 @@ public interface WaterHeaterUserAndExternalControlI {
 		HIGH
 	}
 	
+	public static enum WaterHeaterSensorMeasures {
+		HEATING_STATUS,
+		TARGET_TEMPERATURE,
+		CURRENT_TEMPERATURE,
+		COMPOUND_TEMPERATURES
+	}
+	
 	public int getTargetTemperature() throws Exception;
 	public Timer getTimer() throws Exception;
 	
 	public void setPowerLevel(WaterHeaterPowerLevel power) throws Exception;
 	public double getPowerLevel() throws Exception;
+	
+	public void startHeating() throws Exception;
+	public void stopHeating() throws Exception;
 }

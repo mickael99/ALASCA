@@ -66,4 +66,16 @@ public class WaterHeaterUserControlOutboundPort extends AbstractOutboundPort imp
 	public void removeTimer() throws Exception {
 		((WaterHeaterUserControlCI)this.getConnector()).removeTimer();
 	}
+
+	@Override
+	public void startHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

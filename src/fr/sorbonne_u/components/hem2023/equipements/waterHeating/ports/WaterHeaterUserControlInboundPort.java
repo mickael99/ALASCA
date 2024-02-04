@@ -91,4 +91,16 @@ public class WaterHeaterUserControlInboundPort extends AbstractInboundPort imple
 						return null;
 				});
 	}
+
+	@Override
+	public void startHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

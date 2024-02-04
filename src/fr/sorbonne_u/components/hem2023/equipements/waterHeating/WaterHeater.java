@@ -9,6 +9,7 @@ import fr.sorbonne_u.components.hem2023.equipements.waterHeating.interfaces.Wate
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeaterExternalControlInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.ports.WaterHeaterUserControlInboundPort;
 import fr.sorbonne_u.components.hem2023.timer.Timer;
+import fr.sorbonne_u.components.hem2023.utils.MeasurementUnit;
 import fr.sorbonne_u.exceptions.PreconditionException;
 import fr.sorbonne_u.components.hem2023.equipements.battery.ports.BatteryProductionInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.hem.HEM;
@@ -50,6 +51,9 @@ public class WaterHeater extends AbstractComponent
 	protected double currentBattery;
 	public static final double MAX_BATTERY = 50000.0;
 	public static final double INITIAL_CURRENT_BATTERY = 5000.0;
+	public static final double INIT_TARGET_TEMPERATURE = 30.0;
+	public static final double FAKE_CURRENT_TEMPERATURE = 20.0;
+	public static final MeasurementUnit TEMPERATURE_UNIT  = MeasurementUnit.CELSIUS;
 	
 	protected boolean heating;
 	protected boolean suspended;

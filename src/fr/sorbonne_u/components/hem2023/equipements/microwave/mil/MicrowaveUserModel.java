@@ -121,7 +121,7 @@ public class MicrowaveUserModel extends AtomicES_Model {
 	
 	@Override
 	public void setSimulationRunParameters(
-			Map<String, Serializable> simParams) throws MissingRunParameterException {
+			Map<String, Object> simParams) throws MissingRunParameterException {
 		super.setSimulationRunParameters(simParams);
 		
 		String stepName =

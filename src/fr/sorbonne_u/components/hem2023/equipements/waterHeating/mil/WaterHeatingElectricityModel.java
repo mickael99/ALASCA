@@ -338,8 +338,8 @@ public class WaterHeatingElectricityModel extends AtomicHIOA
 	public static final String	TENSION_RUNPNAME = "TENSION";
 	
 	@Override
-	public void			setSimulationRunParameters(
-		Map<String, Serializable> simParams
+	public void	setSimulationRunParameters(
+		Map<String, Object> simParams
 		) throws MissingRunParameterException
 	{
 		super.setSimulationRunParameters(simParams);

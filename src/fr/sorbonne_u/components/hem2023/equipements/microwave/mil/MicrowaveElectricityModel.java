@@ -217,7 +217,7 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	}
 	
 	@Override
-	public void setSimulationRunParameters(Map<String, Serializable> simParams) 
+	public void setSimulationRunParameters(Map<String, Object> simParams) 
 			throws MissingRunParameterException {
 		super.setSimulationRunParameters(simParams);
 		

@@ -54,5 +54,17 @@ public class WaterHeaterUserControlConnector extends AbstractConnector implement
 	public void removeTimer() throws Exception {
 		((WaterHeaterUserControlCI)this.offering).removeTimer();
 	}
+
+	@Override
+	public void startHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopHeating() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
