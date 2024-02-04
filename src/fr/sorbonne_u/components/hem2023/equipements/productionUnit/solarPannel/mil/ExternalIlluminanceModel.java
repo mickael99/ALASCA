@@ -92,7 +92,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-@ModelExportedVariable(name = "externalIlluminance", type = Double.class)
+@ModelExportedVariable(name = "currentSolarIlluminance", type = Double.class)
 //-----------------------------------------------------------------------------
 public class			ExternalIlluminanceModel
 extends		AtomicHIOA
@@ -127,7 +127,7 @@ extends		AtomicHIOA
 
 	/** current external illuminance in Lux.							*/
 	@ExportedVariable(type = Double.class)
-	protected final Value<Double>	externalIlluminance =
+	protected final Value<Double>	currentSolarIlluminance =
 												new Value<Double>(this);
 
 	// -------------------------------------------------------------------------
@@ -190,18 +190,18 @@ extends		AtomicHIOA
 	@Override
 	public Pair<Integer, Integer>	fixpointInitialiseVariables()
 	{
-		if (!this.externalIlluminance.isInitialised()) {
-			this.externalIlluminance.initialise(MIN_EXTERNAL_ILLUMINANCE);
+		if (!this.currentSolarIlluminance.isInitialised()) {
+			this.currentSolarIlluminance.initialise(MIN_EXTERNAL_ILLUMINANCE);
 
 			this.getSimulationEngine().toggleDebugMode();
 			this.logMessage("simulation begins.\n");
 			StringBuffer message =
 					new StringBuffer("current external illuminance: ");
-			message.append(this.externalIlluminance.getValue());
+			message.append(this.currentSolarIlluminance.getValue());
 			message.append(" at ");
 			message.append(this.getCurrentStateTime());
 			message.append("\n");
-//			this.logMessage(message.toString());
+			//this.logMessage(message.toString());
 
 			return new Pair<>(1, 0);
 		} else {
@@ -265,17 +265,17 @@ extends		AtomicHIOA
 			newIllu = 0.0;
 		}
 
-		this.externalIlluminance.setNewValue(newIllu,
+		this.currentSolarIlluminance.setNewValue(newIllu,
 											 this.getCurrentStateTime());
 
 		// Tracing
 		StringBuffer message =
 				new StringBuffer("current external illuminance: ");
-		message.append(this.externalIlluminance.getValue());
-		message.append(" at ");
+		message.append(this.currentSolarIlluminance.getValue());
+		message.append(" lux at ");
 		message.append(this.getCurrentStateTime());
 		message.append("\n");
-//		this.logMessage(message.toString());
+		//this.logMessage(message.toString());
 	}
 
 	/**

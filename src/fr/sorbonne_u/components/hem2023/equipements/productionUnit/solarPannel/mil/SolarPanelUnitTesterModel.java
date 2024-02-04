@@ -32,13 +32,10 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL-C license and that you accept its terms.
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.*;
 import fr.sorbonne_u.devs_simulation.models.AtomicModel;
-import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
-import fr.sorbonne_u.devs_simulation.models.events.EventI;
+
 import fr.sorbonne_u.devs_simulation.models.time.Duration;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
 import fr.sorbonne_u.devs_simulation.simulators.interfaces.AtomicSimulatorI;
@@ -78,8 +75,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-@ModelExternalEvents(exported = {SwitchOnSolarPanel.class,
-								 SwitchOffSolarPanel.class})
+
 // -----------------------------------------------------------------------------
 public class			SolarPanelUnitTesterModel
 extends		AtomicModel
@@ -101,7 +97,7 @@ extends		AtomicModel
 	// -------------------------------------------------------------------------
 
 	/**
-	 * create a <code>HeaterUnitTesterModel</code> instance.
+	 * create a <code>SolarPanelUnitTesterModel</code> instance.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -141,40 +137,16 @@ extends		AtomicModel
 		this.logMessage("simulation begins.\n");
 	}
 
-	/**
-	 * @see fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI#output()
-	 */
-	@Override
-	public ArrayList<EventI>	output()
-	{
-		// Simple way to implement a test scenario. Here each step generates
-		// an event sent to the other models in the standard order.
-		if (this.step > 0 && this.step < 10) {
-			ArrayList<EventI> ret = new ArrayList<EventI>();
-			switch (this.step) {
-			case 1:
-				ret.add(new SwitchOnSolarPanel(this.getTimeOfNextEvent()));
-				break;
-			case 2:
-				ret.add(new SwitchOffSolarPanel(this.getTimeOfNextEvent()));
-				break;
-			}
-			return ret;
-		} else {
-			return null;
-		}
-	}
 
 	/**
 	 * @see fr.sorbonne_u.devs_simulation.models.interfaces.ModelI#timeAdvance()
 	 */
 	@Override
-	public Duration		timeAdvance()
-	{
+	public Duration timeAdvance() {
 		// As long as events have to be created and sent, the next internal
 		// transition is set at one second later, otherwise, no more internal
 		// transitions are triggered (delay = infinity).
-		if (this.step < 2) {
+		if (this.step < 10) {
 			return new Duration(1.0, this.getSimulatedTimeUnit());
 		} else {
 			return Duration.INFINITY;

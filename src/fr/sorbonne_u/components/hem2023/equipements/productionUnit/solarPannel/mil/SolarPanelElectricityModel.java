@@ -33,18 +33,15 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 // knowledge of the CeCILL-C license and that you accept its terms.
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.hem2023.HEM_ReportI;
 import fr.sorbonne_u.components.hem2023.utils.Electricity;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.*;
-import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.events.WaterHeatingEventI;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
+import fr.sorbonne_u.devs_simulation.hioa.annotations.ImportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelExportedVariable;
+import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelImportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA;
 import fr.sorbonne_u.devs_simulation.hioa.models.vars.Value;
-import fr.sorbonne_u.devs_simulation.models.annotations.ModelExternalEvents;
-import fr.sorbonne_u.devs_simulation.models.events.Event;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.time.Duration;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
@@ -109,33 +106,18 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
 
-@ModelExternalEvents(imported = {SwitchOnSolarPanel.class,
-		 SwitchOffSolarPanel.class})
-@ModelExportedVariable(name = "currentIntensity", type = Double.class)
+@ModelImportedVariable(name = "currentSolarIlluminance", type = Double.class)
 @ModelExportedVariable(name = "currentHeatingPower", type = Double.class)
 //-----------------------------------------------------------------------------
 public class			SolarPanelElectricityModel
 extends		AtomicHIOA
 {
-	// -------------------------------------------------------------------------
-	// Inner classes and types
-	// -------------------------------------------------------------------------
-
-	/**
-	 * The enumeration <code>State</code> defines the state in which the
-	 * heater can be from the electric power consumption perspective.
-	 *
-	 * <p>Created on : 2021-09-24</p>
-	 * 
-	 * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
-	 */
 	public static enum	State {
 		/** heater is on and heating.										*/
 		ON,
 		/** heater is off.													*/
 		OFF
 	}
-
 	// -------------------------------------------------------------------------
 	// Constants and variables
 	// -------------------------------------------------------------------------
@@ -145,44 +127,47 @@ extends		AtomicHIOA
 	public static final String	URI = SolarPanelElectricityModel.class.
 															getSimpleName();
 
-	/** power of the heater in watts.										*/
+	/** power of the solar pannel in watts.										*/
 	public static double		NOT_PRODUCING_POWER = 0.0;
-	/** max power of the heater in watts.										*/
-	public static double		MAX_PRODUCING_POWER = 2000.0;
+	/** max power of the solar pannel in watts.										*/
+	public static double		MAX_PRODUCING_POWER = 500.0;
 	/** nominal tension (in Volts) of the heater.							*/
 	public static double		TENSION = 220.0;
 
-	/** current state of the heater.										*/
-	protected State				currentState = State.OFF;
-	/** true when the electricity consumption of the heater has changed
-	 *  after executing an external event; the external event changes the
-	 *  value of <code>currentState</code> and then an internal transition
-	 *  will be triggered by putting through in this variable which will
-	 *  update the variable <code>currentIntensity</code>.					*/
-	protected boolean			productionHasChanged = false;
 
-	/** total consumption of the heater during the simulation in kwh.		*/
+	/** total production of the solar pannel during the simulation in kwh.		*/
 	protected double			totalProduction;
+	
+	/** integration step as a duration, including the time unit.				*/
+	protected final Duration integrationStep;
+	/** integration step for the differential equation(assumed in hours).		*/
+	protected static double	STEP = 60.0/3600.0;	// 60 seconds 
+	
+	/** size of the solar panel in m^2 */
+	protected final double SIZE_SOLAR_PANEL = 2; 
+	
+	/** coefficient to turn the illuminance (lux) to power density(W/m^2)*/
+	protected final double EFFICIENCY_COEFFICIENT = 0.02;
 
 	// -------------------------------------------------------------------------
 	// HIOA model variables
 	// -------------------------------------------------------------------------
 
-	/** the current heating power between 0 and
+	/** the current producing power between 0 and
 	 *  {@code HeaterElectricityModel.MAX_HEATING_POWER}.					*/
 	@ExportedVariable(type = Double.class)
 	protected final Value<Double>	currentProducingPower =
 														new Value<Double>(this);
 	/** current intensity in amperes; intensity is power/tension.			*/
-	@ExportedVariable(type = Double.class)
-	protected final Value<Double>	currentIntensity = new Value<Double>(this);
+	@ImportedVariable(type = Double.class)
+	protected final Value<Double>	currentSolarIlluminance = new Value<Double>(this);
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
 	/**
-	 * create a heater MIL model instance.
+	 * create a solar pannel MIL model instance.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -196,44 +181,23 @@ extends		AtomicHIOA
 	 * @param simulationEngine	simulation engine to which the model is attached.
 	 * @throws Exception		<i>to do</i>.
 	 */
-	public				SolarPanelElectricityModel(
-		String uri,
-		TimeUnit simulatedTimeUnit,
-		AtomicSimulatorI simulationEngine
-		) throws Exception
+	public SolarPanelElectricityModel(
+			String uri,
+			TimeUnit simulatedTimeUnit,
+			AtomicSimulatorI simulationEngine
+			) throws Exception
 	{
 		super(uri, simulatedTimeUnit, simulationEngine);
+		this.integrationStep = new Duration(STEP, simulatedTimeUnit);
 		this.getSimulationEngine().setLogger(new StandardLogger());
 	}
 
 	// -------------------------------------------------------------------------
 	// Methods
 	// -------------------------------------------------------------------------
-
+	
 	/**
-	 * set the state of the heater.
-	 * 
-	 * <p><strong>Contract</strong></p>
-	 * 
-	 * <pre>
-	 * pre	{@code s != null}
-	 * post	{@code true}	// no postcondition.
-	 * </pre>
-	 *
-	 * @param s		the new state.
-	 * @param t		time at which the state {@code s} is set.
-	 */
-	public void			setState(State s, Time t)
-	{
-		State old = this.currentState;
-		this.currentState = s;
-		if (old != s) {
-			this.productionHasChanged = true;					
-		}
-	}
-
-	/**
-	 * return the state of the heater.
+	 * return the total power produced of the Solar Panel.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -242,40 +206,10 @@ extends		AtomicHIOA
 	 * post	{@code ret != null}
 	 * </pre>
 	 *
-	 * @return	the current state.
+	 * @return	total power produced.
 	 */
-	public State		getState()
-	{
-		return this.currentState;
-	}
-
-	/**
-	 * set the current heating power of the heater to {@code newPower}.
-	 * 
-	 * <p><strong>Contract</strong></p>
-	 * 
-	 * <pre>
-	 * pre	{@code newPower >= 0.0 && newPower <= MAX_HEATING_POWER}
-	 * post	{@code getCurrentHeatingPower() == newPower}
-	 * </pre>
-	 *
-	 * @param newPower	the new power in watts to be set on the heater.
-	 * @param t			time at which the new power is set.
-	 */
-	public void			setCurrentProducingPower(double newPower, Time t)
-	{
-		assert	newPower >= 0.0 &&
-				newPower <= SolarPanelElectricityModel.MAX_PRODUCING_POWER :
-			new AssertionError(
-					"Precondition violation: newPower >= 0.0 && "
-					+ "newPower <= HeaterElectricityModel.MAX_PRODUCING_POWER,"
-					+ " but newPower = " + newPower);
-
-		double oldPower = this.currentProducingPower.getValue();
-		this.currentProducingPower.setNewValue(newPower, t);
-		if (newPower != oldPower) {
-			this.productionHasChanged = true;
-		}
+	public double getTotalPowerProduced(){
+		return this.totalProduction;
 	}
 
 	// -------------------------------------------------------------------------
@@ -290,8 +224,6 @@ extends		AtomicHIOA
 	{
 		super.initialiseState(initialTime);
 
-		this.currentState = State.OFF;
-		this.productionHasChanged = false;
 		this.totalProduction = 0.0;
 
 		this.getSimulationEngine().toggleDebugMode();
@@ -313,19 +245,17 @@ extends		AtomicHIOA
 	@Override
 	public Pair<Integer, Integer> fixpointInitialiseVariables()
 	{
-		if (!this.currentIntensity.isInitialised() ||
-								!this.currentProducingPower.isInitialised()) {
-			// initially, the heater is off, so its consumption is zero.
-			this.currentIntensity.initialise(0.0);
-			this.currentProducingPower.initialise(MAX_PRODUCING_POWER);
+		if (!this.currentProducingPower.isInitialised()) {
+			// initially, the Solar Panel starts with 0 production.
+			this.currentProducingPower.initialise(0.0);
 
 			StringBuffer sb = new StringBuffer("new production: ");
-			sb.append(this.currentIntensity.getValue());
+			sb.append(this.currentProducingPower.getValue());
 			sb.append(" amperes at ");
-			sb.append(this.currentIntensity.getTime());
+			sb.append(this.currentProducingPower.getTime());
 			sb.append(" seconds.\n");
 			this.logMessage(sb.toString());
-			return new Pair<>(2, 0);
+			return new Pair<>(1, 0); 
 		} else {
 			return new Pair<>(0, 0);
 		}
@@ -346,17 +276,7 @@ extends		AtomicHIOA
 	@Override
 	public Duration		timeAdvance()
 	{
-		if (this.productionHasChanged) {
-			// When the consumption has changed, an immediate (delay = 0.0)
-			// internal transition must be made to update the electricity
-			// consumption.
-			this.productionHasChanged = false;
-			return Duration.zero(this.getSimulatedTimeUnit());
-		} else {
-			// As long as the state does not change, no internal transition
-			// is made (delay = infinity).
-			return Duration.INFINITY;
-		}
+		return this.integrationStep;
 	}
 
 	/**
@@ -365,62 +285,29 @@ extends		AtomicHIOA
 	@Override
 	public void			userDefinedInternalTransition(Duration elapsedTime)
 	{
+		// Formula: total power (Wh) = illuminance(lux) * efficiency coefficient * surface (m^2) * period(h)
+		double currentPowerProduction = (this.currentSolarIlluminance.getValue().doubleValue()) *EFFICIENCY_COEFFICIENT *SIZE_SOLAR_PANEL;
+		this.totalProduction += currentPowerProduction*elapsedTime.getSimulatedDuration();
+		this.currentProducingPower.setNewValue(currentPowerProduction*elapsedTime.getSimulatedDuration(), this.currentSolarIlluminance.getTime());
+
+		// Tracing
+		StringBuffer message1 = new StringBuffer();	
+		message1.append("Current power production: ");
+		message1.append((Math.round(currentPowerProduction*elapsedTime.getSimulatedDuration() * 100.0) / 100.0) + " Wh");
+		message1.append(" at " + this.currentSolarIlluminance.getTime());
+		message1.append("\n");
+		this.logMessage(message1.toString());
+		
+		StringBuffer message = new StringBuffer();	
+		message.append("Total power production: ");
+		message.append((Math.round(totalProduction * 100.0) / 100.0) + " Wh");
+		message.append(" at " + this.currentSolarIlluminance.getTime());
+		message.append("\n");
+		this.logMessage(message.toString());
+
+
 		super.userDefinedInternalTransition(elapsedTime);
-
-		Time t = this.getCurrentStateTime();
-		if (this.currentState == State.ON) {
-			this.currentIntensity.setNewValue(
-								this.currentProducingPower.getValue()/
-								SolarPanelElectricityModel.TENSION,
-								t);
-		} else {
-			assert	this.currentState == State.OFF;
-			this.currentIntensity.setNewValue(0.0, t);
-		}
-
-		StringBuffer sb = new StringBuffer("new production: ");
-		sb.append(this.currentIntensity.getValue());
-		sb.append(" amperes at ");
-		sb.append(this.currentIntensity.getTime());
-		sb.append(" seconds.\n");
-		this.logMessage(sb.toString());
 	}
-
-	@Override
-	public void userDefinedExternalTransition(Duration elapsedTime)
-	{
-		super.userDefinedExternalTransition(elapsedTime);
-
-		// get the vector of current external events
-		ArrayList<EventI> currentEvents = this.getStoredEventAndReset();
-		// when this method is called, there is at least one external event,
-		// and for the heater model, there will be exactly one by
-		// construction.
-		assert	currentEvents != null && currentEvents.size() == 1;
-
-		Event ce = (Event) currentEvents.get(0);
-		assert	ce instanceof WaterHeatingEventI;
-
-		// compute the total consumption for the simulation report.
-		this.totalProduction +=
-				Electricity.computeConsumption(
-									elapsedTime,
-									TENSION*this.currentIntensity.getValue());
-
-		StringBuffer sb = new StringBuffer("execute the external event: ");
-		sb.append(ce.eventAsString());
-		sb.append(".\n");
-		this.logMessage(sb.toString());
-
-		// the next call will update the current state of the heater and if
-		// this state has changed, it put the boolean consumptionHasChanged
-		// at true, which in turn will trigger an immediate internal transition
-		// to update the current intensity of the heater electricity
-		// consumption.
-		ce.executeOn(this);
-	}
-	
-	
 
 	/**
 	 * @see fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA#endSimulation(fr.sorbonne_u.devs_simulation.models.time.Time)
@@ -432,7 +319,7 @@ extends		AtomicHIOA
 		this.totalProduction +=
 				Electricity.computeConsumption(
 									d,
-									TENSION*this.currentIntensity.getValue());
+									TENSION*this.currentSolarIlluminance.getValue());
 
 		this.logMessage("simulation ends.\n");
 		super.endSimulation(endTime);
@@ -443,9 +330,9 @@ extends		AtomicHIOA
 	// -------------------------------------------------------------------------
 
 	/** power of the heater in watts.										*/
-	public static final String	NOT_HEATING_POWER_RUNPNAME = "NOT_HEATING_POWER";
+	public static final String	NOT_PRODUCING_POWER_RUNPNAME = "NOT_PRODUCING_POWER";
 	/** power of the heater in watts.										*/
-	public static final String	MAX_HEATING_POWER_RUNPNAME = "MAX_HEATING_POWER";
+	public static final String	MAX_PRODUCING_POWER_RUNPNAME = "MAX_PRODUCING_POWER";
 	/** nominal tension (in Volts) of the heater.							*/
 	public static final String	TENSION_RUNPNAME = "TENSION";
 
@@ -511,7 +398,7 @@ extends		AtomicHIOA
 			ret.append(" report\n");
 			ret.append(indent);
 			ret.append('|');
-			ret.append("total consumption in kwh = ");
+			ret.append("total production in kwh = ");
 			ret.append(this.totalProduction);
 			ret.append(".\n");
 			ret.append(indent);

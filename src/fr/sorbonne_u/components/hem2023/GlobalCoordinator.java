@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.utils;
+package fr.sorbonne_u.components.hem2023;
 
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
@@ -33,9 +33,11 @@ package fr.sorbonne_u.components.hem2023.utils;
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL-C license and that you accept its terms.
 
+import fr.sorbonne_u.components.cyphy.AbstractCyPhyComponent;
+
 // -----------------------------------------------------------------------------
 /**
- * The enumeration <code>ExecutionType</code>
+ * The class <code>HairDryerCoordinator</code>
  *
  * <p><strong>Description</strong></p>
  * 
@@ -51,57 +53,41 @@ package fr.sorbonne_u.components.hem2023.utils;
  * invariant	{@code true}	// no more invariant
  * </pre>
  * 
- * <p>Created on : 2023-11-14</p>
+ * <p>Created on : 2023-11-13</p>
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public enum				ExecutionType
+public class			GlobalCoordinator
+extends		AbstractCyPhyComponent
 {
-	STANDARD,			// standard usage, no simulation
-	UNIT_TEST,			// unit tests without simulation
-	INTEGRATION_TEST,	// integration tests without simulation
-	MIL_SIMULATION,		// model-in-the-loop simulation
-	MIL_RT_SIMULATION,	// model-in-the-loop real time simulation
-	SIL_SIMULATION;		// software-in-the-loop real time simulation
+	// -------------------------------------------------------------------------
+	// Constants and variables
+	// -------------------------------------------------------------------------
 
-	public boolean		isStandard()
-	{
-		return this == STANDARD;
-	}
+	public static final String	REFLECTION_INBOUND_PORT_URI =
+													"HAIR-DRYER-COORDINATOR";
 
-	public boolean		isUnitTest()
+	/**
+	 * crate the component.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * pre	{@code true}	// no precondition.
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 */
+	protected			GlobalCoordinator()
 	{
-		return this == UNIT_TEST;
-	}
+		// 2 threads are required to take charge of the simulation main
+		// coordination and the calls from submodels when they need to perform
+		// externam events and notify their parent coupled models to do so.
+		super(REFLECTION_INBOUND_PORT_URI, 2, 0);
 
-	public boolean		isIntegrationTest()
-	{
-		return this == INTEGRATION_TEST;
-	}
-
-	public boolean		isTest()
-	{
-		return this.isUnitTest() || this.isIntegrationTest();
-	}
-
-	public boolean		isSimulated()
-	{
-		return this.isMIL() || this.isMILRT() || this.isSIL();
-	}
-
-	public boolean		isMIL()
-	{
-		return this == MIL_SIMULATION;
-	}
-
-	public boolean		isMILRT()
-	{
-		return this == MIL_RT_SIMULATION;
-	}
-
-	public boolean		isSIL()
-	{
-		return this == SIL_SIMULATION;
+		this.tracer.get().setTitle("Global coordinator");
+		this.tracer.get().setRelativePosition(0, 2);
+		this.toggleTracing();
 	}
 }
 // -----------------------------------------------------------------------------

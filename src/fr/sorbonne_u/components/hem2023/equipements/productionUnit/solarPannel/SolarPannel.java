@@ -4,6 +4,8 @@
 package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel;
 
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
+import fr.sorbonne_u.components.cyphy.plugins.devs.RTAtomicSimulatorPlugin;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
@@ -14,6 +16,12 @@ import fr.sorbonne_u.components.hem2023.equipements.productionUnit.connectors.pr
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.ports.ProductionUnitProductionOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.interfaces.SolarPannelImplementationI;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.ports.SolarPannelInboundPort;
+import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.MILSimulationArchitectures;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelStateModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOffSolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOnSolarPannel;
+import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.exceptions.PreconditionException;
 
 /**
@@ -28,15 +36,18 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 
 	/** Solar intensity in W/m^2 compute with a sensor.								*/
 	public static double solarIntensity = 600;
-	/** Maximum solar intensity before to turn off the device to avoid to break it  */
-	public final static double MAX_SOLAR_INTENSITY = 1500.0;
 	
+	/** Maximum solar intensity (lux) before to turn off the device to avoid to break it  */
+	public final static double MAX_SOLAR_INTENSITY = 5000.0;
+	
+	public static final String			REFLECTION_INBOUND_PORT_URI =
+			"SOLAR-PANNEL-RIP-URI";
 	/** URI of the solar pannel inbound port used in tests.					*/
 	public static final String INBOUND_PORT_URI =
-									"SOLAR-PANNEL-INBOUND-PORT-URI";	
-	
+									"SOLAR-PANNEL-INBOUND-PORT-URI";
+		
 	/** when true, methods trace their actions.								*/
-	public static final boolean	VERBOSE = true;
+	public static boolean	VERBOSE = true;
 	
 	public static final SolarPannelState INITIAL_STATE = SolarPannelState.OFF;
 		
@@ -52,6 +63,9 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	/** inbound port offering the <code>SolarPannelUserCI</code> interface.		*/
 	protected SolarPannelInboundPort		spip;
 	
+	/**current power producted by the solar pannel*/
+	protected double CurrentPowerProducted; 
+	
 	/** 
 	 * outbound port offerunt the <code>EnergyTransferCI</code> interface for sending 
 	 * energy to the battery
@@ -65,6 +79,22 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	
 	protected boolean isUnitTest = false;
 	
+	// Execution/Simulation
+
+	/** plug-in holding the local simulation architecture and simulators.	*/
+	protected AtomicSimulatorPlugin		asp;
+	/** current type of execution.											*/
+	protected final ExecutionType		currentExecutionType;
+	/** URI of the simulation architecture to be created or the empty string
+	 *  if the component does not execute as a SIL simulation.				*/
+	protected final String				simArchitectureURI;
+	/** URI of the local simulator used to compose the global simulation
+	 *  architecture.														*/
+	protected final String				localSimulatorURI;
+	/** acceleration factor to be used when running the real time
+	 *  simulation.															*/
+	protected double					accFactor;
+
 
 	// -------------------------------------------------------------------------
 	// Constructors
@@ -86,16 +116,25 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	protected SolarPannel()
 	throws Exception
 	{
-		super(1, 0);
-		this.initialise(INBOUND_PORT_URI);
+		this(INBOUND_PORT_URI);
+
 	}
 	
-	protected SolarPannel(boolean isUnitTest)
+	protected SolarPannel(String SolarPannelInboundPortURI,
+			String transferEnergyOutboundPortURI,
+			String productionOutboudPortURI)
 		throws Exception {
 		
-			super(1, 0);
-			this.isUnitTest = isUnitTest;
-			this.initialise(INBOUND_PORT_URI);
+		this(REFLECTION_INBOUND_PORT_URI, SolarPannelInboundPortURI,
+				 ExecutionType.STANDARD, null, null, 0.0, transferEnergyOutboundPortURI,
+					 productionOutboudPortURI);
+		}
+	
+	protected SolarPannel(String SolarPannelInboundPortURI)
+		throws Exception {
+		
+		this(REFLECTION_INBOUND_PORT_URI, SolarPannelInboundPortURI,
+				 ExecutionType.STANDARD, null, null, 0.0);
 		}
 	
 	/**
@@ -113,44 +152,106 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	 * @param solarPannelInboundPortURI	URI of the solar pannel inbound port.
 	 * @throws Exception				<i>to do</i>.
 	 */
-	protected SolarPannel(String solarPannelInboundPortURI)
-	throws Exception {
-		super(1, 0);
-		this.initialise(solarPannelInboundPortURI);
-	}
-
-	/**
-	 * create a fan component with the given reflection inbound port URI.
-	 * 
-	 * <p><strong>Contract</strong></p>
-	 * 
-	 * <pre>
-	 * pre	{@code solarPannelInboundPortURI != null}
-	 * pre	{@code !solarPannelInboundPortURI.isEmpty()}
-	 * pre	{@code reflectionInboundPortURI != null}
-	 * post	{@code getState() == FanState.OFF}
-	 * post	{@code getMode() == FanMode.LOW}
-	 * </pre>
-	 *
-	 * @param solarPannelInboundPortURI	URI of the solar pannel inbound port.
-	 * @param reflectionInboundPortURI	URI of the reflection innbound port of the component.
-	 * @throws Exception				<i>to do</i>.
-	 */
-	protected SolarPannel(
-		String solarPannelInboundPortURI,
-		String reflectionInboundPortURI) throws Exception {
-			super(reflectionInboundPortURI, 1, 0);
-			this.initialise(solarPannelInboundPortURI);
-	}
-	
-	protected SolarPannel(String solarPannelInboundPortURI,
+	protected			SolarPannel(
 			String reflectionInboundPortURI,
+			String solarPannelInboundPortURI,
+			ExecutionType currentExecutionType,
+			String simArchitectureURI,
+			String localSimulatorURI,
+			double accFactor,
 			String transferEnergyOutboundPortURI,
-			String productionOutboudPortURI) throws Exception {
-		super(reflectionInboundPortURI, 1, 0);
-		this.initialise(solarPannelInboundPortURI, transferEnergyOutboundPortURI,
-				productionOutboudPortURI);
-	}
+			String productionOutboudPortURI
+			) throws Exception
+		{
+			super(reflectionInboundPortURI, 1, 0);
+
+			assert	solarPannelInboundPortURI != null &&
+												!solarPannelInboundPortURI.isEmpty() :
+					new PreconditionException(
+							"solarPannelInboundPortURI != null && "
+							+ "!solarPannelInboundPortURI.isEmpty()");
+			assert	currentExecutionType != null :
+					new PreconditionException("currentExecutionType != null");
+			assert	!currentExecutionType.isSimulated() ||
+									(simArchitectureURI != null &&
+												!simArchitectureURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(simArchitectureURI != null && "
+							+ "!simArchitectureURI.isEmpty())");
+			assert	!currentExecutionType.isSimulated() ||
+									(localSimulatorURI != null &&
+													!localSimulatorURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(localSimulatorURI != null && "
+							+ "!localSimulatorURI.isEmpty())");
+			assert	!currentExecutionType.isSIL() || accFactor > 0.0 :
+					new PreconditionException(
+							"!currentExecutionType.isSIL() || accFactor > 0.0");
+
+			this.currentExecutionType = currentExecutionType;
+			this.simArchitectureURI = simArchitectureURI;
+			this.localSimulatorURI = localSimulatorURI;
+			this.accFactor = accFactor;			
+
+			if (this.currentExecutionType.isIntegrationTest()) {
+				SolarPannel.VERBOSE = true;
+			}
+
+			this.initialise(solarPannelInboundPortURI, transferEnergyOutboundPortURI,
+					 productionOutboudPortURI);
+		}
+	
+	protected			SolarPannel(
+			String reflectionInboundPortURI,
+			String solarPannelInboundPortURI,
+			ExecutionType currentExecutionType,
+			String simArchitectureURI,
+			String localSimulatorURI,
+			double accFactor
+			) throws Exception
+		{
+			super(reflectionInboundPortURI, 1, 0);
+
+			assert	solarPannelInboundPortURI != null &&
+												!solarPannelInboundPortURI.isEmpty() :
+					new PreconditionException(
+							"solarPannelInboundPortURI != null && "
+							+ "!solarPannelInboundPortURI.isEmpty()");
+			assert	currentExecutionType != null :
+					new PreconditionException("currentExecutionType != null");
+			assert	!currentExecutionType.isSimulated() ||
+									(simArchitectureURI != null &&
+												!simArchitectureURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(simArchitectureURI != null && "
+							+ "!simArchitectureURI.isEmpty())");
+			assert	!currentExecutionType.isSimulated() ||
+									(localSimulatorURI != null &&
+													!localSimulatorURI.isEmpty()) :
+					new PreconditionException(
+							"currentExecutionType.isSimulated() ||  "
+							+ "(localSimulatorURI != null && "
+							+ "!localSimulatorURI.isEmpty())");
+			assert	!currentExecutionType.isSIL() || accFactor > 0.0 :
+					new PreconditionException(
+							"!currentExecutionType.isSIL() || accFactor > 0.0");
+
+			this.currentExecutionType = currentExecutionType;
+			this.simArchitectureURI = simArchitectureURI;
+			this.localSimulatorURI = localSimulatorURI;
+			this.accFactor = accFactor;			
+
+			if (this.currentExecutionType.isIntegrationTest()) {
+				SolarPannel.VERBOSE = true;
+			}
+
+			this.initialise(solarPannelInboundPortURI);
+		}
+
+
 	
 	// -------------------------------------------------------------------------
 	// Initialize method
@@ -170,47 +271,59 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	 * @param solarPannelInboundPortURI	URI of the fan inbound port.
 	 * @throws Exception				<i>to do</i>.
 	 */
-	protected void initialise(String solarPannelInboundPortURI)
+	protected void initialise(String solarPannelInboundPortURI,
+							String transferEnergyOutboundPortURI,
+							String productionOutboudPortURI)
 	throws Exception
 	{
 		assert	solarPannelInboundPortURI != null :
-					new PreconditionException(
-										"solarPannelInboundPortURI != null");
-		assert	!solarPannelInboundPortURI.isEmpty() :
-					new PreconditionException(
-										"!solarPannelInboundPortURI.isEmpty()");
-		
-		this.currentState = INITIAL_STATE;
-		this.currentBattery =INIT_BATTERY;
-		this.spip = new SolarPannelInboundPort(solarPannelInboundPortURI, this);
-		this.spip.publishPort();
+			new PreconditionException("hairDryerInboundPortURI != null");
+	assert	!solarPannelInboundPortURI.isEmpty() :
+			new PreconditionException(
+					"!hairDryerInboundPortURI.isEmpty()");
 
-		if (SolarPannel.VERBOSE) {
-			this.tracer.get().setTitle("Solar Pannel component");
-			this.tracer.get().setRelativePosition(1, 0);
-			this.toggleTracing();
-		}
+	this.currentState = INITIAL_STATE;
+	this.spip = new SolarPannelInboundPort(solarPannelInboundPortURI, this);
+	this.spip.publishPort();
+
+	switch (this.currentExecutionType) {
+//	case MIL_SIMULATION:
+//		Architecture architecture =
+//			MILSimulationArchitectures.createSolarPannelMILArchitecture();
+//		assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+//				new AssertionError(
+//						"local simulator " + this.localSimulatorURI
+//						+ " does not exist!");
+//		this.addLocalSimulatorArchitecture(architecture);
+//		this.architecturesURIs2localSimulatorURIS.
+//					put(this.simArchitectureURI, this.localSimulatorURI);
+//		break;
+	case MIL_RT_SIMULATION:
+//	case SIL_SIMULATION:
+//		architecture =
+//			MILSimulationArchitectures.
+//						createHairDryerRTArchitecture(
+//								this.currentExecutionType,
+//								this.accFactor);
+//		assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+//				new AssertionError(
+//						"local simulator " + this.localSimulatorURI
+//						+ " does not exist!");
+//		this.addLocalSimulatorArchitecture(architecture);
+//		this.architecturesURIs2localSimulatorURIS.
+//				put(this.simArchitectureURI, this.localSimulatorURI);
+//		break;
+	case STANDARD:
+	case INTEGRATION_TEST:
+	default:
+	}
+
+	if (SolarPannel.VERBOSE) {
+		this.tracer.get().setTitle("Solar Pannel component");
+		this.tracer.get().setRelativePosition(1, 1);
+		this.toggleTracing();
 	}
 	
-	protected void initialise(String solarPannelInboundPotURI, 
-			String transferEnergyOutboundPortURI,
-			String productionOutboudPortURI) throws Exception {
-		initialise(solarPannelInboundPotURI);
-		
-		assert	transferEnergyOutboundPortURI != null :
-			new PreconditionException(
-								"transferEnergyOutboundPortURI != null");
-		assert	!transferEnergyOutboundPortURI.isEmpty() :
-			new PreconditionException(
-								"!transferEnergyOutboundPortURI.isEmpty()"); 
-		
-		assert	productionOutboudPortURI != null :
-			new PreconditionException(
-						"transferEnergyOutboundPortURI != null");
-		assert	!productionOutboudPortURI.isEmpty() :
-			new PreconditionException(
-						"!transferEnergyOutboundPortURI.isEmpty()"); 
-		
 		this.consomationEquimentOutboundPort = new ConsomationEquimentOutboundPort(
 												transferEnergyOutboundPortURI, this);
 		this.consomationEquimentOutboundPort.publishPort();
@@ -221,6 +334,61 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 		this.productionUnitProductionOutboundPort.publishPort();
 	}
 	
+	protected void initialise(String solarPannelInboundPortURI)
+	throws Exception
+	{
+		assert	solarPannelInboundPortURI != null :
+		new PreconditionException("hairDryerInboundPortURI != null");
+		assert	!solarPannelInboundPortURI.isEmpty() :
+		new PreconditionException(
+			"!hairDryerInboundPortURI.isEmpty()");
+		
+		this.currentState = INITIAL_STATE;
+		this.spip = new SolarPannelInboundPort(solarPannelInboundPortURI, this);
+		this.spip.publishPort();
+		
+		switch (this.currentExecutionType) {
+//			case MIL_SIMULATION:
+//			Architecture architecture =
+//			MILSimulationArchitectures.createSolarPannelMILArchitecture();
+//			assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+//			new AssertionError(
+//					"local simulator " + this.localSimulatorURI
+//					+ " does not exist!");
+//			this.addLocalSimulatorArchitecture(architecture);
+//			this.architecturesURIs2localSimulatorURIS.
+//				put(this.simArchitectureURI, this.localSimulatorURI);
+//			break;
+			case MIL_RT_SIMULATION:
+//			case SIL_SIMULATION:
+//			architecture =
+//			MILSimulationArchitectures.
+//					createHairDryerRTArchitecture(
+//							this.currentExecutionType,
+//							this.accFactor);
+//			assert	architecture.getRootModelURI().equals(this.localSimulatorURI) :
+//			new AssertionError(
+//					"local simulator " + this.localSimulatorURI
+//					+ " does not exist!");
+//			this.addLocalSimulatorArchitecture(architecture);
+//			this.architecturesURIs2localSimulatorURIS.
+//			put(this.simArchitectureURI, this.localSimulatorURI);
+//			break;
+			case STANDARD:
+			case INTEGRATION_TEST:
+			default:
+		}
+		
+		if (SolarPannel.VERBOSE) {
+		this.tracer.get().setTitle("Solar Pannel component");
+		this.tracer.get().setRelativePosition(1, 1);
+		this.toggleTracing();
+		}
+		
+	}
+	
+	
+	
 	// -------------------------------------------------------------------------
 	// Component life-cycle
 	// -------------------------------------------------------------------------
@@ -228,47 +396,38 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	@Override
 	public synchronized void start() throws ComponentStartException {
 		super.start();		
+
 		try {
-			if(VERBOSE)
-				this.traceMessage("connexion des ports du panneau solaire\n\n");
-			
-			if(!isUnitTest) {
-				this.doPortConnection(this.consomationEquimentOutboundPort.getPortURI(), 
-						Battery.URI_PRODUCTION, 
-						ProductionEquipmentConnector.class.getCanonicalName());
-				
-				this.doPortConnection(this.productionUnitProductionOutboundPort.getPortURI(), 
-						ElectricMeter.PRODUCTION_URI, 
-						productionElectricMeterConnector.class.getCanonicalName());
-				
-				if(sendBattery(1000.0))
-					productionToElectricMeter(1000.0);
-			}
-			
+			switch (this.currentExecutionType) {
+//			case MIL_SIMULATION:
+//				this.asp = new AtomicSimulatorPlugin();
+//				String uri = this.architecturesURIs2localSimulatorURIS.
+//												get(this.simArchitectureURI);
+//				Architecture architecture =
+//					(Architecture) this.localSimulatorsArchitectures.get(uri);
+//				this.asp.setPluginURI(uri);
+//				this.asp.setSimulationArchitecture(architecture);
+//				this.installPlugin(this.asp);
+//				break;
+			case MIL_RT_SIMULATION:
+//			case SIL_SIMULATION:
+//				this.asp = new RTAtomicSimulatorPlugin();
+//				uri = this.architecturesURIs2localSimulatorURIS.
+//												get(this.simArchitectureURI);
+//				architecture =
+//						(Architecture) this.localSimulatorsArchitectures.get(uri);
+//				((RTAtomicSimulatorPlugin)this.asp).setPluginURI(uri);
+//				((RTAtomicSimulatorPlugin)this.asp).
+//										setSimulationArchitecture(architecture);
+//				this.installPlugin(this.asp);
+//				break;
+			case STANDARD:
+			case INTEGRATION_TEST:
+			default:
+			}		
 		} catch (Exception e) {
-			throw new ComponentStartException(e);
+			throw new ComponentStartException(e) ;
 		}
-	}
-	
-	@Override
-	public synchronized void execute() throws Exception {
-		super.execute();
-		
-		if(VERBOSE)
-			this.traceMessage("debut des tests\n\n");		
-	}
-	
-	@Override
-	public synchronized void finalise() throws Exception {
-		if(VERBOSE)
-			this.traceMessage("déconnexion des liaisons entre les ports\n\n");
-		
-		if(!isUnitTest) {
-			this.doPortDisconnection(this.consomationEquimentOutboundPort.getPortURI());
-			this.doPortDisconnection(this.productionUnitProductionOutboundPort.getPortURI());
-		}
-		
-		super.finalise();
 	}
 	
 	@Override
@@ -309,6 +468,15 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 				new PreconditionException("getState() == SolarPannelState.OFF\n");
 
 		this.currentState = SolarPannelState.ON;
+		if (this.currentExecutionType.isSIL()) {
+			// For SIL simulation, an operation done in the component code
+			// must be reflected in the simulation; to do so, the component
+			// code triggers an external event sent to the HairDryerStateModel
+			// to make it change its state to on.
+			((RTAtomicSimulatorPlugin)this.asp).triggerExternalEvent(
+												SolarPannelStateModel.SIL_URI,
+												t -> new SwitchOnSolarPannel(t));
+		}
 	}
 
 	@Override
@@ -321,6 +489,15 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 				new PreconditionException("getState() == SolarPannelState.ON\n");
 
 		this.currentState = SolarPannelState.OFF;
+		if (this.currentExecutionType.isSIL()) {
+			// For SIL simulation, an operation done in the component code
+			// must be reflected in the simulation; to do so, the component
+			// code triggers an external event sent to the HairDryerStateModel
+			// to make it change its state to on.
+			((RTAtomicSimulatorPlugin)this.asp).triggerExternalEvent(
+												SolarPannelStateModel.SIL_URI,
+												t -> new SwitchOffSolarPannel(t));
+		}
 	}
 
 	public double getBattery() throws Exception {
@@ -328,7 +505,7 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	}
 
 	public boolean addBattery(double quantity) throws Exception {
-		assert this.currentState == SolarPannelState.ON;
+//		assert this.currentState == SolarPannelState.ON;
 		
 		
 		if(this.currentBattery + quantity > this.MAX_BATTERY) {
@@ -348,7 +525,7 @@ public class SolarPannel extends AbstractComponent implements SolarPannelImpleme
 	 * have to complete
 	 */
 	public boolean sendBattery(double quantity) throws Exception {
-		assert this.currentState == SolarPannelState.ON;
+//		assert this.currentState == SolarPannelState.ON;
 		
 		if(this.currentBattery - quantity < 0) {
 			if(VERBOSE)
