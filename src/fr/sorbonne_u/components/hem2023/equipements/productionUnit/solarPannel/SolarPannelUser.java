@@ -11,6 +11,7 @@ import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
 import fr.sorbonne_u.components.cyphy.plugins.devs.RTAtomicSimulatorPlugin;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.connectors.SolarPannelConnector;
 import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
