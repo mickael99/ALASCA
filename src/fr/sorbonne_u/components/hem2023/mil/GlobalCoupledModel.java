@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events;
+package fr.sorbonne_u.components.hem2023.mil;
 
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
@@ -32,17 +32,27 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL-C license and that you accept its terms.
 
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import fr.sorbonne_u.devs_simulation.models.CoupledModel;
 import fr.sorbonne_u.devs_simulation.models.events.EventI;
-import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;
-import fr.sorbonne_u.devs_simulation.models.time.Time;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelElectricityModel;
+import fr.sorbonne_u.devs_simulation.models.events.EventSink;
+import fr.sorbonne_u.devs_simulation.models.events.EventSource;
+import fr.sorbonne_u.devs_simulation.models.events.ReexportedEvent;
+import fr.sorbonne_u.devs_simulation.models.interfaces.ModelI;
+import fr.sorbonne_u.devs_simulation.simulators.interfaces.CoordinatorI;
 
 // -----------------------------------------------------------------------------
 /**
- * The class <code>SwitchOnHeater</code> defines the simulation event of the
- * heater being switched on.
+ * The class <code>HairDryerCoupledModel</code> defines the DEVS coupled
+ * model for a first prototype of the HEM simulator.
  *
  * <p><strong>Description</strong></p>
+ * 
+ * <p>
+ * This model is only used to perform simulated tests on the HEM. The same model
+ * can be used for MIL, real-time MIL and real-time SIL simulators.
+ * </p>
  * 
  * <p><strong>White-box Invariant</strong></p>
  * 
@@ -56,25 +66,37 @@ import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.m
  * invariant	{@code true}	// no more invariant
  * </pre>
  * 
- * <p>Created on : 2023-10-02</p>
+ * <p>Created on : 2021-09-20</p>
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public class			SwitchOnSolarPanel
-extends		AbstractSolarPanelEvent
+public class			GlobalCoupledModel
+extends		CoupledModel
 {
 	// -------------------------------------------------------------------------
 	// Constants and variables
 	// -------------------------------------------------------------------------
 
 	private static final long serialVersionUID = 1L;
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	MIL_URI = GlobalCoupledModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as only one instance is created.								*/
+	public static final String	MIL_RT_URI = GlobalCoupledModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	SIL_URI = GlobalCoupledModel.class.
+													getSimpleName() + "-SIL";
 
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
 
 	/**
-	 * create a <code>SwitchOnHeater</code> event.
+	 * creating the coupled model instance.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -83,46 +105,27 @@ extends		AbstractSolarPanelEvent
 	 * post	{@code true}	// no more postcondition.
 	 * </pre>
 	 *
-	 * @param timeOfOccurrence	time of occurrence of the event.
+	 * @param uri				URI of the coupled model to be created.
+	 * @param simulatedTimeUnit	time unit used in the simulation by the model.
+	 * @param simulationEngine	simulation engine enacting the model.
+	 * @param submodels			array of submodels of the new coupled model.
+	 * @param imported			map from imported event types to submodels consuming them.
+	 * @param reexported		map from event types exported by submodels that are reexported by this coupled model.
+	 * @param connections		map connecting event sources to arrays of event sinks among submodels.
+	 * @throws Exception		<i>to do</i>.
 	 */
-	public				SwitchOnSolarPanel(
-		Time timeOfOccurrence
-		)
+	public				GlobalCoupledModel(
+		String uri,
+		TimeUnit simulatedTimeUnit,
+		CoordinatorI simulationEngine,
+		ModelI[] submodels,
+		Map<Class<? extends EventI>,EventSink[]> imported,
+		Map<Class<? extends EventI>,ReexportedEvent> reexported,
+		Map<EventSource, EventSink[]> connections
+		) throws Exception
 	{
-		super(timeOfOccurrence, null);
-	}
-
-	// -------------------------------------------------------------------------
-	// Methods
-	// -------------------------------------------------------------------------
-
-	/**
-	 * @see fr.sorbonne_u.devs_simulation.es.events.ES_Event#hasPriorityOver(fr.sorbonne_u.devs_simulation.models.events.EventI)
-	 */
-	@Override
-	public boolean		hasPriorityOver(EventI e)
-	{
-		// if many heater events occur at the same time, the
-		// SwitchOnHeater one will be executed first.
-		return true;
-	}
-
-	/**
-	 * @see fr.sorbonne_u.devs_simulation.models.events.Event#executeOn(fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI)
-	 */
-	@Override
-	public void			executeOn(AtomicModelI model)
-	{
-		assert	model instanceof SolarPanelElectricityModel;
-
-		SolarPanelElectricityModel heater = (SolarPanelElectricityModel)model;
-		assert	heater.getState() == SolarPanelElectricityModel.State.OFF :
-				new AssertionError(
-						"model not in the right state, should be "
-						+ "HeaterElectricityModel.State.OFF but is "
-						+ heater.getState());
-		heater.setState(SolarPanelElectricityModel.State.ON,
-						this.getTimeOfOccurrence());
+		super(uri, simulatedTimeUnit, simulationEngine, submodels,
+			  imported, reexported, connections);
 	}
 }
 // -----------------------------------------------------------------------------

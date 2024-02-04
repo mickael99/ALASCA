@@ -1,10 +1,12 @@
 package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events;
 
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelOperationI;
+
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
 //
-// This software is a computer program whose purpose is to implement a mock-up
-// of household energy management system.
+// This software is a computer program whose purpose is to provide a basic
+// household management systems as an example of a cyber-physical system.
 //
 // This software is governed by the CeCILL-C license under French law and
 // abiding by the rules of distribution of free software.  You can use,
@@ -32,35 +34,29 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL-C license and that you accept its terms.
 
-import fr.sorbonne_u.devs_simulation.es.events.ES_Event;
-import fr.sorbonne_u.devs_simulation.models.events.EventInformationI;
+import fr.sorbonne_u.devs_simulation.models.events.EventI;
+import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
 
 // -----------------------------------------------------------------------------
 /**
- * The abstract class <code>AbstractHairDryerEvent</code> enforces a common
- * type for all hair dryer simulation events.
+ * The class <code>SwitchOnHairDryer</code> defines the simulation event of the
+ * hair dryer being switched on.
  *
  * <p><strong>Description</strong></p>
  * 
- * <p><strong>White-box Invariant</strong></p>
+ * <p><strong>Invariant</strong></p>
  * 
  * <pre>
  * invariant	{@code true}	// no more invariant
  * </pre>
  * 
- * <p><strong>Black-box Invariant</strong></p>
+* <p>Created on : 2023-12-24</p>
  * 
- * <pre>
- * invariant	{@code true}	// no more invariant
- * </pre>
- * 
- * <p>Created on : 2023-09-29</p>
- * 
- * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
+ * @author	<a href="mailto:yukai_luo@yahoo.com">Yukai Luo</a>
  */
-public class			AbstractSolarPanelEvent
-extends		ES_Event
+public class			SwitchOnSolarPannel
+extends		AbstractSolarPannelEvent
 {
 	// -------------------------------------------------------------------------
 	// Constants and variables
@@ -73,7 +69,7 @@ extends		ES_Event
 	// -------------------------------------------------------------------------
 
 	/**
-	 * used to create an event used by the hair dryer simulation model.
+	 * create a <code>SwitchOnHairDryer</code> event.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -83,14 +79,39 @@ extends		ES_Event
 	 * </pre>
 	 *
 	 * @param timeOfOccurrence	time of occurrence of the event.
-	 * @param content			content (data) associated with the event.
 	 */
-	public				AbstractSolarPanelEvent(
-		Time timeOfOccurrence,
-		EventInformationI content
-		)
+	public				SwitchOnSolarPannel(Time timeOfOccurrence)
 	{
-		super(timeOfOccurrence, content);
+		super(timeOfOccurrence, null);
+	}
+
+	// -------------------------------------------------------------------------
+	// Methods
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @see fr.sorbonne_u.devs_simulation.es.events.ES_Event#hasPriorityOver(fr.sorbonne_u.devs_simulation.models.events.EventI)
+	 */
+	@Override
+	public boolean			hasPriorityOver(EventI e)
+	{
+		// if many hair dryer events occur at the same time, the
+		// SwitchOnHairDryer one will be executed first.
+		return true;
+	}
+
+	/**
+	 * @see fr.sorbonne_u.devs_simulation.models.events.Event#executeOn(fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI)
+	 */
+	@Override
+	public void				executeOn(AtomicModelI model)
+	{
+		// by using the interface HairDryerOperationI, the event can be executed
+		// on both HairDryerElectricityModel and HairDryerStateModel as they
+		// both implement this interface
+		assert	model instanceof SolarPannelOperationI;
+
+		((SolarPannelOperationI)model).turnOn();
 	}
 }
 // -----------------------------------------------------------------------------

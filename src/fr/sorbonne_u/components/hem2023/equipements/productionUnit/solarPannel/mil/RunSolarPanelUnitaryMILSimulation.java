@@ -38,8 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOffSolarPanel;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOnSolarPanel;
 import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.devs_simulation.architectures.ArchitectureI;
 import fr.sorbonne_u.devs_simulation.hioa.architectures.AtomicHIOA_Descriptor;
@@ -150,34 +148,20 @@ public class			RunSolarPanelUnitaryMILSimulation
 			submodels.add(SolarPanelElectricityModel.URI);
 			submodels.add(ExternalIlluminanceModel.URI);
 			submodels.add(SolarPanelUnitTesterModel.URI);
-			
-			// event exchanging connections between exporting and importing
-			// models
-			Map<EventSource,EventSink[]> connections =
-										new HashMap<EventSource,EventSink[]>();
-
-			connections.put(
-					new EventSource(SolarPanelUnitTesterModel.URI,
-									SwitchOnSolarPanel.class),
-					new EventSink[] {
-							new EventSink(SolarPanelElectricityModel.URI,
-									SwitchOnSolarPanel.class)
-					});
-			connections.put(
-					new EventSource(SolarPanelUnitTesterModel.URI,
-									SwitchOffSolarPanel.class),
-					new EventSink[] {
-							new EventSink(SolarPanelElectricityModel.URI,
-									SwitchOffSolarPanel.class)
-					});
 
 
 			// variable bindings between exporting and importing models
 			Map<VariableSource,VariableSink[]> bindings =
 								new HashMap<VariableSource,VariableSink[]>();
-
-
-
+			
+			bindings.put(new VariableSource("currentSolarIlluminance",
+					Double.class,
+					ExternalIlluminanceModel.URI),
+					new VariableSink[] {
+							new VariableSink("currentSolarIlluminance",
+									Double.class,
+									SolarPanelElectricityModel.URI)
+			});
 
 			// coupled model descriptor
 			coupledModelDescriptors.put(
@@ -188,7 +172,7 @@ public class			RunSolarPanelUnitaryMILSimulation
 							submodels,
 							null,
 							null,
-							connections,
+							null,
 							null,
 							null,
 							null,

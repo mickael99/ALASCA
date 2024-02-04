@@ -1,11 +1,10 @@
-package fr.sorbonne_u.components.hem2023.utils;
+package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil;
 
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
 //
 // This software is a computer program whose purpose is to provide a
-// basic component programming model to program with components
-// real time distributed applications in the Java programming language.
+// new implementation of the DEVS simulation standard for Java.
 //
 // This software is governed by the CeCILL-C license under French law and
 // abiding by the rules of distribution of free software.  You can use,
@@ -35,77 +34,44 @@ package fr.sorbonne_u.components.hem2023.utils;
 
 // -----------------------------------------------------------------------------
 /**
- * The enumeration <code>ExecutionType</code>
+ * The interface <code>HairDryerOperationI</code> declares operations that
+ * simulation models must implement to have events associated with the models
+ * execute on them.
  *
  * <p><strong>Description</strong></p>
  * 
- * <p><strong>White-box Invariant</strong></p>
- * 
- * <pre>
- * invariant	{@code true}	// no more invariant
- * </pre>
- * 
- * <p><strong>Black-box Invariant</strong></p>
- * 
- * <pre>
- * invariant	{@code true}	// no more invariant
- * </pre>
- * 
- * <p>Created on : 2023-11-14</p>
+ * <p>Created on : 2022-10-20</p>
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public enum				ExecutionType
+public interface		SolarPannelOperationI
 {
-	STANDARD,			// standard usage, no simulation
-	UNIT_TEST,			// unit tests without simulation
-	MIL_SIMULATION,		// model-in-the-loop simulation
-	MIL_RT_SIMULATION,	// model-in-the-loop real time simulation
-	SIL_SIMULATION,		// software-in-the-loop real time simulation
-	INTEGRATION_TEST;
+	/**
+	 * turn on the hair dryer
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * pre	{@code true}	// no precondition.
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 */
+	public void			turnOn();
 
-	public boolean		isStandard()
-	{
-		return this == STANDARD;
-	}
-	
-	public boolean isIntegrationtest() {
-		return this == INTEGRATION_TEST;
-	}
+	/**
+	 * turn off the hair dryer.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * pre	{@code true}	// no precondition.
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 */
+	public void			turnOff();
 
-	public boolean		isUnitTest()
-	{
-		return this == UNIT_TEST;
-	}
 
-	public boolean		isIntegrationTest()
-	{
-		return this == INTEGRATION_TEST;
-	}
-
-	public boolean		isMIL()
-	{
-		return this == MIL_SIMULATION;
-	}
-
-	public boolean		isMILRT()
-	{
-		return this == MIL_RT_SIMULATION;
-	}
-
-	public boolean		isSIL()
-	{
-		return this == SIL_SIMULATION;
-	}
-	
-	public boolean isTest() 
-	{
-		return this == INTEGRATION_TEST || this == UNIT_TEST;
-	}
-	
-	public boolean		isSimulated()
-	{
-		return this.isMIL() || this.isMILRT() || this.isSIL();
-	}
 }
 // -----------------------------------------------------------------------------

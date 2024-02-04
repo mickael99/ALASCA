@@ -1,12 +1,10 @@
 package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events;
 
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelElectricityModel;
-
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
 //
-// This software is a computer program whose purpose is to implement a mock-up
-// of household energy management system.
+// This software is a computer program whose purpose is to provide a basic
+// household management systems as an example of a cyber-physical system.
 //
 // This software is governed by the CeCILL-C license under French law and
 // abiding by the rules of distribution of free software.  You can use,
@@ -34,35 +32,29 @@ import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.m
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL-C license and that you accept its terms.
 
-import fr.sorbonne_u.devs_simulation.models.events.EventI;
-import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;
+import fr.sorbonne_u.devs_simulation.es.events.ES_Event;
+import fr.sorbonne_u.devs_simulation.models.events.EventInformationI;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
 
 // -----------------------------------------------------------------------------
 /**
- * The class <code>SwitchOffHairDryer</code> defines the simulation event of the
- * hair dryer being switched off.
+ * The abstract class <code>AbstractSolarPannelEvent</code> enforces a common
+ * type for all solar pannel simulation events.
  *
  * <p><strong>Description</strong></p>
  * 
- * <p><strong>White-box Invariant</strong></p>
+ * <p><strong>Invariant</strong></p>
  * 
  * <pre>
  * invariant	{@code true}	// no more invariant
  * </pre>
  * 
- * <p><strong>Black-box Invariant</strong></p>
+ * <p>Created on : 2023-12-24</p>
  * 
- * <pre>
- * invariant	{@code true}	// no more invariant
- * </pre>
- * 
- * <p>Created on : 2023-09-29</p>
- * 
- * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
+ * @author	<a href="mailto:yukai_luo@yahoo.com">Yukai Luo</a>
  */
-public class			SwitchOffSolarPanel
-extends		AbstractSolarPanelEvent
+public class			AbstractSolarPannelEvent
+extends		ES_Event
 {
 	// -------------------------------------------------------------------------
 	// Constants and variables
@@ -75,7 +67,7 @@ extends		AbstractSolarPanelEvent
 	// -------------------------------------------------------------------------
 
 	/**
-	 * create a <code>SwitchOffHairDryer</code> event.
+	 * used to create an event used by the solar pannel simulation model.
 	 * 
 	 * <p><strong>Contract</strong></p>
 	 * 
@@ -85,45 +77,14 @@ extends		AbstractSolarPanelEvent
 	 * </pre>
 	 *
 	 * @param timeOfOccurrence	time of occurrence of the event.
+	 * @param content			content (data) associated with the event.
 	 */
-	public				SwitchOffSolarPanel(Time timeOfOccurrence)
+	public				AbstractSolarPannelEvent(
+		Time timeOfOccurrence,
+		EventInformationI content
+		)
 	{
-		super(timeOfOccurrence, null);
-	}
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
-
-	/**
-	 * @see fr.sorbonne_u.devs_simulation.es.events.ES_Event#hasPriorityOver(fr.sorbonne_u.devs_simulation.models.events.EventI)
-	 */
-	@Override
-	public boolean		hasPriorityOver(EventI e)
-	{
-		// if many hair dryer events occur at the same time, the
-		// SwitchOffHairDryer one will be executed after all others.
-		return false;
-	}
-
-	/**
-	 * @see fr.sorbonne_u.devs_simulation.models.events.Event#executeOn(fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI)
-	 */
-	@Override
-	public void			executeOn(AtomicModelI model)
-	{
-		assert	model instanceof SolarPanelElectricityModel;
-
-		if (model instanceof SolarPanelElectricityModel) {
-			SolarPanelElectricityModel heater = (SolarPanelElectricityModel)model;
-			assert	heater.getState() != SolarPanelElectricityModel.State.ON :
-				new AssertionError(
-						"model not in the right state, should not be "
-								+ "HeaterElectricityModel.State.ON but is "
-								+ heater.getState());
-			heater.setState(SolarPanelElectricityModel.State.OFF,
-							this.getTimeOfOccurrence());
-		}
+		super(timeOfOccurrence, content);
 	}
 }
 // -----------------------------------------------------------------------------
