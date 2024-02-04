@@ -1,9 +1,12 @@
 package fr.sorbonne_u.components.hem2023.equipements.meter.mil;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import fr.sorbonne_u.components.hem2023.utils.Electricity;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
+import fr.sorbonne_u.devs_simulation.exceptions.MissingRunParameterException;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ImportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.InternalVariable;
 import fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA;
@@ -15,17 +18,26 @@ import fr.sorbonne_u.devs_simulation.simulators.interfaces.AtomicSimulatorI;
 import fr.sorbonne_u.devs_simulation.simulators.interfaces.SimulationReportI;
 import fr.sorbonne_u.devs_simulation.utils.Pair;
 import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
+import fr.sorbonne_u.exceptions.PreconditionException;
+import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
 import fr.sorbonne_u.components.hem2023.HEM_ReportI;
 
 
 public class ElectricMeterElectricityModel extends AtomicHIOA {
 	private static final long serialVersionUID = 1L;
-	public static final String URI = ElectricMeterElectricityModel.class.
-																getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	MIL_URI = ElectricMeterElectricityModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as only one instance is created.										*/
+	public static final String	MIL_RT_URI = ElectricMeterElectricityModel.class.
+													getSimpleName() + "-MIL_RT";
 	public static final double TENSION = 220.0;
 
 	protected static final double STEP = 60.0/3600.0;	// 60 seconds
 	protected final Duration evaluationStep;
+	protected ElectricMeter						ownerComponent;
 
 	protected ElectricMeterElectricityReport	finalReport;
 
@@ -45,7 +57,11 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	protected final Value<Double> currentIntensity =
 												new Value<Double>(this);
 	@InternalVariable(type = Double.class)
-	protected final Value<Double> currentConsumption =
+	protected final Value<Double> currentPowerConsumption =
+												new Value<Double>(this);
+	/** current total consumption of the house in kwh.						*/
+	@InternalVariable(type = Double.class)
+	protected final Value<Double>	currentCumulativeConsumption =
 												new Value<Double>(this);
 
 	// -------------------------------------------------------------------------
@@ -66,28 +82,32 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	// Methods
 	// -------------------------------------------------------------------------
 	
-	protected void updateConsumption(Duration d) {
-		double c = this.currentConsumption.getValue();
+	protected void		updateCumulativeConsumption(Duration d)
+	{
+		double c = this.currentCumulativeConsumption.getValue();
 		c += Electricity.computeConsumption(
-								d, TENSION * this.currentIntensity.getValue());
-		Time t = this.currentConsumption.getTime().add(d);
-		this.currentConsumption.setNewValue(c, t);
+							d, TENSION*this.currentPowerConsumption.getValue());
+		Time t = this.currentCumulativeConsumption.getTime().add(d);
+		this.currentCumulativeConsumption.setNewValue(c, t);
 	}
-
-	protected double computeTotalIntensity() {
-		double i = this.currentMicrowaveIntensity.getValue() +
-				   this.currentFanIntensity.getValue() + 
-				   this.currentDishWasherIntensity.getValue() +
-				   this.currentWaterHeaterIntensity.getValue();
-
-		if (this.currentIntensity.isInitialised()) {
-			StringBuffer message = new StringBuffer("current total consumption: ");
-			message.append(this.currentIntensity.getValue());
-			message.append(" at ");
-			message.append(this.getCurrentStateTime());
-			message.append('\n');
-			this.logMessage(message.toString());
-		}
+	
+	/**
+	 * compute the current total intensity.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * pre	{@code true}	// no precondition.
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 * @return the current total intensity of electric consumption.
+	 */
+	protected double		computePowerConsumption()
+	{
+		// simple sum of all incoming intensities
+		double i = this.currentFanIntensity.getValue()
+				   + this.currentWaterHeaterIntensity.getValue();
 
 		return i;
 	}
@@ -111,12 +131,12 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 							this.currentFanIntensity.isInitialised() &&
 							this.currentDishWasherIntensity.isInitialised() &&
 							this.currentWaterHeaterIntensity.isInitialised()) {
-			double i = this.computeTotalIntensity();
-			this.currentIntensity.initialise(i);
-			this.currentConsumption.initialise(0.0);
+			double i = this.computePowerConsumption();
+			this.currentPowerConsumption.initialise(i);
+			this.currentCumulativeConsumption.initialise(0.0);
 			justInitialised += 2;
 		} 
-		else if(!this.currentIntensity.isInitialised()) 
+		else if(!this.currentPowerConsumption.isInitialised()) 
 			notInitialisedYet += 2;
 		
 		return new Pair<>(justInitialised, notInitialisedYet);
@@ -136,23 +156,66 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	{
 		super.userDefinedInternalTransition(elapsedTime);
 
-		this.updateConsumption(elapsedTime);
-		double i = this.computeTotalIntensity();
-		this.currentIntensity.setNewValue(i, this.getCurrentStateTime());
+		// update the current consumption since the last consumption update.
+		// must be done before recomputing the instantaneous intensity.
+		this.updateCumulativeConsumption(elapsedTime);
+		// recompute the current total intensity
+		double old = this.currentPowerConsumption.getValue();
+		double i = this.computePowerConsumption();
+		this.currentPowerConsumption.setNewValue(i, this.getCurrentStateTime());
+		
+		if (Math.abs(old - i) > 0.000001) {
+			// Tracing
+			StringBuffer message =
+						new StringBuffer("current power consumption: ");
+			message.append(this.currentPowerConsumption.getValue());
+			message.append(" at ");
+			message.append(this.getCurrentStateTime());
+			message.append('\n');
+			this.logMessage(message.toString());
+		}
 	}
 
 	@Override
 	public void			endSimulation(Time endTime)
 	{
-		this.updateConsumption(
-						endTime.subtract(this.currentConsumption.getTime()));
+		this.updateCumulativeConsumption(
+						endTime.subtract(this.currentCumulativeConsumption.getTime()));
 
 		this.finalReport = new ElectricMeterElectricityReport(
-											URI,
-											this.currentConsumption.getValue());
+											this.getURI(),
+											this.currentCumulativeConsumption.getValue());
 
 		this.logMessage("simulation ends.\n");
 		super.endSimulation(endTime);
+	}
+
+	// -------------------------------------------------------------------------
+	// Optional DEVS simulation protocol: simulation run parameters
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @see fr.sorbonne_u.devs_simulation.models.Model#setSimulationRunParameters(java.util.Map)
+	 */
+	@Override
+	public void			setSimulationRunParameters(
+		Map<String, Object> simParams
+		) throws MissingRunParameterException
+	{
+		super.setSimulationRunParameters(simParams);
+
+		assert	simParams != null && !simParams.isEmpty() :
+				new PreconditionException(
+								"simParams != null && !simParams.isEmpty()");
+
+		if (simParams.containsKey(
+						AtomicSimulatorPlugin.OWNER_RUNTIME_PARAMETER_NAME)) {
+			this.ownerComponent = 
+				(ElectricMeter) simParams.get(
+						AtomicSimulatorPlugin.OWNER_RUNTIME_PARAMETER_NAME);
+			this.getSimulationEngine().setLogger(
+						AtomicSimulatorPlugin.createComponentLogger(simParams));
+		}
 	}
 
 	// -------------------------------------------------------------------------
