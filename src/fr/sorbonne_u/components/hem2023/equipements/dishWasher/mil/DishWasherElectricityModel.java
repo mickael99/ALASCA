@@ -338,7 +338,7 @@ public class DishWasherElectricityModel extends AtomicHIOA {
 	
 	@Override
 	public void			setSimulationRunParameters(
-		Map<String, Serializable> simParams
+		Map<String, Object> simParams
 		) throws MissingRunParameterException
 	{
 		super.setSimulationRunParameters(simParams);

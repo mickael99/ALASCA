@@ -59,14 +59,18 @@ public enum				ExecutionType
 {
 	STANDARD,			// standard usage, no simulation
 	UNIT_TEST,			// unit tests without simulation
-	INTEGRATION_TEST,	// integration tests without simulation
 	MIL_SIMULATION,		// model-in-the-loop simulation
 	MIL_RT_SIMULATION,	// model-in-the-loop real time simulation
-	SIL_SIMULATION;		// software-in-the-loop real time simulation
+	SIL_SIMULATION,		// software-in-the-loop real time simulation
+	INTEGRATION_TEST;
 
 	public boolean		isStandard()
 	{
 		return this == STANDARD;
+	}
+	
+	public boolean isIntegrationtest() {
+		return this == INTEGRATION_TEST;
 	}
 
 	public boolean		isUnitTest()
@@ -77,16 +81,6 @@ public enum				ExecutionType
 	public boolean		isIntegrationTest()
 	{
 		return this == INTEGRATION_TEST;
-	}
-
-	public boolean		isTest()
-	{
-		return this.isUnitTest() || this.isIntegrationTest();
-	}
-
-	public boolean		isSimulated()
-	{
-		return this.isMIL() || this.isMILRT() || this.isSIL();
 	}
 
 	public boolean		isMIL()
@@ -102,6 +96,16 @@ public enum				ExecutionType
 	public boolean		isSIL()
 	{
 		return this == SIL_SIMULATION;
+	}
+	
+	public boolean isTest() 
+	{
+		return this == INTEGRATION_TEST || this == UNIT_TEST;
+	}
+	
+	public boolean		isSimulated()
+	{
+		return this.isMIL() || this.isMILRT() || this.isSIL();
 	}
 }
 // -----------------------------------------------------------------------------

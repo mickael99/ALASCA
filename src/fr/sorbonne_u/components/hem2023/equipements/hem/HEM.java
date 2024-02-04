@@ -2,9 +2,12 @@ package fr.sorbonne_u.components.hem2023.equipements.hem;
 
 import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.classCreator.ClassCreator;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
 import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryManagementI;
@@ -19,6 +22,12 @@ import fr.sorbonne_u.components.hem2023.equipements.hem.registration.Registratio
 import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.WaterHeater;
+import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
+import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
+import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
+import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
+import java.time.Instant;
 
 public class HEM extends AbstractComponent 
 	implements RegistrationI, BatteryManagementI {
@@ -29,12 +38,17 @@ public class HEM extends AbstractComponent
 	public static final String URI_WATER_HEATER_PORT = "URI_WATER_HEATER_PORT";
 	public static final String URI_REGISTRATION_INBOUND_PORT = "URI_REGISTRATION_INBOUND_PORT";
 
+	protected ClocksServerOutboundPort clocksServerOutboundPort;
 	protected ElectricMeterOutboundPort electricMeterOutboundPort;
 	protected RegistrationInboundPort registrationInboundPort;
 	protected BatteryManagementOutboundPort batteryManagementOutboundPort;
 	protected ElectricMeterConsumptionOutboundPort electricMeterConsumptionOutboundPort;
 	
 	protected HashMap<String, AdjustableOutboundPort> registeredUriModularEquipement;
+	
+	protected ExecutionType currentExecutionType = null;
+	protected boolean isSimulationExecution = false;
+	public final long PERIOD_IN_SECONDS = 60L;
 	
 	protected boolean isBatteryThere = true;
 
@@ -45,6 +59,18 @@ public class HEM extends AbstractComponent
 	public HEM() throws Exception {
 		super(2, 1);
 		initialiseHEM();	
+	}
+	
+	public HEM(ExecutionType executionType) throws Exception {
+		super(1, 1);
+		this.currentExecutionType = executionType;
+		this.isSimulationExecution = true;
+		
+		this.tracer.get().setTitle("Home energy manager");
+		this.tracer.get().setRelativePosition(0, 0);
+		this.toggleTracing();
+		
+		initialiseHEM();
 	}
 	
 	public HEM(boolean isBatteryThere) throws Exception {
@@ -113,20 +139,162 @@ public class HEM extends AbstractComponent
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
+		AcceleratedClock ac = null;
 		
-		if(!isBatteryThere) {
-			if(VERBOSE)
-				this.traceMessage("debut des tests");
-			runTest();
+		if(this.isSimulationExecution) {
+			if(this.currentExecutionType.isSIL() || this.currentExecutionType.isIntegrationtest()) {
+				this.clocksServerOutboundPort = new ClocksServerOutboundPort(this);
+				this.clocksServerOutboundPort.publishPort();
+				this.doPortConnection(this.clocksServerOutboundPort.getPortURI(), 
+										ClocksServer.STANDARD_INBOUNDPORT_URI, 
+										ClocksServerConnector.class.getCanonicalName());
+				
+				this.logMessage("HEM gets the clock");
+				ac = this.clocksServerOutboundPort.getClock(CVMGlobalTest.CLOCK_URI);
+				this.doPortDisconnection(this.clocksServerOutboundPort.getPortURI());
+				this.clocksServerOutboundPort.unpublishPort();
+				this.logMessage("HEM waits untill start time");
+				ac.waitUntilStart();
+				this.logMessage("HEM starts");
+			}
+			
+			if(this.currentExecutionType.isSIL()) {
+				long delayUntilEndInSeconds = (long)(TimeUnit.HOURS.toSeconds(1) * CVMGlobalTest.SIMULATION_DURATION);
+				Instant startInstant = ac.getStartInstant();
+				Instant endInstant = startInstant.plusSeconds(delayUntilEndInSeconds);
+				
+				long delayInSecondsOfSimulatedTime = 600L;
+				Instant first = startInstant.plusSeconds(delayInSecondsOfSimulatedTime);
+				this.logMessage("HEM schedules the SIL integration test");
+				this.loop(first, endInstant, ac);
+			} 
+			else if(this.currentExecutionType.isIntegrationtest()) {
+				Instant meterTest = ac.getStartInstant().plusSeconds(60L);
+				long delay = ac.nanoDelayUntilInstant(meterTest);
+				this.logMessage("HEM schedules the integration test in " + delay + " " + 
+						TimeUnit.NANOSECONDS + "\n");	
+				
+				//electric meter
+				AbstractComponent o = this;
+				this.scheduleTaskOnComponent(
+						new AbstractComponent.AbstractTask() {
+							@Override
+							public void run() {
+								try {
+									o.traceMessage("Electric meter current consumption: " +
+											electricMeterOutboundPort.getCurrentConsumption() + "\n");
+									o.traceMessage("Electric meter current production: " +
+											electricMeterOutboundPort.getCurrentProduction() + "\n");
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}, 
+						delay, TimeUnit.NANOSECONDS);
+				
+				Instant waterHeater1 = ac.getStartInstant().plusSeconds(30L);
+				delay = ac.nanoDelayUntilInstant(waterHeater1);
+				this.logMessage("HEM schedules the water heater first test " + delay + " " + 
+						TimeUnit.NANOSECONDS + "\n");	
+				AdjustableOutboundPort adjustableOutboundPortForWaterHeater = 
+						registeredUriModularEquipement.get(WaterHeater.Uri);
+				this.scheduleTaskOnComponent(
+						new AbstractComponent.AbstractTask() {
+							@Override
+							public void run() {
+								try {
+									o.traceMessage("first tests begin \n");
+									o.traceMessage("water heater max mode" +
+											adjustableOutboundPortForWaterHeater.maxMode() + "\n");
+									o.traceMessage("water heater current mode" +
+											adjustableOutboundPortForWaterHeater.currentMode() + "\n");
+									o.traceMessage("water heater down mode" +
+											adjustableOutboundPortForWaterHeater.downMode() + "\n");
+									o.traceMessage("water heater current mode" +
+											adjustableOutboundPortForWaterHeater.currentMode() + "\n");
+									o.traceMessage("water heater current mode" +
+											adjustableOutboundPortForWaterHeater.upMode() + "\n");
+									o.traceMessage("water heater current mode" +
+											adjustableOutboundPortForWaterHeater.currentMode() + "\n");
+									o.traceMessage("water heater set mode" +
+											adjustableOutboundPortForWaterHeater.setMode(1) + "\n");
+									o.traceMessage("water heater current mode" +
+											adjustableOutboundPortForWaterHeater.currentMode() + "\n");
+									o.traceMessage("water heater suspended" +
+											adjustableOutboundPortForWaterHeater.suspended() + "\n");
+									o.traceMessage("first tests end \n");
+									
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}, 
+						delay, TimeUnit.NANOSECONDS);
+				
+					
+				Instant waterHeater2 = ac.getStartInstant().plusSeconds(120L);
+				delay = ac.nanoDelayUntilInstant(waterHeater2);
+				this.logMessage("HEM schedules the water heater second test " + delay + " " + 
+						TimeUnit.NANOSECONDS + "\n");	
+				this.scheduleTaskOnComponent(
+						new AbstractComponent.AbstractTask() {
+							@Override
+							public void run() {
+								try {
+									o.traceMessage("second tests begin \n");
+									o.traceMessage("water heater suspend" +
+											adjustableOutboundPortForWaterHeater.suspend() + "\n");
+									o.traceMessage("water heater suspended" +
+											adjustableOutboundPortForWaterHeater.suspended() + "\n");
+									o.traceMessage("second tests end \n");
+									
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}, 
+						delay, TimeUnit.NANOSECONDS);
+				
+					
+				Instant waterHeater3 = ac.getStartInstant().plusSeconds(240L);
+				delay = ac.nanoDelayUntilInstant(waterHeater3);
+				this.logMessage("HEM schedules the water heater thrird test " + delay + " " + 
+						TimeUnit.NANOSECONDS + "\n");	
+				this.scheduleTaskOnComponent(
+						new AbstractComponent.AbstractTask() {
+							@Override
+							public void run() {
+								try {
+									o.traceMessage("third tests begin \n");
+									o.traceMessage("water heater emergency" +
+											adjustableOutboundPortForWaterHeater.emergency() + "\n");
+									o.traceMessage("water heater resume" +
+											adjustableOutboundPortForWaterHeater.resume() + "\n");
+									o.traceMessage("third tests end \n");
+									
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}, 
+						delay, TimeUnit.NANOSECONDS);
+			}
 		}
 		else {
-			this.setConsomationMode();
-			
-			if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
-					this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
-				this.addElectricConsumption(2000.0);
+			if(!isBatteryThere) {
 				if(VERBOSE)
-					this.traceMessage("succesfull !!!");
+					this.traceMessage("debut des tests");
+				runTest();
+			}
+			else {
+				this.setConsomationMode();
+				
+				if(this.sendBatteryToAModularEquipment(WaterHeater.Uri, 1000.0) && 			
+						this.sendBatteryToAModularEquipment(DishWasher.Uri, 1000.0)) {
+					this.addElectricConsumption(2000.0);
+					if(VERBOSE)
+						this.traceMessage("succesfull !!!");
+				}
 			}
 		}
 	}
@@ -327,5 +495,26 @@ public class HEM extends AbstractComponent
 			this.traceMessage("add " + quantity + " watts consumption\n\n");
 		
 		this.electricMeterConsumptionOutboundPort.addElectricConsumption(quantity);
+	}
+	
+	protected void loop(Instant current, Instant end, AcceleratedClock ac) {
+		long delay = ac.nanoDelayUntilInstant(current);
+		Instant next = current.plusSeconds(this.PERIOD_IN_SECONDS);
+		if(next.compareTo(end) < 0) {
+			this.scheduleTask(
+					o -> {
+						try {
+							o.traceMessage("Electric meter current consumption -> " + 
+								this.electricMeterOutboundPort.getCurrentConsumption() + "\n");
+							o.traceMessage("Electric meter current production -> " + 
+									this.electricMeterOutboundPort.getCurrentProduction() + "\n");
+							loop(next, end, ac);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+					}, 
+					delay, 
+					TimeUnit.NANOSECONDS);
+		}
 	}
 }
