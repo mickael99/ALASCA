@@ -6,6 +6,7 @@ import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
 import fr.sorbonne_u.components.cyphy.plugins.devs.RTAtomicSimulatorPlugin;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanMode;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanState;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanOperationI;

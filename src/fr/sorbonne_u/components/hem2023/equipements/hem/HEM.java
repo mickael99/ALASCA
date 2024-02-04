@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.classCreator.ClassCreator;
 import fr.sorbonne_u.components.hem2023.equipements.battery.Battery;
 import fr.sorbonne_u.components.hem2023.equipements.battery.interfaces.BatteryManagementI;
