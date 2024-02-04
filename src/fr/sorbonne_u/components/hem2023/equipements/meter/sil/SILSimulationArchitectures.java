@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipments.meter.sil;
+package fr.sorbonne_u.components.hem2023.equipements.meter.sil;
 
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
@@ -38,18 +38,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import fr.sorbonne_u.components.hem2023e3.equipments.hairdryer.mil.events.SetHighHairDryer;
-import fr.sorbonne_u.components.hem2023e3.equipments.hairdryer.mil.events.SetLowHairDryer;
-import fr.sorbonne_u.components.hem2023e3.equipments.hairdryer.mil.events.SwitchOffHairDryer;
-import fr.sorbonne_u.components.hem2023e3.equipments.hairdryer.mil.events.SwitchOnHairDryer;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.HeaterElectricityModel;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.events.DoNotHeat;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.events.Heat;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.events.SetPowerHeater;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.events.SwitchOffHeater;
-import fr.sorbonne_u.components.hem2023e3.equipments.heater.mil.events.SwitchOnHeater;
-import fr.sorbonne_u.components.hem2023e3.equipments.hairdryer.mil.HairDryerElectricityModel;
-import fr.sorbonne_u.components.hem2023e3.equipments.meter.mil.ElectricMeterCoupledModel;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SetHighFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SetLowFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SetMeddiumFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOffFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOffMusicFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnFan;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnMusicFan;
+import fr.sorbonne_u.components.hem2023.equipements.meter.mil.ElectricMeterCoupledModel;
 import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.devs_simulation.architectures.RTArchitecture;
 import fr.sorbonne_u.devs_simulation.hioa.architectures.HIOA_Composer;
@@ -129,21 +126,21 @@ public abstract class	SILSimulationArchitectures
 						null,
 						accelerationFactor));
 		atomicModelDescriptors.put(
-				HairDryerElectricityModel.SIL_URI,
+				FanElectricityModel.SIL_URI,
 				RTAtomicHIOA_Descriptor.create(
-						HairDryerElectricityModel.class,
-						HairDryerElectricityModel.SIL_URI,
+						FanElectricityModel.class,
+						FanElectricityModel.SIL_URI,
 						TimeUnit.HOURS,
 						null,
 						accelerationFactor));
-		atomicModelDescriptors.put(
-				HeaterElectricityModel.SIL_URI,
-				RTAtomicHIOA_Descriptor.create(
-						HeaterElectricityModel.class,
-						HeaterElectricityModel.SIL_URI,
-						TimeUnit.HOURS,
-						null,
-						accelerationFactor));
+//		atomicModelDescriptors.put(
+//				HeaterElectricityModel.SIL_URI,
+//				RTAtomicHIOA_Descriptor.create(
+//						HeaterElectricityModel.class,
+//						HeaterElectricityModel.SIL_URI,
+//						TimeUnit.HOURS,
+//						null,
+//						accelerationFactor));
 
 		// map that will contain the coupled model descriptors to construct
 		// the simulation architecture
@@ -153,65 +150,86 @@ public abstract class	SILSimulationArchitectures
 		// the set of submodels of the coupled model, given by their URIs
 		Set<String> submodels = new HashSet<String>();
 		submodels.add(ElectricMeterElectricitySILModel.SIL_URI);
-		submodels.add(HairDryerElectricityModel.SIL_URI);
-		submodels.add(HeaterElectricityModel.SIL_URI);
+		submodels.add(FanElectricityModel.SIL_URI);
+//		submodels.add(HeaterElectricityModel.SIL_URI);
 
 		Map<Class<? extends EventI>,EventSink[]> imported = new HashMap<>();
 		imported.put(
-				SwitchOnHairDryer.class,
+				SwitchOnFan.class,
 				new EventSink[] {
-					new EventSink(HairDryerElectricityModel.SIL_URI,
-								  SwitchOnHairDryer.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SwitchOnFan.class)
 				});
 		imported.put(
-				SwitchOffHairDryer.class,
+				SwitchOffFan.class,
 				new EventSink[] {
-					new EventSink(HairDryerElectricityModel.SIL_URI,
-								  SwitchOffHairDryer.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SwitchOffFan.class)
 				});
 		imported.put(
-				SetLowHairDryer.class,
+				SetLowFan.class,
 				new EventSink[] {
-					new EventSink(HairDryerElectricityModel.SIL_URI,
-								  SetLowHairDryer.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SetLowFan.class)
 				});
 		imported.put(
-				SetHighHairDryer.class,
+				SetHighFan.class,
 				new EventSink[] {
-					new EventSink(HairDryerElectricityModel.SIL_URI,
-								  SetHighHairDryer.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SetHighFan.class)
 				});
-
+		
 		imported.put(
-				SetPowerHeater.class,
+				SetMeddiumFan.class,
 				new EventSink[] {
-						new EventSink(HeaterElectricityModel.SIL_URI,
-									  SetPowerHeater.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SetMeddiumFan.class)
 				});
+		
 		imported.put(
-				SwitchOnHeater.class,
+				SwitchOnMusicFan.class,
 				new EventSink[] {
-						new EventSink(HeaterElectricityModel.SIL_URI,
-									  SwitchOnHeater.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SwitchOnMusicFan.class)
 				});
+		
 		imported.put(
-				SwitchOffHeater.class,
+				SwitchOffMusicFan.class,
 				new EventSink[] {
-						new EventSink(HeaterElectricityModel.SIL_URI,
-									  SwitchOffHeater.class)
+					new EventSink(FanElectricityModel.MIL_URI,
+								  SwitchOffMusicFan.class)
 				});
-		imported.put(
-				Heat.class,
-				new EventSink[] {
-						new EventSink(HeaterElectricityModel.SIL_URI,
-									  Heat.class)
-				});
-		imported.put(
-				DoNotHeat.class,
-				new EventSink[] {
-						new EventSink(HeaterElectricityModel.SIL_URI,
-									  DoNotHeat.class)
-				});
+		
+//		imported.put(
+//				SetPowerHeater.class,
+//				new EventSink[] {
+//						new EventSink(HeaterElectricityModel.SIL_URI,
+//									  SetPowerHeater.class)
+//				});
+//		imported.put(
+//				SwitchOnHeater.class,
+//				new EventSink[] {
+//						new EventSink(HeaterElectricityModel.SIL_URI,
+//									  SwitchOnHeater.class)
+//				});
+//		imported.put(
+//				SwitchOffHeater.class,
+//				new EventSink[] {
+//						new EventSink(HeaterElectricityModel.SIL_URI,
+//									  SwitchOffHeater.class)
+//				});
+//		imported.put(
+//				Heat.class,
+//				new EventSink[] {
+//						new EventSink(HeaterElectricityModel.SIL_URI,
+//									  Heat.class)
+//				});
+//		imported.put(
+//				DoNotHeat.class,
+//				new EventSink[] {
+//						new EventSink(HeaterElectricityModel.SIL_URI,
+//									  DoNotHeat.class)
+//				});
 
 		// variable bindings between exporting and importing models
 		Map<VariableSource,VariableSink[]> bindings =
@@ -219,22 +237,22 @@ public abstract class	SILSimulationArchitectures
 		bindings.put(
 				new VariableSource("currentIntensity",
 								   Double.class,
-								   HairDryerElectricityModel.SIL_URI),
+								   FanElectricityModel.SIL_URI),
 				new VariableSink[] {
 					new VariableSink("currentHairDryerIntensity",
 									 Double.class,
 									 ElectricMeterElectricitySILModel.SIL_URI)
 				});
 
-		bindings.put(
-				new VariableSource("currentIntensity",
-								   Double.class,
-								   HeaterElectricityModel.SIL_URI),
-				new VariableSink[] {
-					new VariableSink("currentHeaterIntensity",
-									 Double.class,
-									 ElectricMeterElectricitySILModel.SIL_URI)
-				});
+//		bindings.put(
+//				new VariableSource("currentIntensity",
+//								   Double.class,
+//								   HeaterElectricityModel.SIL_URI),
+//				new VariableSink[] {
+//					new VariableSink("currentHeaterIntensity",
+//									 Double.class,
+//									 ElectricMeterElectricitySILModel.SIL_URI)
+//				});
 
 		coupledModelDescriptors.put(
 				ElectricMeterCoupledModel.SIL_URI,

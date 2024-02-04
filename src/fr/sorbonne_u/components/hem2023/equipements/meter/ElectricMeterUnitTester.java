@@ -7,13 +7,21 @@ import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.equipements.hem.ports.ElectricMeterOutboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.connectors.ElectricMeterConnector;
 import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMeterCI;
+import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
+import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
+import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
+import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RequiredInterfaces(required={ElectricMeterCI.class})
 public class ElectricMeterUnitTester extends AbstractComponent {
 
-	protected ElectricMeterOutboundPort electricMeterOutboundPort;
+	protected ElectricMeterOutboundPort emop;
+	
+	protected ClocksServerOutboundPort	clocksServerOutboundPort;
+
 
 	/**
 	 * 				CONSTRUCTEURS
@@ -22,8 +30,8 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 	protected ElectricMeterUnitTester() throws Exception {
 		super(1, 0);
 
-		this.electricMeterOutboundPort = new ElectricMeterOutboundPort(this);
-		this.electricMeterOutboundPort.publishPort();
+		this.emop = new ElectricMeterOutboundPort(this);
+		this.emop.publishPort();
 
 		this.tracer.get().setTitle("Electric meter tester component");
 		this.tracer.get().setRelativePosition(0, 0);
@@ -39,7 +47,7 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 		super.start();
 		try {
 			this.doPortConnection(
-					this.electricMeterOutboundPort.getPortURI(),
+					this.emop.getPortURI(),
 					ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI,
 					ElectricMeterConnector.class.getCanonicalName());
 		} catch (Exception e) {
@@ -49,19 +57,37 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 
 	@Override
 	public synchronized void execute() throws Exception {
+		this.clocksServerOutboundPort = new ClocksServerOutboundPort(this);
+		this.clocksServerOutboundPort.publishPort();
+		this.doPortConnection(
+				this.clocksServerOutboundPort.getPortURI(),
+				ClocksServer.STANDARD_INBOUNDPORT_URI,
+				ClocksServerConnector.class.getCanonicalName());
+		this.logMessage("ElectricMeterUnitTester gets the clock.");
+		AcceleratedClock ac =
+			this.clocksServerOutboundPort.getClock(CVMGlobalTest.CLOCK_URI);
+
+		this.logMessage("ElectricMeterUnitTester waits until start time.");
+		ac.waitUntilStart();
+		this.logMessage("ElectricMeterUnitTester starts.");
+		this.doPortDisconnection(
+					this.clocksServerOutboundPort.getPortURI());
+		this.clocksServerOutboundPort.unpublishPort();
+		this.logMessage("ElectricMeterUnitTester begins to perform tests.");
 		this.runAllTests();
+		this.logMessage("ElectricMeterUnitTester tests end.");
 	}
 
 	@Override
 	public synchronized void finalise() throws Exception {
-		this.doPortDisconnection(this.electricMeterOutboundPort.getPortURI());
+		this.doPortDisconnection(this.emop.getPortURI());
 		super.finalise();
 	}
 
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
-			this.electricMeterOutboundPort.unpublishPort();
+			this.emop.unpublishPort();
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;
 		}
@@ -75,7 +101,7 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 	protected void testGetCurrentConsumption() throws Exception {
 		this.traceMessage("début testGetCurrentConsumption\n");
 		
-		if(this.electricMeterOutboundPort.getCurrentConsumption() != 0) {
+		if(this.emop.getCurrentConsumption() != 0) {
 			this.traceMessage("testGetCurrentConsumption a échoué\n");
 			assertTrue(false);
 		}
@@ -85,7 +111,7 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 
 	protected void testGetCurrentProduction() throws Exception {
 		this.traceMessage("début testGetCurrentProduction\n");
-		if(this.electricMeterOutboundPort.getCurrentProduction() != 0) {
+		if(this.emop.getCurrentProduction() != 0) {
 			this.traceMessage("testGetCurrentProduction a échoué\n");
 			assertTrue(false);
 		}

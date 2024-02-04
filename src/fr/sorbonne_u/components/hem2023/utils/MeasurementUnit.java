@@ -1,6 +1,5 @@
 package fr.sorbonne_u.components.hem2023.utils;
 
-// Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr
 //
 // This software is a computer program whose purpose is to provide a
@@ -56,7 +55,6 @@ package fr.sorbonne_u.components.hem2023.utils;
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-=======
 //Copyright Jacques Malenfant, Sorbonne Universite.
 //Jacques.Malenfant@lip6.fr
 //

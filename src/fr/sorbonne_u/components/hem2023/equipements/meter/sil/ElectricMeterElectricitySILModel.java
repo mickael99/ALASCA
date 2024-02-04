@@ -1,4 +1,4 @@
-package fr.sorbonne_u.components.hem2023.equipments.meter.sil;
+package fr.sorbonne_u.components.hem2023.equipements.meter.sil;
 
 // Copyright Jacques Malenfant, Sorbonne Universite.
 // Jacques.Malenfant@lip6.fr

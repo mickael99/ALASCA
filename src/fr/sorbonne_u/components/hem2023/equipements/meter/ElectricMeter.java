@@ -16,12 +16,12 @@ import fr.sorbonne_u.components.hem2023.equipements.meter.interfaces.ElectricMet
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterConsomationInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterInboundPort;
 import fr.sorbonne_u.components.hem2023.equipements.meter.ports.ElectricMeterProductionInboundPort;
+import fr.sorbonne_u.components.hem2023.equipements.meter.sil.SILSimulationArchitectures;
 import fr.sorbonne_u.components.hem2023.utils.Measure;
 import fr.sorbonne_u.components.hem2023.utils.MeasurementUnit;
 import fr.sorbonne_u.components.hem2023.utils.SensorData;
 import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.equipements.meter.mil.MILSimulationArchitectures;
-import fr.sorbonne_u.components.hem2023.equipments.meter.sil.SILSimulationArchitectures;
 import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.exceptions.PreconditionException;
 import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
