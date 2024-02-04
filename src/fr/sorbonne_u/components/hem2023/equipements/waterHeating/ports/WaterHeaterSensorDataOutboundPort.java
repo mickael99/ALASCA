@@ -182,6 +182,5 @@ implements	WaterHeaterSensorDataCI.WaterHeaterSensorOfferedPullCI
 		this.getOwner().runTask(
 			o -> ((WaterHeaterController)o).receiveDataFromHeater(d));
 	}
-
 }
 // -----------------------------------------------------------------------------
