@@ -77,7 +77,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  */
 
 // -----------------------------------------------------------------------------
-public class			SolarPanelUnitTesterModel
+public class			SolarPannelUnitTesterModel
 extends		AtomicModel
 {
 	// -------------------------------------------------------------------------
@@ -86,7 +86,7 @@ extends		AtomicModel
 
 	private static final long serialVersionUID = 1L;
 	/** URI for a model; works when only one instance is created.			*/
-	public static final String	URI = SolarPanelUnitTesterModel.class.
+	public static final String	URI = SolarPannelUnitTesterModel.class.
 															getSimpleName();
 
 	/** steps in the test scenario.											*/
@@ -111,7 +111,7 @@ extends		AtomicModel
 	 * @param simulationEngine	simulation engine to which the model is attached.
 	 * @throws Exception		<i>to do</i>.
 	 */
-	public				SolarPanelUnitTesterModel(
+	public				SolarPannelUnitTesterModel(
 		String uri,
 		TimeUnit simulatedTimeUnit,
 		AtomicSimulatorI simulationEngine

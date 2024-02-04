@@ -68,7 +68,7 @@ import fr.sorbonne_u.devs_simulation.simulators.interfaces.CoordinatorI;
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public class			SolarPanelCoupledModel
+public class			SolarPannelCoupledModel
 extends		CoupledModel
 {
 	// -------------------------------------------------------------------------
@@ -78,7 +78,7 @@ extends		CoupledModel
 	private static final long serialVersionUID = 1L;
 	/** URI for an instance model; works as long as only one instance is
 	 *  created.															*/
-	public static final String	URI = SolarPanelCoupledModel.class.
+	public static final String	URI = SolarPannelCoupledModel.class.
 																getSimpleName();
 
 	// -------------------------------------------------------------------------
@@ -104,7 +104,7 @@ extends		CoupledModel
 	 * @param connections		map connecting event sources to arrays of event sinks among submodels.
 	 * @throws Exception		<i>to do</i>.
 	 */
-	public				SolarPanelCoupledModel(
+	public				SolarPannelCoupledModel(
 		String uri,
 		TimeUnit simulatedTimeUnit,
 		CoordinatorI simulationEngine,
@@ -118,7 +118,7 @@ extends		CoupledModel
 			  imported, reexported, connections);
 	}
 	
-	public SolarPanelCoupledModel(
+	public SolarPannelCoupledModel(
 			String uri,
 			TimeUnit simulatedTimeUnit,
 			CoordinatorI simulationEngine,

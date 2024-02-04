@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanElectricityModel;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanUserModel;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.ExternalIlluminanceModel;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelElectricityModel;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelUnitTesterModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelUnitTesterModel;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.ExternalTemperatureModel;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.WaterHeatingElectricityModel;
 import fr.sorbonne_u.components.hem2023.equipements.waterHeating.mil.WaterHeatingTemperatureModel;
@@ -36,18 +36,18 @@ public class RunBatteryUnitarySimulation {
 			
 			//launch solar pannel
 			atomicModelDescriptor.put(
-					SolarPanelElectricityModel.URI, 
+					SolarPannelElectricityModel.URI, 
 					AtomicHIOA_Descriptor.create(
-							SolarPanelElectricityModel.class, 
-							SolarPanelElectricityModel.URI, 
+							SolarPannelElectricityModel.class, 
+							SolarPannelElectricityModel.URI, 
 							TimeUnit.HOURS, 
 							null));
 			
 			atomicModelDescriptor.put(
-					SolarPanelUnitTesterModel.URI, 
+					SolarPannelUnitTesterModel.URI, 
 					AtomicHIOA_Descriptor.create(
-							SolarPanelUnitTesterModel.class, 
-							SolarPanelUnitTesterModel.URI, 
+							SolarPannelUnitTesterModel.class, 
+							SolarPannelUnitTesterModel.URI, 
 							TimeUnit.HOURS, 
 							null));
 			
@@ -128,8 +128,8 @@ public class RunBatteryUnitarySimulation {
 			submodels.add(BatteryUnitTesterModel.URI);
 			
 			//solar pannel
-			submodels.add(SolarPanelElectricityModel.URI);
-			submodels.add(SolarPanelUnitTesterModel.URI);
+			submodels.add(SolarPannelElectricityModel.URI);
+			submodels.add(SolarPannelUnitTesterModel.URI);
 			submodels.add(ExternalIlluminanceModel.URI);
 			
 			//water heater

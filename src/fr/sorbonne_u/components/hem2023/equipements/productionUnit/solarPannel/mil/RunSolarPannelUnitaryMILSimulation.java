@@ -101,7 +101,7 @@ import fr.sorbonne_u.devs_simulation.simulators.interfaces.SimulatorI;
  * 
  * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public class			RunSolarPanelUnitaryMILSimulation
+public class			RunSolarPannelUnitaryMILSimulation
 {
 	public static void main(String[] args)
 	{
@@ -115,10 +115,10 @@ public class			RunSolarPanelUnitaryMILSimulation
 			// temperatures and the external temperature are atomic HIOA models
 			// hence we use an AtomicHIOA_Descriptor(s)
 			atomicModelDescriptors.put(
-					SolarPanelElectricityModel.URI,
+					SolarPannelElectricityModel.MIL_URI,
 					AtomicHIOA_Descriptor.create(
-							SolarPanelElectricityModel.class,
-							SolarPanelElectricityModel.URI,
+							SolarPannelElectricityModel.class,
+							SolarPannelElectricityModel.MIL_URI,
 							TimeUnit.HOURS,
 							null));
 			atomicModelDescriptors.put(
@@ -131,10 +131,10 @@ public class			RunSolarPanelUnitaryMILSimulation
 			// the heater unit tester model only exchanges event, an
 			// atomic model hence we use an AtomicModelDescriptor
 			atomicModelDescriptors.put(
-					SolarPanelUnitTesterModel.URI,
+					SolarPannelUnitTesterModel.URI,
 					AtomicModelDescriptor.create(
-							SolarPanelUnitTesterModel.class,
-							SolarPanelUnitTesterModel.URI,
+							SolarPannelUnitTesterModel.class,
+							SolarPannelUnitTesterModel.URI,
 							TimeUnit.HOURS,
 							null));
 
@@ -145,9 +145,9 @@ public class			RunSolarPanelUnitaryMILSimulation
 
 			// the set of submodels of the coupled model, given by their URIs
 			Set<String> submodels = new HashSet<String>();
-			submodels.add(SolarPanelElectricityModel.URI);
+			submodels.add(SolarPannelElectricityModel.MIL_URI);
 			submodels.add(ExternalIlluminanceModel.URI);
-			submodels.add(SolarPanelUnitTesterModel.URI);
+			submodels.add(SolarPannelUnitTesterModel.URI);
 
 
 			// variable bindings between exporting and importing models
@@ -160,15 +160,15 @@ public class			RunSolarPanelUnitaryMILSimulation
 					new VariableSink[] {
 							new VariableSink("currentSolarIlluminance",
 									Double.class,
-									SolarPanelElectricityModel.URI)
+									SolarPannelElectricityModel.MIL_URI)
 			});
 
 			// coupled model descriptor
 			coupledModelDescriptors.put(
-					SolarPanelCoupledModel.URI,
+					SolarPannelCoupledModel.URI,
 					new CoupledHIOA_Descriptor(
-							SolarPanelCoupledModel.class,
-							SolarPanelCoupledModel.URI,
+							SolarPannelCoupledModel.class,
+							SolarPannelCoupledModel.URI,
 							submodels,
 							null,
 							null,
@@ -181,7 +181,7 @@ public class			RunSolarPanelUnitaryMILSimulation
 			// simulation architecture
 			ArchitectureI architecture =
 					new Architecture(
-							SolarPanelCoupledModel.URI,
+							SolarPannelCoupledModel.URI,
 							atomicModelDescriptors,
 							coupledModelDescriptors,
 							TimeUnit.HOURS);

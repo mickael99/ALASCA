@@ -40,6 +40,8 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	protected ElectricMeter						ownerComponent;
 
 	protected ElectricMeterElectricityReport	finalReport;
+	
+
 
 	@ImportedVariable(type = Double.class)
 	protected Value<Double>	currentMicrowaveIntensity;
@@ -52,6 +54,9 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	
 	@ImportedVariable(type = Double.class)
 	protected Value<Double>	currentWaterHeaterIntensity;
+	
+	@ImportedVariable(type = Double.class)
+	protected Value<Double>	currentSolarPannelIntensity;
 
 	@InternalVariable(type = Double.class)
 	protected final Value<Double> currentIntensity =
@@ -59,9 +64,15 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	@InternalVariable(type = Double.class)
 	protected final Value<Double> currentPowerConsumption =
 												new Value<Double>(this);
+	@InternalVariable(type = Double.class)
+	protected final Value<Double> currentPowerProduction =
+												new Value<Double>(this);
 	/** current total consumption of the house in kwh.						*/
 	@InternalVariable(type = Double.class)
 	protected final Value<Double>	currentCumulativeConsumption =
+												new Value<Double>(this);
+	@InternalVariable(type = Double.class)
+	protected final Value<Double>	currentCumulativeProduction =
 												new Value<Double>(this);
 
 	// -------------------------------------------------------------------------
@@ -91,6 +102,15 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 		this.currentCumulativeConsumption.setNewValue(c, t);
 	}
 	
+	protected void		updateCumulativeProduction(Duration d)
+	{
+		double c = this.currentCumulativeProduction.getValue();
+		c += Electricity.computeConsumption(
+							d, TENSION*this.currentCumulativeProduction.getValue());
+		Time t = this.currentCumulativeProduction.getTime().add(d);
+		this.currentCumulativeProduction.setNewValue(c, t);
+	}
+	
 	/**
 	 * compute the current total intensity.
 	 * 
@@ -108,6 +128,26 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 		// simple sum of all incoming intensities
 		double i = this.currentFanIntensity.getValue()
 				   + this.currentWaterHeaterIntensity.getValue();
+
+		return i;
+	}
+	
+	/**
+	 * compute the current total intensity.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * pre	{@code true}	// no precondition.
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 * @return the current total intensity of electric consumption.
+	 */
+	protected double		computePowerProduction()
+	{
+		// simple sum of all incoming intensities
+		double i = this.currentSolarPannelIntensity.getValue();
 
 		return i;
 	}
@@ -130,10 +170,14 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 							this.currentMicrowaveIntensity.isInitialised() &&
 							this.currentFanIntensity.isInitialised() &&
 							this.currentDishWasherIntensity.isInitialised() &&
-							this.currentWaterHeaterIntensity.isInitialised()) {
+							this.currentWaterHeaterIntensity.isInitialised() &&
+							this.currentSolarPannelIntensity.isInitialised()) {
 			double i = this.computePowerConsumption();
 			this.currentPowerConsumption.initialise(i);
 			this.currentCumulativeConsumption.initialise(0.0);
+			double p = this.computePowerProduction();
+			this.currentPowerProduction.initialise(p);
+			this.currentCumulativeProduction.initialise(0.0);
 			justInitialised += 2;
 		} 
 		else if(!this.currentPowerConsumption.isInitialised()) 
@@ -159,16 +203,32 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 		// update the current consumption since the last consumption update.
 		// must be done before recomputing the instantaneous intensity.
 		this.updateCumulativeConsumption(elapsedTime);
+		this.updateCumulativeProduction(elapsedTime);
 		// recompute the current total intensity
 		double old = this.currentPowerConsumption.getValue();
 		double i = this.computePowerConsumption();
 		this.currentPowerConsumption.setNewValue(i, this.getCurrentStateTime());
+		
+		double old_p = this.currentPowerProduction.getValue();
+		double i_p = this.computePowerProduction();
+		this.currentPowerProduction.setNewValue(i_p, this.getCurrentStateTime());
 		
 		if (Math.abs(old - i) > 0.000001) {
 			// Tracing
 			StringBuffer message =
 						new StringBuffer("current power consumption: ");
 			message.append(this.currentPowerConsumption.getValue());
+			message.append(" at ");
+			message.append(this.getCurrentStateTime());
+			message.append('\n');
+			this.logMessage(message.toString());
+		}
+		
+		if (Math.abs(old_p - i_p) > 0.000001) {
+			// Tracing
+			StringBuffer message =
+						new StringBuffer("current power prodection: ");
+			message.append(this.currentPowerProduction.getValue());
 			message.append(" at ");
 			message.append(this.getCurrentStateTime());
 			message.append('\n');
@@ -181,10 +241,16 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	{
 		this.updateCumulativeConsumption(
 						endTime.subtract(this.currentCumulativeConsumption.getTime()));
+		
+		this.updateCumulativeConsumption(
+				endTime.subtract(this.currentCumulativeProduction.getTime()));
 
 		this.finalReport = new ElectricMeterElectricityReport(
 											this.getURI(),
-											this.currentCumulativeConsumption.getValue());
+											this.currentCumulativeConsumption.getValue(),
+											this.currentCumulativeProduction.getValue());
+		
+
 
 		this.logMessage("simulation ends.\n");
 		super.endSimulation(endTime);
@@ -227,11 +293,16 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 		private static final long serialVersionUID = 1L;
 		protected String	modelURI;
 		protected double	totalConsumption;
+		protected double 	totalProduction;
 
-		public ElectricMeterElectricityReport(String modelURI, double totalConsumption) {
+		public ElectricMeterElectricityReport(String modelURI, 
+												double totalConsumption,
+												double totalProduction) 
+		{
 			super();
 			this.modelURI = modelURI;
 			this.totalConsumption = totalConsumption;
+			this.totalProduction = totalProduction;
 		}
 
 		@Override
@@ -252,6 +323,8 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 			ret.append("total consumption in kwh = ");
 			ret.append(this.totalConsumption);
 			ret.append(".\n");
+			ret.append("and total production in kwh = ");
+			ret.append(this.totalProduction);
 			ret.append(indent);
 			ret.append("---\n");
 			return ret.toString();
@@ -262,5 +335,10 @@ public class ElectricMeterElectricityModel extends AtomicHIOA {
 	public SimulationReportI getFinalReport() {
 		return this.finalReport;
 	}
+
+	
+
+
+
 
 }

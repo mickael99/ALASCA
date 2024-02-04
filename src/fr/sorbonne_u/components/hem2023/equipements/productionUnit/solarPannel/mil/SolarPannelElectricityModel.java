@@ -35,6 +35,7 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.hem2023.HEM_ReportI;
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanElectricityModel;
 import fr.sorbonne_u.components.hem2023.utils.Electricity;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ImportedVariable;
@@ -109,7 +110,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
 @ModelImportedVariable(name = "currentSolarIlluminance", type = Double.class)
 @ModelExportedVariable(name = "currentHeatingPower", type = Double.class)
 //-----------------------------------------------------------------------------
-public class			SolarPanelElectricityModel
+public class			SolarPannelElectricityModel
 extends		AtomicHIOA
 {
 	public static enum	State {
@@ -123,9 +124,18 @@ extends		AtomicHIOA
 	// -------------------------------------------------------------------------
 
 	private static final long	serialVersionUID = 1L;
-	/** URI for a model; works when only one instance is created.			*/
-	public static final String	URI = SolarPanelElectricityModel.class.
-															getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	MIL_URI = SolarPannelElectricityModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as  only one instance is created.								*/
+	public static final String	MIL_RT_URI = SolarPannelElectricityModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	SIL_URI = SolarPannelElectricityModel.class.
+													getSimpleName() + "-SIL";
 
 	/** power of the solar pannel in watts.										*/
 	public static double		NOT_PRODUCING_POWER = 0.0;
@@ -181,7 +191,7 @@ extends		AtomicHIOA
 	 * @param simulationEngine	simulation engine to which the model is attached.
 	 * @throws Exception		<i>to do</i>.
 	 */
-	public SolarPanelElectricityModel(
+	public SolarPannelElectricityModel(
 			String uri,
 			TimeUnit simulatedTimeUnit,
 			AtomicSimulatorI simulationEngine
@@ -413,7 +423,7 @@ extends		AtomicHIOA
 	@Override
 	public SimulationReportI	getFinalReport()
 	{
-		return new SolarPanelElectricityReport(URI, this.totalProduction);
+		return new SolarPanelElectricityReport(this.getURI(), this.totalProduction);
 	}
 }
 // -----------------------------------------------------------------------------

@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.cyphy.plugins.devs.AtomicSimulatorPlugin;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelElectricityModel;
-import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPanelElectricityModel.State;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelElectricityModel.State;
 import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.*;
 import fr.sorbonne_u.devs_simulation.exceptions.MissingRunParameterException;
 import fr.sorbonne_u.devs_simulation.models.AtomicModel;
@@ -175,7 +175,7 @@ implements	SolarPannelOperationI
 	@Override
 	public void			turnOn()
 	{
-		if (this.currentState == SolarPanelElectricityModel.State.OFF) {
+		if (this.currentState == SolarPannelElectricityModel.State.OFF) {
 		}
 	}
 
@@ -187,9 +187,9 @@ implements	SolarPannelOperationI
 	{
 		// a SwitchOff event can be executed when the state of the hair
 		// dryer model is *not* in the state OFF
-		if (this.currentState != SolarPanelElectricityModel.State.OFF) {
+		if (this.currentState != SolarPannelElectricityModel.State.OFF) {
 			// then put it in the state OFF
-			this.currentState = SolarPanelElectricityModel.State.OFF;
+			this.currentState = SolarPannelElectricityModel.State.OFF;
 		}
 	}
 

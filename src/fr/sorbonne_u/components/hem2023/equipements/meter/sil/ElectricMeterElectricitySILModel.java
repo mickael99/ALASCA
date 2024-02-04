@@ -126,21 +126,40 @@ extends		ElectricMeterElectricityModel
 		// update the current consumption since the last consumption update.
 		// must be done before recomputing the instantaneous intensity.
 		this.updateCumulativeConsumption(elapsedTime);
+		this.updateCumulativeProduction(elapsedTime);
 		// recompute the current total intensity
 		double old = this.currentPowerConsumption.getValue();
 		double i = this.computePowerConsumption();
 		this.currentPowerConsumption.setNewValue(i, this.getCurrentStateTime());
+		
+		double oldProduction = this.currentPowerProduction.getValue();
+		double production = this.computePowerProduction();
+		this.currentPowerProduction.setNewValue(production, this.getCurrentStateTime());
 
 		// here, the difference with the MIL model; the new value is set
 		// directly in the component to be retrieved by its sensor methods.
 		this.ownerComponent.setCurrentPowerConsumption(
 							new Measure<Double>(i, MeasurementUnit.AMPERES));
 		
+		this.ownerComponent.setCurrentPowerProduction(
+				new Measure<Double>(production, MeasurementUnit.AMPERES));
+		
 		if (Math.abs(old - i) > 0.000001) {
 			// Tracing
 			StringBuffer message =
 						new StringBuffer("current power consumption: ");
 			message.append(this.currentPowerConsumption.getValue());
+			message.append(" at ");
+			message.append(this.getCurrentStateTime());
+			message.append('\n');
+			this.logMessage(message.toString());
+		}
+		
+		if (Math.abs(oldProduction - production) > 0.000001) {
+			// Tracing
+			StringBuffer message =
+						new StringBuffer("current power prodection: ");
+			message.append(this.currentPowerProduction.getValue());
 			message.append(" at ");
 			message.append(this.getCurrentStateTime());
 			message.append('\n');

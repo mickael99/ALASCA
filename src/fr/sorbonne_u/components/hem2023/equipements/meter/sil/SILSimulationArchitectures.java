@@ -47,6 +47,10 @@ import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOffMusi
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnFan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnMusicFan;
 import fr.sorbonne_u.components.hem2023.equipements.meter.mil.ElectricMeterCoupledModel;
+import fr.sorbonne_u.components.hem2023.equipements.meter.mil.ElectricMeterElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelElectricityModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOffSolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOnSolarPannel;
 import fr.sorbonne_u.devs_simulation.architectures.Architecture;
 import fr.sorbonne_u.devs_simulation.architectures.RTArchitecture;
 import fr.sorbonne_u.devs_simulation.hioa.architectures.HIOA_Composer;
@@ -133,6 +137,14 @@ public abstract class	SILSimulationArchitectures
 						TimeUnit.HOURS,
 						null,
 						accelerationFactor));
+		atomicModelDescriptors.put(
+				SolarPannelElectricityModel.SIL_URI,
+				RTAtomicHIOA_Descriptor.create(
+						SolarPannelElectricityModel.class,
+						SolarPannelElectricityModel.SIL_URI,
+						TimeUnit.HOURS,
+						null,
+						accelerationFactor));
 //		atomicModelDescriptors.put(
 //				HeaterElectricityModel.SIL_URI,
 //				RTAtomicHIOA_Descriptor.create(
@@ -151,6 +163,7 @@ public abstract class	SILSimulationArchitectures
 		Set<String> submodels = new HashSet<String>();
 		submodels.add(ElectricMeterElectricitySILModel.SIL_URI);
 		submodels.add(FanElectricityModel.SIL_URI);
+		submodels.add(SolarPannelElectricityModel.SIL_URI);
 //		submodels.add(HeaterElectricityModel.SIL_URI);
 
 		Map<Class<? extends EventI>,EventSink[]> imported = new HashMap<>();
@@ -200,6 +213,20 @@ public abstract class	SILSimulationArchitectures
 								  SwitchOffMusicFan.class)
 				});
 		
+		imported.put(
+				SwitchOffSolarPannel.class,
+				new EventSink[] {
+					new EventSink(SolarPannelElectricityModel.MIL_RT_URI,
+								SwitchOffSolarPannel.class)
+				});
+		
+		imported.put(
+				SwitchOnSolarPannel.class,
+				new EventSink[] {
+					new EventSink(SolarPannelElectricityModel.MIL_RT_URI,
+								SwitchOnSolarPannel.class)
+				});
+		
 //		imported.put(
 //				SetPowerHeater.class,
 //				new EventSink[] {
@@ -242,6 +269,16 @@ public abstract class	SILSimulationArchitectures
 					new VariableSink("currentHairDryerIntensity",
 									 Double.class,
 									 ElectricMeterElectricitySILModel.SIL_URI)
+				});
+		
+		bindings.put(
+				new VariableSource("currentProducingPower",
+								   Double.class,
+								   SolarPannelElectricityModel.MIL_URI),
+				new VariableSink[] {
+					new VariableSink("currentSolarPannelIntensity",
+									 Double.class,
+									 ElectricMeterElectricityModel.MIL_URI)
 				});
 
 //		bindings.put(
