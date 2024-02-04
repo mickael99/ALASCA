@@ -203,7 +203,7 @@ extends		AtomicES_Model
 			nextEvent = new SwitchOffSolarPannel(t);
 			
 		}
-		this.logMessage("HairDryerUserModel emits "
+		this.logMessage("SolarPannelUserModel emits "
 								+ nextEvent.getClass().getSimpleName() + ".\n");
 		// schedule the event to be executed by this model
 		this.scheduleEvent(nextEvent);

@@ -35,6 +35,7 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanCoupledModel;
 import fr.sorbonne_u.devs_simulation.hioa.models.vars.StaticVariableDescriptor;
 import fr.sorbonne_u.devs_simulation.hioa.models.vars.VariableSink;
 import fr.sorbonne_u.devs_simulation.hioa.models.vars.VariableSource;
@@ -76,11 +77,18 @@ extends		CoupledModel
 	// -------------------------------------------------------------------------
 
 	private static final long serialVersionUID = 1L;
-	/** URI for an instance model; works as long as only one instance is
-	 *  created.															*/
-	public static final String	URI = SolarPannelCoupledModel.class.
-																getSimpleName();
-
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	MIL_URI = SolarPannelCoupledModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	MIL_RT_URI = SolarPannelCoupledModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	SIL_URI = SolarPannelCoupledModel.class.
+													getSimpleName() + "-SIL";
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------

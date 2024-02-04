@@ -8,6 +8,7 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.hem2023.CVMGlobalTest;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanMode;
+import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanMusic;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanImplementationI.FanState;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanOperationI;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.MILSimulationArchitectures;
@@ -55,7 +56,7 @@ implements	FanOperationI
 	/** standard reflection, inbound port URI for the {@code HairDryerUser}
 	 *  component.															*/
 	public static final String			REFLECTION_INBOUND_PORT_URI =
-													"HAIR-DRYER-USER-RIP-URI";
+													"FAN-USER-RIP-URI";
 	/** when true, operations are traced.									*/
 	public static boolean				VERBOSE = true ;
 
@@ -247,7 +248,7 @@ implements	FanOperationI
 		default:
 		}		
 
-		this.tracer.get().setTitle("Hair dryer user component");
+		this.tracer.get().setTitle("Fan user component");
 		this.tracer.get().setRelativePosition(2, 1);
 		this.toggleTracing();		
 	}
@@ -295,7 +296,7 @@ implements	FanOperationI
 	public void			setHigh()
 	{
 		if (VERBOSE) {
-			this.logMessage("HairDryerUser#setHigh().");
+			this.logMessage("FanUser#setHigh().");
 		}
 		try {
 			this.fop.setHigh();
@@ -415,7 +416,7 @@ implements	FanOperationI
 		this.logMessage("...done.");
 	}
 
-	public void			testSetLowHigh()
+	public void			testSetLowHighMeddium()
 	{
 		this.logMessage("testSetLowHigh()... ");
 		try {
@@ -446,7 +447,77 @@ implements	FanOperationI
 			assertTrue(false);
 		}
 		try {
+			this.fop.setMeddium();
+			assertEquals(FanState.ON, this.fop.getState());
+			assertEquals(FanMode.MEDDIUM, this.fop.getMode());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			assertThrows(ExecutionException.class,
+						 () -> this.fop.setMeddium());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
 			this.fop.turnOff();
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		this.logMessage("...done.");
+	}
+	
+	public void			testTurnOnOffMusic()
+	{
+		this.logMessage("testTurnOnOffMusic()... ");
+		try {
+			assertEquals(FanState.OFF, this.fop.getState());
+			this.fop.turnOn();
+			assertEquals(FanState.ON, this.fop.getState());
+			assertEquals(FanMode.LOW, this.fop.getMode());
+			assertEquals(FanMusic.OFF, this.fop.getMusicState());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			assertThrows(ExecutionException.class,
+						 () -> this.fop.turnOn());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			this.fop.turnOnMusic();
+			assertEquals(FanMusic.ON, this.fop.getMusicState());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			assertThrows(ExecutionException.class,
+						 () -> this.fop.turnOnMusic());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			this.fop.turnOffMusic();
+			assertEquals(FanMusic.OFF, this.fop.getMusicState());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			assertThrows(ExecutionException.class,
+						 () -> this.fop.turnOffMusic());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			this.fop.turnOff();
+			assertEquals(FanState.OFF, this.fop.getState());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		try {
+			assertThrows(ExecutionException.class,
+						 () -> this.fop.turnOff());
 		} catch (Exception e) {
 			assertTrue(false);
 		}
@@ -458,7 +529,8 @@ implements	FanOperationI
 		this.testGetState();
 		this.testGetMode();
 		this.testTurnOnOff();
-		this.testSetLowHigh();
+		this.testSetLowHighMeddium();
+		this.testTurnOnOffMusic();
 	}
 
 	// -------------------------------------------------------------------------
@@ -587,7 +659,7 @@ implements	FanOperationI
 		// perform the action at the appropriate time.
 		long delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(switchOn);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"Fan#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS
@@ -597,7 +669,7 @@ implements	FanOperationI
 				delayInNanos, TimeUnit.NANOSECONDS);
 		delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(setHigh);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"Fan#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS
@@ -607,7 +679,7 @@ implements	FanOperationI
 				delayInNanos, TimeUnit.NANOSECONDS);
 		delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(setLow);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"Fan#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS
@@ -617,7 +689,7 @@ implements	FanOperationI
 				delayInNanos, TimeUnit.NANOSECONDS);
 		delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(switchOff);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"Fan#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS

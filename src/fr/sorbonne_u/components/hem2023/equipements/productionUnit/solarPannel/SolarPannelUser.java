@@ -250,7 +250,7 @@ implements	SolarPannelOperationI
 		default:
 		}		
 
-		this.tracer.get().setTitle("Hair dryer user component");
+		this.tracer.get().setTitle("Solar Pannel user component");
 		this.tracer.get().setRelativePosition(2, 1);
 		this.toggleTracing();		
 	}
@@ -415,17 +415,17 @@ implements	SolarPannelOperationI
 			this.doPortDisconnection(
 								this.clocksServerOutboundPort.getPortURI());
 			this.clocksServerOutboundPort.unpublishPort();
-			this.logMessage("FanUser waits until start time.");
+			this.logMessage("SolarPannelUser waits until start time.");
 			this.acceleratedClock.waitUntilStart();
-			this.logMessage("FanUser starts.");
+			this.logMessage("SolarPannelUser starts.");
 			if (this.currentExecutionType.isUnitTest()) {
-				this.logMessage("FanUser begins to perform unit tests.");
+				this.logMessage("SolarPannelUser begins to perform unit tests.");
 				this.runAllTests();
-				this.logMessage("FanUser unit tests end.");
+				this.logMessage("SolarPannelUser unit tests end.");
 			} else {
-				this.logMessage("FanUser begins to perform SIL scenario.");
+				this.logMessage("SolarPannelUser begins to perform SIL scenario.");
 				this.silTestScenario();
-				this.logMessage("FanUser SIL scenario end.");				
+				this.logMessage("SolarPannelUser SIL scenario end.");				
 			}
 		}
 	}
@@ -464,8 +464,6 @@ implements	SolarPannelOperationI
 		// Define the instants of the different actions in the scenario.
 		Instant startInstant = Instant.parse(CVMGlobalTest.START_INSTANT);
 		Instant switchOn = startInstant.plusSeconds(3600L);
-		Instant setHigh = startInstant.plusSeconds(3800L);
-		Instant setLow = startInstant.plusSeconds(4500L);
 		Instant switchOff = startInstant.plusSeconds(5000L);
 
 		// For each action, compute the waiting time for this action using the
@@ -473,7 +471,7 @@ implements	SolarPannelOperationI
 		// perform the action at the appropriate time.
 		long delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(switchOn);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"SolarPannel#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS
@@ -483,7 +481,7 @@ implements	SolarPannelOperationI
 				delayInNanos, TimeUnit.NANOSECONDS);
 		delayInNanos = this.acceleratedClock.nanoDelayUntilInstant(switchOff);
 		this.logMessage(
-				"HairDryer#silTestScenario waits for " + delayInNanos
+				"SolarPannel#silTestScenario waits for " + delayInNanos
 				+ " " + TimeUnit.NANOSECONDS + " i.e., "
 				+ TimeUnit.NANOSECONDS.toMillis(delayInNanos)
 												+ " " + TimeUnit.MILLISECONDS

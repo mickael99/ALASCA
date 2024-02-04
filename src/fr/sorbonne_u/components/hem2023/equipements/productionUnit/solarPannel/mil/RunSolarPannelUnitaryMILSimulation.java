@@ -122,10 +122,10 @@ public class			RunSolarPannelUnitaryMILSimulation
 							TimeUnit.HOURS,
 							null));
 			atomicModelDescriptors.put(
-					ExternalIlluminanceModel.URI,
+					ExternalIlluminanceModel.MIL_URI,
 					AtomicHIOA_Descriptor.create(
 							ExternalIlluminanceModel.class,
-							ExternalIlluminanceModel.URI,
+							ExternalIlluminanceModel.MIL_URI,
 							TimeUnit.HOURS,
 							null));
 			// the heater unit tester model only exchanges event, an
@@ -146,7 +146,7 @@ public class			RunSolarPannelUnitaryMILSimulation
 			// the set of submodels of the coupled model, given by their URIs
 			Set<String> submodels = new HashSet<String>();
 			submodels.add(SolarPannelElectricityModel.MIL_URI);
-			submodels.add(ExternalIlluminanceModel.URI);
+			submodels.add(ExternalIlluminanceModel.MIL_URI);
 			submodels.add(SolarPannelUnitTesterModel.URI);
 
 
@@ -156,7 +156,7 @@ public class			RunSolarPannelUnitaryMILSimulation
 			
 			bindings.put(new VariableSource("currentSolarIlluminance",
 					Double.class,
-					ExternalIlluminanceModel.URI),
+					ExternalIlluminanceModel.MIL_URI),
 					new VariableSink[] {
 							new VariableSink("currentSolarIlluminance",
 									Double.class,
@@ -165,10 +165,10 @@ public class			RunSolarPannelUnitaryMILSimulation
 
 			// coupled model descriptor
 			coupledModelDescriptors.put(
-					SolarPannelCoupledModel.URI,
+					SolarPannelCoupledModel.MIL_URI,
 					new CoupledHIOA_Descriptor(
 							SolarPannelCoupledModel.class,
-							SolarPannelCoupledModel.URI,
+							SolarPannelCoupledModel.MIL_URI,
 							submodels,
 							null,
 							null,
@@ -181,7 +181,7 @@ public class			RunSolarPannelUnitaryMILSimulation
 			// simulation architecture
 			ArchitectureI architecture =
 					new Architecture(
-							SolarPannelCoupledModel.URI,
+							SolarPannelCoupledModel.MIL_URI,
 							atomicModelDescriptors,
 							coupledModelDescriptors,
 							TimeUnit.HOURS);

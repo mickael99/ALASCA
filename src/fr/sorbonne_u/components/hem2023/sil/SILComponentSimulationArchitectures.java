@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.cyphy.plugins.devs.CoordinatorPlugin;
+import fr.sorbonne_u.components.cyphy.plugins.devs.architectures.ComponentAtomicModelDescriptor;
 import fr.sorbonne_u.components.cyphy.plugins.devs.architectures.ComponentModelArchitecture;
 import fr.sorbonne_u.components.cyphy.plugins.devs.architectures.RTComponentAtomicModelDescriptor;
 import fr.sorbonne_u.components.cyphy.plugins.devs.architectures.RTComponentCoupledModelDescriptor;
@@ -51,6 +52,12 @@ import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOffFan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOffMusicFan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnFan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.events.SwitchOnMusicFan;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
+import fr.sorbonne_u.components.hem2023.equipements.meter.mil.ElectricMeterCoupledModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelStateModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOffSolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.events.SwitchOnSolarPannel;
 import fr.sorbonne_u.components.hem2023.GlobalCoordinator;
 import fr.sorbonne_u.components.hem2023.GlobalSupervisor;
 import fr.sorbonne_u.components.hem2023.mil.GlobalCoupledModel;
@@ -138,6 +145,19 @@ public abstract class	SILComponentSimulationArchitectures
 						TimeUnit.HOURS,
 						Fan.REFLECTION_INBOUND_PORT_URI
 						));
+		atomicModelDescriptors.put(
+				SolarPannelStateModel.SIL_URI,
+				ComponentAtomicModelDescriptor.create(
+						SolarPannelStateModel.SIL_URI,
+						(Class<? extends EventI>[]) new Class<?>[]{
+							SwitchOnSolarPannel.class,
+							SwitchOffSolarPannel.class},
+						(Class<? extends EventI>[]) new Class<?>[]{
+								SwitchOnSolarPannel.class,
+								SwitchOffSolarPannel.class},
+						TimeUnit.HOURS,
+						SolarPannel.REFLECTION_INBOUND_PORT_URI
+						));
 
 //		atomicModelDescriptors.put(
 //				HeaterCoupledModel.SIL_URI,
@@ -154,23 +174,23 @@ public abstract class	SILComponentSimulationArchitectures
 //						Heater.REFLECTION_INBOUND_PORT_URI));
 
 		// The electric meter also has a SIL simulation model
-//		atomicModelDescriptors.put(
-//				ElectricMeterCoupledModel.SIL_URI,
-//				RTComponentAtomicModelDescriptor.create(
-//						ElectricMeterCoupledModel.SIL_URI,
-//						(Class<? extends EventI>[]) new Class<?>[]{
-//							SwitchOnHairDryer.class,
-//							SwitchOffHairDryer.class,
-//							SetLowHairDryer.class,
-//							SetHighHairDryer.class,
-//							SetPowerHeater.class,
-//							SwitchOnHeater.class,
-//							SwitchOffHeater.class,
-//							Heat.class,
-//							DoNotHeat.class},
-//						(Class<? extends EventI>[]) new Class<?>[]{},
-//						TimeUnit.HOURS,
-//						ElectricMeter.REFLECTION_INBOUND_PORT_URI));
+		atomicModelDescriptors.put(
+				ElectricMeterCoupledModel.SIL_URI,
+				RTComponentAtomicModelDescriptor.create(
+						ElectricMeterCoupledModel.SIL_URI,
+						(Class<? extends EventI>[]) new Class<?>[]{
+							SwitchOnFan.class,
+							SwitchOffFan.class,
+							SetLowFan.class,
+							SetHighFan.class,
+							SetMeddiumFan.class,
+							SwitchOnMusicFan.class,
+							SwitchOffMusicFan.class,
+							SwitchOnSolarPannel.class,
+							SwitchOffSolarPannel.class},
+						(Class<? extends EventI>[]) new Class<?>[]{},
+						TimeUnit.HOURS,
+						ElectricMeter.REFLECTION_INBOUND_PORT_URI));
 
 		// map that will contain the coupled model descriptors to construct
 		// the simulation architecture
@@ -180,8 +200,9 @@ public abstract class	SILComponentSimulationArchitectures
 		// the set of submodels of the coupled model, given by their URIs
 		Set<String> submodels = new HashSet<String>();
 		submodels.add(FanStateModel.SIL_URI);
+		submodels.add(SolarPannelStateModel.SIL_URI);
 //		submodels.add(HeaterCoupledModel.SIL_URI);
-//		submodels.add(ElectricMeterCoupledModel.SIL_URI);
+		submodels.add(ElectricMeterCoupledModel.SIL_URI);
 
 		// event exchanging connections between exporting and importing
 		// models
@@ -189,6 +210,70 @@ public abstract class	SILComponentSimulationArchitectures
 									new HashMap<EventSource,EventSink[]>();
 
 		// first, the events going from the hair dryer to the electric meter
+		
+		connections.put(
+				new EventSource(FanStateModel.MIL_RT_URI,
+								SwitchOnFan.class),
+				new EventSink[] {
+					new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+								  SwitchOnFan.class)
+				});
+			connections.put(
+				new EventSource(FanStateModel.MIL_RT_URI,
+								SwitchOffFan.class),
+				new EventSink[] {
+					new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+								  SwitchOffFan.class)
+				});
+			connections.put(
+				new EventSource(FanStateModel.MIL_RT_URI,
+								SetLowFan.class),
+				new EventSink[] {
+					new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+								  SetLowFan.class)
+				});
+			connections.put(
+				new EventSource(FanStateModel.MIL_RT_URI,
+								SetHighFan.class),
+				new EventSink[] {
+					new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+								  SetHighFan.class)
+				});
+			connections.put(
+					new EventSource(FanStateModel.MIL_RT_URI,
+									SetMeddiumFan.class),
+					new EventSink[] {
+						new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+									  SetMeddiumFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_RT_URI,
+									SwitchOffMusicFan.class),
+					new EventSink[] {
+						new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+									  SwitchOffMusicFan.class)
+					});
+			connections.put(
+					new EventSource(FanStateModel.MIL_RT_URI,
+									SwitchOnMusicFan.class),
+					new EventSink[] {
+						new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+									  SwitchOnMusicFan.class)
+					});
+			connections.put(
+					new EventSource(SolarPannelStateModel.MIL_RT_URI,
+									SwitchOnSolarPannel.class),
+					new EventSink[] {
+						new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+									SwitchOnSolarPannel.class)
+					});
+			connections.put(
+					new EventSource(SolarPannelStateModel.MIL_RT_URI,
+									SwitchOffSolarPannel.class),
+					new EventSink[] {
+						new EventSink(ElectricMeterCoupledModel.MIL_RT_URI,
+									SwitchOffSolarPannel.class)
+					});
 //		connections.put(
 //			new EventSource(HairDryerStateModel.SIL_URI,
 //							SwitchOnHairDryer.class),

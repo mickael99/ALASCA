@@ -34,6 +34,8 @@ package fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanCoupledModel;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.annotations.ModelExportedVariable;
 import fr.sorbonne_u.devs_simulation.hioa.models.AtomicHIOA;
@@ -102,9 +104,18 @@ extends		AtomicHIOA
 	// -------------------------------------------------------------------------
 
 	private static final long serialVersionUID = 1L;
-	/** URI for a model; works when only one instance is created.			*/
-	public static final String		URI = ExternalIlluminanceModel.class.
-															getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	MIL_URI = FanCoupledModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	MIL_RT_URI = FanCoupledModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.															*/
+	public static final String	SIL_URI = FanCoupledModel.class.
+													getSimpleName() + "-SIL";
 
 	/** minimal external illuminance.										*/
 	public static final double		MIN_EXTERNAL_ILLUMINANCE = 0.0;
@@ -201,7 +212,7 @@ extends		AtomicHIOA
 			message.append(" at ");
 			message.append(this.getCurrentStateTime());
 			message.append("\n");
-			//this.logMessage(message.toString());
+			this.logMessage(message.toString());
 
 			return new Pair<>(1, 0);
 		} else {
@@ -275,7 +286,7 @@ extends		AtomicHIOA
 		message.append(" lux at ");
 		message.append(this.getCurrentStateTime());
 		message.append("\n");
-		//this.logMessage(message.toString());
+		this.logMessage(message.toString());
 	}
 
 	/**

@@ -108,7 +108,7 @@ import fr.sorbonne_u.devs_simulation.utils.StandardLogger;
  */
 
 @ModelImportedVariable(name = "currentSolarIlluminance", type = Double.class)
-@ModelExportedVariable(name = "currentHeatingPower", type = Double.class)
+@ModelExportedVariable(name = "currentProducingPower", type = Double.class)
 //-----------------------------------------------------------------------------
 public class			SolarPannelElectricityModel
 extends		AtomicHIOA
@@ -329,7 +329,7 @@ extends		AtomicHIOA
 		this.totalProduction +=
 				Electricity.computeConsumption(
 									d,
-									TENSION*this.currentSolarIlluminance.getValue());
+									TENSION*this.currentProducingPower.getValue());
 
 		this.logMessage("simulation ends.\n");
 		super.endSimulation(endTime);

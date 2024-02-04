@@ -41,6 +41,13 @@ import fr.sorbonne_u.components.hem2023.equipements.fan.Fan;
 import fr.sorbonne_u.components.hem2023.equipements.fan.FanUser;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanStateModel;
 import fr.sorbonne_u.components.hem2023.equipements.fan.mil.FanUserModel;
+import fr.sorbonne_u.components.hem2023.equipements.meter.ElectricMeter;
+import fr.sorbonne_u.components.hem2023.equipements.meter.mil.ElectricMeterCoupledModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.SolarPannelUser;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelCoupledModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelStateModel;
+import fr.sorbonne_u.components.hem2023.equipements.productionUnit.solarPannel.mil.SolarPannelUserModel;
 import fr.sorbonne_u.components.hem2023.utils.ExecutionType;
 import fr.sorbonne_u.exceptions.PreconditionException;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
@@ -97,9 +104,9 @@ extends		AbstractCVM
 	/** the type of execution, to select among the values of the
 	 *  enumeration {@code ExecutionType}.									*/
 	public static final ExecutionType	CURRENT_EXECUTION_TYPE =
-											//ExecutionType.INTEGRATION_TEST;
-											//ExecutionType.MIL_SIMULATION;
-											//ExecutionType.MIL_RT_SIMULATION;
+//											ExecutionType.INTEGRATION_TEST;
+//											ExecutionType.MIL_SIMULATION;
+//											ExecutionType.MIL_RT_SIMULATION;
 											ExecutionType.SIL_SIMULATION;
 	/** the control mode of the heater controller for the next run.			*/
 //	public static final ControlMode		CONTROL_MODE = ControlMode.PULL;
@@ -110,7 +117,7 @@ extends		AbstractCVM
 	public static final String			CLOCK_URI = "hem-clock";
 	/** start instant in test scenarios, as a string to be parsed.			*/
 	public static final String			START_INSTANT =
-													"2023-11-22T00:00:00.00Z";
+													"2024-02-03T00:00:00.00Z";
 
 	// -------------------------------------------------------------------------
 	// Constructors
@@ -152,8 +159,10 @@ extends		AbstractCVM
 		String architectureURI = "";
 		String fanLocalSimulatorURI = "";
 		String fanUserLocalSimulatorURI = "";
-		String heaterLocalSimulatorURI = "";
+//		String heaterLocalSimulatorURI = "";
 		String meterLocalSimulatorURI = "";
+		String solarPannelSimulatorURI = "";
+		String solarPannelUserSimulatorURI = "";
 		// acceleration factor for the current run, if relevant.
 		double accelerationFactor = 0.0;
 		// start time in Unix epoch time in nanoseconds.
@@ -172,7 +181,9 @@ extends		AbstractCVM
 			fanLocalSimulatorURI = FanStateModel.MIL_URI;
 			fanUserLocalSimulatorURI = FanUserModel.MIL_URI;
 //			heaterLocalSimulatorURI = HeaterCoupledModel.MIL_URI;
-//			meterLocalSimulatorURI = ElectricMeterCoupledModel.MIL_URI;
+			meterLocalSimulatorURI = ElectricMeterCoupledModel.MIL_URI;
+			solarPannelSimulatorURI = SolarPannelStateModel.MIL_URI;
+			solarPannelUserSimulatorURI = SolarPannelUserModel.MIL_URI;
 			accelerationFactor = ACCELERATION_FACTOR;
 			unixEpochStartTimeInMillis =
 					System.currentTimeMillis() + DELAY_TO_START_SIMULATION;
@@ -184,7 +195,9 @@ extends		AbstractCVM
 			fanLocalSimulatorURI = FanStateModel.MIL_RT_URI;
 			fanUserLocalSimulatorURI = FanUserModel.MIL_RT_URI;
 //			heaterLocalSimulatorURI = HeaterCoupledModel.MIL_RT_URI;
-//			meterLocalSimulatorURI = ElectricMeterCoupledModel.MIL_RT_URI;
+			meterLocalSimulatorURI = ElectricMeterCoupledModel.MIL_RT_URI;
+			solarPannelSimulatorURI = SolarPannelStateModel.MIL_RT_URI;
+			solarPannelUserSimulatorURI = SolarPannelUserModel.MIL_RT_URI;
 			accelerationFactor = ACCELERATION_FACTOR;
 			unixEpochStartTimeInMillis =
 					System.currentTimeMillis() + DELAY_TO_START_SIMULATION;
@@ -196,7 +209,9 @@ extends		AbstractCVM
 			fanLocalSimulatorURI = FanStateModel.SIL_URI;
 			fanUserLocalSimulatorURI = "not-used";
 //			heaterLocalSimulatorURI = HeaterCoupledModel.SIL_URI;
-//			meterLocalSimulatorURI = ElectricMeterCoupledModel.SIL_URI;
+			meterLocalSimulatorURI = ElectricMeterCoupledModel.SIL_URI;
+			solarPannelSimulatorURI = SolarPannelStateModel.SIL_URI;
+			solarPannelUserSimulatorURI = "not-used";
 			accelerationFactor = ACCELERATION_FACTOR;
 			unixEpochStartTimeInMillis =
 					System.currentTimeMillis() + DELAY_TO_START_SIMULATION;
@@ -260,14 +275,30 @@ extends		AbstractCVM
 //							 Heater.ACTUATOR_INBOUND_PORT_URI,
 //							 CURRENT_EXECUTION_TYPE,
 //							 CLOCK_URI});
-//		AbstractComponent.createComponent(
-//				ElectricMeter.class.getCanonicalName(),
-//				new Object[]{ElectricMeter.REFLECTION_INBOUND_PORT_URI,
-//							 ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI,
-//							 CURRENT_EXECUTION_TYPE,
-//							 architectureURI,
-//							 meterLocalSimulatorURI,
-//							 accelerationFactor});
+		AbstractComponent.createComponent(
+				ElectricMeter.class.getCanonicalName(),
+				new Object[]{ElectricMeter.REFLECTION_INBOUND_PORT_URI,
+							 ElectricMeter.ELECTRIC_METER_INBOUND_PORT_URI,
+							 CURRENT_EXECUTION_TYPE,
+							 architectureURI,
+							 meterLocalSimulatorURI,
+							 accelerationFactor});
+		AbstractComponent.createComponent(
+				SolarPannel.class.getCanonicalName(),
+				new Object[]{SolarPannel.REFLECTION_INBOUND_PORT_URI,
+							SolarPannel.INBOUND_PORT_URI,
+							 CURRENT_EXECUTION_TYPE,
+							 architectureURI,
+							 solarPannelSimulatorURI,
+							 accelerationFactor});
+		AbstractComponent.createComponent(
+				SolarPannelUser.class.getCanonicalName(),
+				new Object[]{SolarPannelUser.REFLECTION_INBOUND_PORT_URI,
+							SolarPannel.INBOUND_PORT_URI,
+							 CURRENT_EXECUTION_TYPE,
+							 architectureURI,
+							 solarPannelSimulatorURI,
+							 accelerationFactor});
 //		AbstractComponent.createComponent(
 //				HEM.class.getCanonicalName(),
 //				new Object[]{CURRENT_EXECUTION_TYPE});
