@@ -237,6 +237,8 @@ extends		AbstractCyPhyComponent
 			sp.startRTSimulation(this.unixEpochStartTimeInMillis,
 					this.simulatedStartTime,
 					this.simulationDuration);
+			
+			
 			// For real time simulations, simulationDuration schedules tasks
 			// and releases control immediately; hence, we must wait for the
 			// entire duration of the simulation execution before getting the
