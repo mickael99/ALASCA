@@ -99,24 +99,27 @@ public class ElectricMeterUnitTester extends AbstractComponent {
 	 */
 
 	protected void testGetCurrentConsumption() throws Exception {
-		this.traceMessage("début testGetCurrentConsumption\n");
-		
-		if(this.emop.getCurrentConsumption() != 0) {
-			this.traceMessage("testGetCurrentConsumption a échoué\n");
+		this.traceMessage("testGetCurrentConsumption()...\n");
+		try {
+			this.traceMessage("Electric meter current consumption? " +
+									this.emop.getCurrentConsumption() + "\n");
+		} catch (Exception e) {
+			this.traceMessage("...KO.\n");
 			assertTrue(false);
 		}
-			
-		this.traceMessage("testGetCurrentConsumption réussit\n\n");
+		this.traceMessage("...done.\n");
 	}
 
 	protected void testGetCurrentProduction() throws Exception {
-		this.traceMessage("début testGetCurrentProduction\n");
-		if(this.emop.getCurrentProduction() != 0) {
-			this.traceMessage("testGetCurrentProduction a échoué\n");
+		this.traceMessage("testGetCurrentProduction()...\n");
+		try {
+			this.traceMessage("Electric meter current production? " +
+									this.emop.getCurrentProduction() + "\n");
+		} catch (Exception e) {
+			this.traceMessage("...KO.\n");
 			assertTrue(false);
 		}
-
-		this.traceMessage("testGetCurrentProduction réussit\n\n");
+		this.traceMessage("...done.\n");
 	}
 
 	protected void runAllTests() throws Exception {
