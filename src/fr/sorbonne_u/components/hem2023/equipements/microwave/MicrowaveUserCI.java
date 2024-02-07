@@ -26,7 +26,7 @@ public interface MicrowaveUserCI extends MicrowaveImplementationI, OfferedCI, Re
 
 	public void 		setLow() throws Exception;
 
-	public void 		setUnfreez() throws Exception;
+	public void 		setUnfreeze() throws Exception;
 
 	public void			setTimer(Timer newTimer) throws Exception;
 }

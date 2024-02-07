@@ -273,8 +273,6 @@ public class			RunFanUnitaryMILRTSimulation
 			SimulationEngine.SIMULATION_STEP_SLEEP_TIME = 0L;
 			// run a simulation with the simulation beginning at 0.0 and
 			// ending at 24.0
-			// run a simulation with the simulation beginning at 0.0 and
-			// ending at 24.0
 			long start = System.currentTimeMillis() + 100;
 			double simulationDuration = 24.0;
 			se.startRTSimulation(start, 0.0, simulationDuration);

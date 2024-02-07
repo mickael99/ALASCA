@@ -60,8 +60,8 @@ public class MicrowaveConnector extends AbstractConnector implements MicrowaveUs
 	}
 
 	@Override
-	public void setUnfreez() throws Exception {
-		((MicrowaveUserCI)this.offering).setUnfreez();
+	public void setUnfreeze() throws Exception {
+		((MicrowaveUserCI)this.offering).setUnfreeze();
 		
 	}
 

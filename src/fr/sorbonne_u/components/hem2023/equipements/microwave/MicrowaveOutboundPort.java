@@ -94,9 +94,10 @@ public class MicrowaveOutboundPort extends AbstractOutboundPort implements Micro
 	}
 
 	@Override
-	public void setUnfreez() throws Exception {
-		((MicrowaveUserCI)this.getConnector()).setUnfreez();
+	public void setUnfreeze() throws Exception {
+		((MicrowaveUserCI)this.getConnector()).setUnfreeze();
 		
 	}
+
 }
 //--------------------------------------------------------------

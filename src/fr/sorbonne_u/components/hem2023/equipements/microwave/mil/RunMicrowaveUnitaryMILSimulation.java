@@ -29,59 +29,94 @@ public class RunMicrowaveUnitaryMILSimulation {
 			Map<String, AbstractAtomicModelDescriptor> atomicModelDescriptors = 
 					new HashMap<>();
 			atomicModelDescriptors.put(
-									MicrowaveElectricityModel.URI,
+									MicrowaveElectricityModel.MIL_URI,
 									AtomicHIOA_Descriptor.create(
 											MicrowaveElectricityModel.class,
-											MicrowaveElectricityModel.URI,
+											MicrowaveElectricityModel.MIL_URI,
 											TimeUnit.HOURS,
 											null));
 			atomicModelDescriptors.put(
-									MicrowaveUserModel.URI,
+									MicrowaveUserModel.MIL_URI,
 									AtomicModelDescriptor.create(
 									   	MicrowaveUserModel.class,
-									   	MicrowaveUserModel.URI,
+									   	MicrowaveUserModel.MIL_URI,
 										TimeUnit.HOURS,
 										null));
+			
+			atomicModelDescriptors.put(
+					MicrowaveStateModel.MIL_URI,
+					AtomicModelDescriptor.create(
+							MicrowaveStateModel.class,
+							MicrowaveStateModel.MIL_URI,
+							TimeUnit.HOURS,
+							null));
 			
 			Map<String, CoupledModelDescriptor> coupledModelDescriptors =
 																new HashMap<>();
 			
 			Set<String> submodels = new HashSet<String>();
-			submodels.add(MicrowaveElectricityModel.URI);
-			submodels.add(MicrowaveUserModel.URI);
-			
+			submodels.add(MicrowaveElectricityModel.MIL_URI);
+			submodels.add(MicrowaveUserModel.MIL_URI);
+			submodels.add(MicrowaveStateModel.MIL_URI);
+
 			Map<EventSource, EventSink[]> connections = 
 					new HashMap<EventSource, EventSink[]>();
-			connections.put(new EventSource(MicrowaveUserModel.URI, SwitchOnMicrowave.class),
+
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SwitchOnMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SwitchOnMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SwitchOnMicrowave.class)
 							});
-			connections.put(new EventSource(MicrowaveUserModel.URI, SwitchOffMicrowave.class),
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SwitchOffMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SwitchOffMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SwitchOffMicrowave.class)
 							});
-			connections.put(new EventSource(MicrowaveUserModel.URI, SetLowMicrowave.class),
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetLowMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SetLowMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SetLowMicrowave.class)
 							});
-			connections.put(new EventSource(MicrowaveUserModel.URI, SetMediumMicrowave.class),
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetMediumMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SetMediumMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SetMediumMicrowave.class)
 							});
-			connections.put(new EventSource(MicrowaveUserModel.URI, SetHighMicrowave.class),
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetHighMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SetHighMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SetHighMicrowave.class)
 							});
-			connections.put(new EventSource(MicrowaveUserModel.URI, SetUnfreezMicrowave.class),
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetUnfreezeMicrowave.class),
 							new EventSink[] {
-									new EventSink(MicrowaveElectricityModel.URI, SetUnfreezMicrowave.class)
+									new EventSink(MicrowaveStateModel.MIL_URI, SetUnfreezeMicrowave.class)
+							});
+					
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SwitchOnMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SwitchOnMicrowave.class)
+							});
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SwitchOffMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SwitchOffMicrowave.class)
+							});
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetLowMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SetLowMicrowave.class)
+							});
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetMediumMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SetMediumMicrowave.class)
+							});
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetHighMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SetHighMicrowave.class)
+							});
+			connections.put(new EventSource(MicrowaveUserModel.MIL_URI, SetUnfreezeMicrowave.class),
+							new EventSink[] {
+									new EventSink(MicrowaveElectricityModel.MIL_URI, SetUnfreezeMicrowave.class)
 							});
 			
 			coupledModelDescriptors.put(
-					MicrowaveCoupledModel.URI,
+					MicrowaveCoupledModel.MIL_URI,
 					new CoupledModelDescriptor(
 							MicrowaveCoupledModel.class,
-							MicrowaveCoupledModel.URI,
+							MicrowaveCoupledModel.MIL_URI,
 							submodels,
 							null,
 							null,
@@ -90,7 +125,7 @@ public class RunMicrowaveUnitaryMILSimulation {
 			
 			ArchitectureI architecture = 
 					new Architecture(
-							MicrowaveCoupledModel.URI,
+							MicrowaveCoupledModel.MIL_URI,
 							atomicModelDescriptors,
 							coupledModelDescriptors,
 							TimeUnit.HOURS);

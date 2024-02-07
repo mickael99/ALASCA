@@ -110,9 +110,9 @@ implements MicrowaveUserCI {
 	}
 
 	@Override
-	public void setUnfreez() throws Exception {
+	public void setUnfreeze() throws Exception {
 		this.getOwner().handleRequest(
-				o -> {	((MicrowaveImplementationI)o).setUnfreez();
+				o -> {	((MicrowaveImplementationI)o).setUnfreeze();
 						return null;
 				});		
 	}

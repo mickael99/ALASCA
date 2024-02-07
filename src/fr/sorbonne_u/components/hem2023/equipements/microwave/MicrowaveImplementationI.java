@@ -82,7 +82,7 @@ public interface MicrowaveImplementationI {
 	 * 
 	 * @throws Exception	<i>to do</i>.
 	 */
-	public void 		setUnfreez() throws Exception;
+	public void 		setUnfreeze() throws Exception;
 
 	/**
 	 * set the timer of the microwave.

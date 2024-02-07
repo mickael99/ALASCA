@@ -5,11 +5,11 @@ import fr.sorbonne_u.devs_simulation.models.events.EventI;
 import fr.sorbonne_u.devs_simulation.models.interfaces.AtomicModelI;
 import fr.sorbonne_u.devs_simulation.models.time.Time;
 
-public class SetUnfreezMicrowave extends AbstractMicrowaveEvent {
+public class SetUnfreezeMicrowave extends AbstractMicrowaveEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	public SetUnfreezMicrowave(Time timeOfOccurrence) {
+	public SetUnfreezeMicrowave(Time timeOfOccurrence) {
 		super(timeOfOccurrence, null);
 	}
 

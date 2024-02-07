@@ -164,7 +164,7 @@ extends AbstractComponent {
 			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode MEDDIUM ");
 			assertTrue(false);
 		}
-		this.mwop.setUnfreez();
+		this.mwop.setUnfreeze();
 		if(MicrowaveMode.UNFREEZE != this.mwop.getMode()) {
 			this.logMessage("...KO... Le micro-ondes n'a pas été réglé correctement en mode UNFREEZE ");
 			assertTrue(false);

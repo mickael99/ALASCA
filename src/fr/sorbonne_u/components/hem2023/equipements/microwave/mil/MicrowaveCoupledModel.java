@@ -14,7 +14,18 @@ import fr.sorbonne_u.devs_simulation.simulators.interfaces.CoordinatorI;
 public class MicrowaveCoupledModel extends CoupledModel {
 
 	private static final long serialVersionUID = 1L;
-	public static final String	URI = MicrowaveCoupledModel.class.getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	MIL_URI = MicrowaveCoupledModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as only one instance is created.								*/
+	public static final String	MIL_RT_URI = MicrowaveCoupledModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *  only one instance is created.										*/
+	public static final String	SIL_URI = MicrowaveCoupledModel.class.
+													getSimpleName() + "-SIL";
 
 	public MicrowaveCoupledModel(
 			String uri, 

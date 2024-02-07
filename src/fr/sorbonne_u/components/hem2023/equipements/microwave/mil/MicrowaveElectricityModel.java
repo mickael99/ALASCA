@@ -26,11 +26,14 @@ import fr.sorbonne_u.devs_simulation.models.time.Time;
 @ModelExternalEvents(imported = {SetHighMicrowave.class,
 								 SetLowMicrowave.class,
 								 SetMediumMicrowave.class,
-								 SetUnfreezMicrowave.class,
+								 SetUnfreezeMicrowave.class,
 								 SwitchOnMicrowave.class,
 								 SwitchOffMicrowave.class})	
 @ModelExportedVariable(name = "currentIntensity", type = Double.class)
-public class MicrowaveElectricityModel extends AtomicHIOA {
+public class MicrowaveElectricityModel
+extends AtomicHIOA
+implements MicrowaveOperationI
+{
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +49,18 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 		HIGH
 	}
 											
-	public static final String URI = MicrowaveElectricityModel.class.getSimpleName();
+	/** URI for an instance model in MIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	MIL_URI = MicrowaveElectricityModel.class.
+													getSimpleName() + "-MIL";
+	/** URI for an instance model in MIL real time simulations; works as
+	 *  long as  only one instance is created.								*/
+	public static final String	MIL_RT_URI = MicrowaveElectricityModel.class.
+													getSimpleName() + "-MIL_RT";
+	/** URI for an instance model in SIL simulations; works as long as
+	 *   only one instance is created.										*/
+	public static final String	SIL_URI = MicrowaveElectricityModel.class.
+													getSimpleName() + "-SIL";
 
 	//in watts
 	public static double LOW_MODE_CONSUMPTION = 250.0; 
@@ -56,14 +70,14 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	
 	//simulation run parameters
 	public static final String LOW_MODE_CONSUMPTION_RPNAME =
-				URI + ":LOW_MODE_CONSUMPTION";
+													"LOW_MODE_CONSUMPTION";
 	public static final String MEDDIUM_MODE_CONSUMPTION_RPNAME =
-				URI + ":MEDDIUM_MODE_CONSUMPTION";
+													"MEDDIUM_MODE_CONSUMPTION";
 	public static final String	HIGH_MODE_CONSUMPTION_RPNAME =
-				URI + ":HIGH_MODE_CONSUMPTION";
+													"HIGH_MODE_CONSUMPTION";
 	public static final String	UNFREEZE_MODE_CONSUMPTION_RPNAME =
-				URI + ":UNFREEZE_MODE_CONSUMPTION";
-	public static final String	TENSION_RPNAME = URI + ":TENSION";
+													"UNFREEZE_MODE_CONSUMPTION";
+	public static final String	TENSION_RPNAME = "TENSION";
 
 	//nominal tension (in Volts) 						
 	public static double TENSION = 220.0; 
@@ -90,29 +104,89 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
-	public MicrowaveElectricityModel(String uri, TimeUnit simulatedTimeUnit, AtomicSimulatorI simulationEngine) {
-		super(uri, simulatedTimeUnit, simulationEngine);
-		this.getSimulationEngine().setLogger(new StandardLogger());
-	}
+	public	MicrowaveElectricityModel(
+			String uri,
+			TimeUnit simulatedTimeUnit,
+			AtomicSimulatorI simulationEngine
+			) throws Exception
+		{
+			super(uri, simulatedTimeUnit, simulationEngine);
+			// set the logger to a standard simulation logger
+			this.getSimulationEngine().setLogger(new StandardLogger());
+		}
 	
 	// -------------------------------------------------------------------------
 	// Methods
 	// -------------------------------------------------------------------------
-	
-	public void setState(State s) {
-		currentState = s;
-	}
-	
+
 	public State getState() {
-		return currentState;
-	}
-	
-	public void setMode(Mode m) {
-		currentMode = m;
+		return this.currentState;
 	}
 	
 	public Mode getMode() {
-		return currentMode;
+		return this.currentMode;
+	}
+	
+	public void setMode(Mode mode) {
+		this.currentMode = mode;
+	}
+	
+	public void setState (State state) {
+		this.currentState = state;
+	}
+	
+	@Override
+	public void	turnOn()
+	{
+		if (this.currentState == MicrowaveElectricityModel.State.OFF) {
+			this.currentMode = MicrowaveElectricityModel.Mode.LOW;
+			this.toggleConsumptionHasChanged();
+		}
+	}
+	
+	@Override
+	public void	turnOff()
+	{
+		if (this.currentState != MicrowaveElectricityModel.State.OFF) {
+			this.currentState = MicrowaveElectricityModel.State.OFF;
+			this.toggleConsumptionHasChanged();
+		}
+	}
+	
+	@Override
+	public void	setHigh()
+	{
+		if (this.currentMode != MicrowaveElectricityModel.Mode.HIGH) {
+			this.currentMode = MicrowaveElectricityModel.Mode.HIGH;
+			this.toggleConsumptionHasChanged();
+		}
+	}
+	
+	@Override
+	public void setLow()
+	{
+		if (this.currentMode != MicrowaveElectricityModel.Mode.LOW) {
+			this.currentMode = MicrowaveElectricityModel.Mode.LOW;
+			this.toggleConsumptionHasChanged();
+		}
+	}
+	
+	@Override
+	public void	setMeddium()
+	{
+		if (this.currentMode != MicrowaveElectricityModel.Mode.MEDDIUM) {
+			this.currentMode = MicrowaveElectricityModel.Mode.MEDDIUM;
+			this.toggleConsumptionHasChanged();
+		}
+	}
+	
+	@Override
+	public void	setUnfreeze()
+	{
+		if (this.currentMode != MicrowaveElectricityModel.Mode.UNFREEZE) {
+			this.currentMode = MicrowaveElectricityModel.Mode.UNFREEZE;
+			this.toggleConsumptionHasChanged();
+		}
 	}
 	
 	public void toggleConsumptionHasChanged() {
@@ -124,16 +198,23 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	
 	//un peu different de l'origininal (une methode en moins)
 	@Override
-	public void initialiseVariables() {
-		super.initialiseVariables();
+	public void initialiseState(Time startTime) {
+		super.initialiseState(startTime);
 		currentState = State.OFF;
 		currentMode = Mode.LOW;
 		consumptionHasChanged = false;
 		totalConsumption = 0.0;
-		this.currentIntensity.initialise(0.0);
 		
 		this.getSimulationEngine().toggleDebugMode();
 		this.logMessage("simulation begins.\n");
+	}
+	
+	@Override
+	public void			initialiseVariables()
+	{
+		super.initialiseVariables();
+
+		this.currentIntensity.initialise(0.0);
 	}
 
 	@Override
@@ -282,6 +363,6 @@ public class MicrowaveElectricityModel extends AtomicHIOA {
 	
 	@Override
 	public SimulationReportI getFinalReport() {
-		return new MicrowaveElectricityReport(URI, this.totalConsumption);
+		return new MicrowaveElectricityReport(this.getURI(), this.totalConsumption);
 	}	
 }

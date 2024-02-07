@@ -107,9 +107,9 @@ extends		AtomicHIOA
 															getSimpleName();
 
 	/** minimal external temperature.										*/
-	public static final double		MIN_EXTERNAL_TEMPERATURE = -5.0;
+	public static final double		MIN_EXTERNAL_TEMPERATURE = 20.0;
 	/** maximal external temperature.										*/
-	public static final double		MAX_EXTERNAL_TEMPERATURE = 15.0;
+	public static final double		MAX_EXTERNAL_TEMPERATURE = 25.0;
 	/** period of the temperature variation cycle (day); the cycle begins
 	 *  at the minimal temperature and ends at the same temperature.		*/
 	public static final double		PERIOD = 24.0;
